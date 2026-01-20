@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import VisualEditsMessenger from "../visual-edits/VisualEditsMessenger";
 import ErrorReporter from "@/components/ErrorReporter";
-import Script from "next/script";
 import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/components/AuthContext";
 
 export const metadata: Metadata = {
-  title: "LeetCode Daily Leaderboard",
-  description: "Track DSA progress with friends",
+  title: "DSA Dhurandhar | Grind LeetCode Together",
+  description: "Compete with friends, track your DSA progress, climb the leaderboard!",
 };
 
 export default function RootLayout({
@@ -16,27 +15,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">
-        <Script
-          id="orchids-browser-logs"
-          src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts/orchids-browser-logs.js"
-          strategy="afterInteractive"
-          data-orchids-project-id="6e6a60ce-aa51-43a4-86c7-c3287d97ee58"
-        />
+    <html lang="en" className="dark">
+      <body className="antialiased bg-[#0a0a0f] text-white min-h-screen">
         <ErrorReporter />
-        <Script
-          src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/scripts//route-messenger.js"
-          strategy="afterInteractive"
-          data-target-origin="*"
-          data-message-type="ROUTE_CHANGE"
-          data-include-search-params="true"
-          data-only-in-iframe="true"
-          data-debug="true"
-          data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
-        />
-        {children}
-        <VisualEditsMessenger />
+        <AuthProvider>
+          {children}
+        </AuthProvider>
         <Toaster />
       </body>
     </html>

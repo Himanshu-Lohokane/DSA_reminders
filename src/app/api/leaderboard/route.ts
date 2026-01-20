@@ -6,30 +6,40 @@ import { DailyStat } from '@/models/DailyStat';
 export async function GET() {
   try {
     await dbConnect();
-    const users = await User.find({});
-    
+    const users = await User.find({}).select('-password');
+    const today = new Date().toISOString().split('T')[0];
+
     const leaderboard = [];
     for (const user of users) {
+      // Get today's stat specifically
+      const todayStat = await DailyStat.findOne({ userId: user._id, date: today });
+      // Get latest stat for total problems
       const latestStat = await DailyStat.findOne({ userId: user._id }).sort({ date: -1 });
-      if (latestStat) {
-        leaderboard.push({
-          id: user._id,
-          name: user.name,
-          leetcodeUsername: user.leetcodeUsername,
-          easy: latestStat.easy,
-          medium: latestStat.medium,
-          hard: latestStat.hard,
-          total: latestStat.total,
-          ranking: latestStat.ranking,
-          weightedScore: latestStat.weightedScore,
-          dailyIncrease: latestStat.dailyIncrease,
-          date: latestStat.date,
-        });
-      }
+
+      leaderboard.push({
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        leetcodeUsername: user.leetcodeUsername,
+        todayPoints: todayStat?.todayPoints || 0,
+        totalProblems: latestStat?.total || 0,
+        ranking: latestStat?.ranking || 0,
+        lastUpdated: latestStat?.date || null,
+        rank: 0,
+      });
     }
-    
+
+    // Sort by today's points (descending)
+    leaderboard.sort((a, b) => b.todayPoints - a.todayPoints);
+
+    // Add rank
+    leaderboard.forEach((entry, index) => {
+      entry.rank = index + 1;
+    });
+
     return NextResponse.json(leaderboard);
   } catch (error: any) {
+    console.error('Leaderboard error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
