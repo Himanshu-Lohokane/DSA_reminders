@@ -2,9 +2,10 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Loader2, LogOut, RefreshCw, Trophy, Target, Crown, Flame, Skull, Zap } from "lucide-react";
+import { Loader2, RefreshCw, Trophy, Target, Crown, LogOut } from "lucide-react";
 
 interface LeaderboardEntry {
     id: string;
@@ -17,13 +18,13 @@ interface LeaderboardEntry {
 }
 
 const MOTIVATIONAL_ROASTS = [
-    "Aaj kuch solve kiya ya bas scroll kar raha hai? 🤨",
-    "Tere competitor abhi grind kar rahe! Tu kya kar raha? 💀",
-    "Ye 0 points dekhke teri placement committee ro rahi hai! 😭",
-    "Bro ek problem toh solve kar, recruiter ko impress karna hai! 🙏",
-    "Khali baitha hai? Graph wala question try kar! 📈",
-    "Teri struggle story LinkedIn pe viral hogi... galat reason se! 😅",
-    "Two Sum bhi nahi aata? Beta ye engineering nahi teri bas ki! 🎓",
+    "Did you solve anything today or just scrolling?",
+    "Your competitors are grinding right now. What are you doing?",
+    "That 0 points is making recruiters cry!",
+    "Bro solve at least one problem, need to impress that recruiter!",
+    "Sitting idle? Try that graph question!",
+    "Your struggle story will go viral on LinkedIn... for the wrong reasons!",
+    "Can't even do Two Sum? Maybe engineering isn't for you!",
 ];
 
 function getRandomRoast() {
@@ -92,8 +93,8 @@ export default function HomePage() {
 
     if (authLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-cyan-500" />
+            <div className="min-h-screen bg-white flex items-center justify-center">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600" />
             </div>
         );
     }
@@ -105,155 +106,140 @@ export default function HomePage() {
     const myRank = currentUserEntry?.rank || '-';
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f0f1a] to-[#0a0a0f]">
-            {/* Header */}
-            <header className="border-b border-white/5 bg-black/20 backdrop-blur-xl sticky top-0 z-50">
-                <div className="max-w-6xl mx-auto px-3 sm:px-4 py-2 sm:py-3 flex items-center justify-between">
-                    <div className="flex items-center gap-2 sm:gap-3">
-                        <div className="p-1.5 sm:p-2 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg sm:rounded-xl">
-                            <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
-                        </div>
-                        <h1 className="text-base sm:text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-                            DSA Dhurandhar
-                        </h1>
+        <div className="min-h-screen bg-white text-gray-800 font-sans">
+            {/* Header - Google Style Navbar */}
+            <header className="fixed top-0 inset-x-0 bg-white/90 backdrop-blur-md z-50 border-b border-gray-200">
+                <div className="max-w-[1200px] mx-auto px-6 h-16 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <Image src="/logo.png" alt="Logo" width={40} height={40} className="object-contain" priority />
+                        <span className="text-2xl font-medium tracking-tight text-gray-500">
+                            DSA <span className="text-gray-900 font-semibold">Grinders</span>
+                        </span>
                     </div>
-                    <div className="flex items-center gap-2 sm:gap-3">
+                    
+                    <div className="flex items-center gap-3">
                         <Button
-                            variant="outline"
+                            variant="ghost" 
                             size="sm"
                             onClick={refreshStats}
                             disabled={isRefreshing}
-                            className="border-white/10 bg-white/5 hover:bg-white/10 text-zinc-300 text-xs sm:text-sm px-2 sm:px-3"
+                            className="text-gray-600 hover:bg-gray-50 hover:text-blue-600 font-medium rounded-full px-4"
                         >
-                            <RefreshCw className={`h-3 w-3 sm:h-4 sm:w-4 ${isRefreshing ? 'animate-spin' : ''} sm:mr-2`} />
-                            <span className="hidden sm:inline">Sync Karo</span>
+                            <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
+                            Sync Stats
                         </Button>
+                        <div className="h-6 w-px bg-gray-200 mx-1"></div>
                         <Button
                             variant="ghost"
-                            size="icon"
+                            size="sm"
                             onClick={logout}
-                            className="text-zinc-400 hover:text-white hover:bg-white/10 h-8 w-8 sm:h-10 sm:w-10"
+                            className="text-gray-500 hover:text-red-600 hover:bg-red-50 rounded-full h-9 w-9 p-0"
+                            title="Logout"
                         >
-                            <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
+                            <LogOut className="h-4 w-4" />
                         </Button>
                     </div>
                 </div>
             </header>
 
-            <main className="max-w-6xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
+            <main className="max-w-[1000px] mx-auto pt-24 pb-12 px-6">
+                
+                {/* Minimalist Welcome/Roast */}
+                <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
+                    <h1 className="text-4xl sm:text-5xl font-normal tracking-tight text-gray-900 mb-4">
+                        {myPoints === 0 ? "Zero points?" : "Keep climbing."}
+                    </h1>
+                    <p className="text-lg text-gray-500 max-w-2xl mx-auto font-light">
+                        {myPoints === 0 ? roast : "Great job solving problems today. Don't stop now."}
+                    </p>
+                </div>
 
-                {/* Roast Banner */}
-                {myPoints === 0 && (
-                    <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-xl">
-                        <div className="flex items-start gap-2 sm:gap-3">
-                            <Skull className="h-4 w-4 sm:h-5 sm:w-5 text-red-400 flex-shrink-0 mt-0.5" />
-                            <p className="text-red-300 text-xs sm:text-sm font-medium">{roast}</p>
-                        </div>
-                    </div>
-                )}
-
-                {/* Stats Cards */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-4 sm:mb-8">
+                {/* Stats Grid - Clean Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
                     {/* Today's Points */}
-                    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-cyan-500/10 to-blue-600/10 border border-cyan-500/20 p-3 sm:p-6">
-                        <div className="absolute top-0 right-0 p-2 sm:p-4 opacity-20">
-                            <Target className="h-8 w-8 sm:h-16 sm:w-16 text-cyan-500" />
+                    <div className="bg-white rounded-3xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-shadow border border-gray-100 flex flex-col items-center justify-center text-center group">
+                        <div className="h-12 w-12 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-blue-600">
+                           <Target className="h-6 w-6" />
                         </div>
-                        <p className="text-[10px] sm:text-sm text-cyan-400 font-medium mb-0.5 sm:mb-1">Aaj Ke Points</p>
-                        <p className="text-2xl sm:text-5xl font-bold text-white">{myPoints}</p>
-                        <p className="text-[8px] sm:text-xs text-zinc-500 mt-1 sm:mt-2 hidden sm:block">1 problem = 1 point</p>
+                        <p className="text-4xl font-normal text-gray-900 mb-2">{myPoints}</p>
+                        <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Points Today</p>
                     </div>
 
                     {/* Rank */}
-                    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500/10 to-orange-600/10 border border-amber-500/20 p-3 sm:p-6">
-                        <div className="absolute top-0 right-0 p-2 sm:p-4 opacity-20">
-                            <Crown className="h-8 w-8 sm:h-16 sm:w-16 text-amber-500" />
+                    <div className="bg-white rounded-3xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-shadow border border-gray-100 flex flex-col items-center justify-center text-center group">
+                        <div className="h-12 w-12 bg-yellow-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-yellow-600">
+                           <Crown className="h-6 w-6" />
                         </div>
-                        <p className="text-[10px] sm:text-sm text-amber-400 font-medium mb-0.5 sm:mb-1">Teri Rank</p>
-                        <p className="text-2xl sm:text-5xl font-bold text-white">#{myRank}</p>
-                        <p className="text-[8px] sm:text-xs text-zinc-500 mt-1 sm:mt-2 hidden sm:block">{leaderboard.length} mein se</p>
+                        <p className="text-4xl font-normal text-gray-900 mb-2">#{myRank}</p>
+                        <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Current Rank</p>
                     </div>
 
                     {/* Total Problems */}
-                    <div className="relative overflow-hidden rounded-xl sm:rounded-2xl bg-gradient-to-br from-purple-500/10 to-pink-600/10 border border-purple-500/20 p-3 sm:p-6">
-                        <div className="absolute top-0 right-0 p-2 sm:p-4 opacity-20">
-                            <Trophy className="h-8 w-8 sm:h-16 sm:w-16 text-purple-500" />
+                    <div className="bg-white rounded-3xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-shadow border border-gray-100 flex flex-col items-center justify-center text-center group">
+                        <div className="h-12 w-12 bg-green-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-green-600">
+                           <Trophy className="h-6 w-6" />
                         </div>
-                        <p className="text-[10px] sm:text-sm text-purple-400 font-medium mb-0.5 sm:mb-1">Total Solved</p>
-                        <p className="text-2xl sm:text-5xl font-bold text-white">{currentUserEntry?.totalProblems || 0}</p>
-                        <p className="text-[8px] sm:text-xs text-zinc-500 mt-1 sm:mt-2 hidden sm:block">lifetime</p>
+                        <p className="text-4xl font-normal text-gray-900 mb-2">{currentUserEntry?.totalProblems || 0}</p>
+                        <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Lifetime Solved</p>
                     </div>
                 </div>
 
-                {/* Leaderboard */}
-                <div className="rounded-xl sm:rounded-2xl border border-white/5 bg-white/[0.02] overflow-hidden">
-                    <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-white/5 flex items-center justify-between">
-                        <h2 className="text-sm sm:text-lg font-semibold text-white flex items-center gap-2">
-                            <Flame className="h-4 w-4 sm:h-5 sm:w-5 text-orange-500" />
-                            Aaj Ka Leaderboard 🔥
-                        </h2>
+                {/* Leaderboard Table */}
+                <div className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-sm">
+                    <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                        <h2 className="text-xl font-normal text-gray-800">Leaderboard</h2>
                         {lastRefresh && (
-                            <p className="text-[10px] sm:text-xs text-zinc-500">
-                                {lastRefresh.toLocaleTimeString()}
-                            </p>
+                            <span className="text-xs font-medium text-gray-400 bg-white px-3 py-1 rounded-full border border-gray-200">
+                                Updated {lastRefresh.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                            </span>
                         )}
                     </div>
-
+                    
                     {isLoading ? (
-                        <div className="h-48 sm:h-64 flex items-center justify-center">
-                            <Loader2 className="h-6 w-6 sm:h-8 sm:w-8 animate-spin text-cyan-500" />
+                        <div className="h-64 flex items-center justify-center">
+                            <Loader2 className="h-8 w-8 animate-spin text-blue-600 opacity-50" />
                         </div>
                     ) : leaderboard.length === 0 ? (
-                        <div className="h-48 sm:h-64 flex flex-col items-center justify-center text-zinc-500 p-4">
-                            <Trophy className="h-10 w-10 sm:h-12 sm:w-12 mb-4 opacity-20" />
-                            <p className="text-sm text-center">Koi data nahi. Pehle LeetCode pe jaake solve toh kar! 😤</p>
+                        <div className="h-64 flex flex-col items-center justify-center text-gray-400">
+                            <p>No data available yet.</p>
                         </div>
                     ) : (
-                        <div className="divide-y divide-white/5">
+                        <div className="divide-y divide-gray-100">
                             {leaderboard.map((entry, index) => (
-                                <div
-                                    key={entry.id}
-                                    className={`px-3 sm:px-6 py-3 sm:py-4 flex items-center gap-2 sm:gap-4 transition-colors ${entry.email === user.email
-                                        ? 'bg-cyan-500/5 border-l-2 border-cyan-500'
-                                        : 'hover:bg-white/[0.02]'
-                                        }`}
+                                <div 
+                                    key={entry.id} 
+                                    className={`px-8 py-5 flex items-center gap-6 transition-colors hover:bg-gray-50 ${
+                                        entry.email === user.email ? 'bg-blue-50/40' : ''
+                                    }`}
                                 >
-                                    {/* Rank */}
-                                    <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-bold text-sm sm:text-lg flex-shrink-0 ${index === 0 ? 'bg-gradient-to-br from-amber-400 to-amber-600 text-black' :
-                                        index === 1 ? 'bg-gradient-to-br from-zinc-300 to-zinc-500 text-black' :
-                                            index === 2 ? 'bg-gradient-to-br from-amber-600 to-amber-800 text-white' :
-                                                'bg-white/5 text-zinc-400'
-                                        }`}>
+                                    <div className={`
+                                        w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold flex-shrink-0
+                                        ${index === 0 ? 'bg-yellow-100 text-yellow-700' : 
+                                          index === 1 ? 'bg-gray-100 text-gray-600' :
+                                          index === 2 ? 'bg-orange-100 text-orange-700' :
+                                          'text-gray-400'}
+                                    `}>
                                         {entry.rank}
                                     </div>
-
-                                    {/* User Info */}
+                                    
                                     <div className="flex-1 min-w-0">
-                                        <p className="font-medium text-white truncate text-sm sm:text-base">
-                                            {entry.name}
+                                        <div className="flex items-center gap-2">
+                                            <p className="font-medium text-gray-900 truncate">{entry.name}</p>
                                             {entry.email === user.email && (
-                                                <span className="ml-1 sm:ml-2 text-[10px] sm:text-xs text-cyan-400">(Tu)</span>
+                                                <span className="text-[10px] font-bold tracking-wide text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full uppercase">You</span>
                                             )}
-                                        </p>
-                                        <p className="text-xs sm:text-sm text-zinc-500 truncate">@{entry.leetcodeUsername}</p>
+                                        </div>
+                                        <p className="text-sm text-gray-500 font-normal truncate">@{entry.leetcodeUsername}</p>
                                     </div>
-
-                                    {/* Points */}
-                                    <div className="text-right flex-shrink-0">
-                                        <p className="text-xl sm:text-2xl font-bold text-white">{entry.todayPoints}</p>
-                                        <p className="text-[10px] sm:text-xs text-zinc-500">aaj</p>
+                                    
+                                    <div className="text-right">
+                                        <span className="block text-lg font-medium text-gray-900">{entry.todayPoints}</span>
+                                        <span className="text-xs text-gray-400">points</span>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     )}
-                </div>
-
-                {/* Footer Message */}
-                <div className="mt-4 sm:mt-8 text-center">
-                    <p className="text-zinc-600 text-xs sm:text-sm px-4">
-                        💡 LeetCode pe problem solve karo, phir "Sync Karo" button dabao!
-                    </p>
                 </div>
             </main>
         </div>

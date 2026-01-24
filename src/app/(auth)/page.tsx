@@ -4,63 +4,33 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, UserPlus, LogIn, Skull } from "lucide-react";
+import { Loader2, ArrowRight } from "lucide-react";
 import { useAuth } from "@/components/AuthContext";
 import Image from "next/image";
 
-const ROASTS = [
-    "Abe DSA kar varna Swiggy pe delivery karega! 🛵",
-    "Netflix band kar, LeetCode khol! Nahi toh fresher hi rahega! 💀",
-    "Tere dost Google join kar rahe, tu abhi bhi Two Sum mein atka hai! 😭",
-    "DSA nahi aati? Koi baat nahi, Chai Ka Thela bhi acha business hai! ☕",
-    "Ek problem roz bhi solve nahi karta? Beta campus mein hi reh jayega! 🏫",
-    "Array reverse karna nahi aata? Career bhi reverse ho jayegi! 🔄",
-    "Teri struggle story LinkedIn pe viral hogi... galat reason se! 😅",
-    "Recursion samajh nahi aata? Tu khud ek infinite loop hai bro! 🔁",
-];
-
-function getRandomRoast() {
-    return ROASTS[Math.floor(Math.random() * ROASTS.length)];
-}
-
 export default function AuthPage() {
     const { login, register } = useAuth();
+    const [isLogin, setIsLogin] = useState(true);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [roast] = useState(getRandomRoast());
 
-    // Login form state
-    const [loginEmail, setLoginEmail] = useState("");
-    const [loginPassword, setLoginPassword] = useState("");
+    // Form state
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [leetcode, setLeetcode] = useState("");
 
-    // Register form state
-    const [regName, setRegName] = useState("");
-    const [regEmail, setRegEmail] = useState("");
-    const [regPassword, setRegPassword] = useState("");
-    const [regLeetcode, setRegLeetcode] = useState("");
-
-    const handleLogin = async (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setError(null);
         setIsLoading(true);
 
         try {
-            await login(loginEmail, loginPassword);
-        } catch (err: any) {
-            setError(err.message);
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
-    const handleRegister = async (e: React.FormEvent) => {
-        e.preventDefault();
-        setError(null);
-        setIsLoading(true);
-
-        try {
-            await register(regName, regEmail, regPassword, regLeetcode);
+            if (isLogin) {
+                await login(email, password);
+            } else {
+                await register(name, email, password, leetcode);
+            }
         } catch (err: any) {
             setError(err.message);
         } finally {
@@ -69,181 +39,135 @@ export default function AuthPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#0a0a0f] via-[#0f0f1a] to-[#0a0a0f] flex items-center justify-center p-4">
-            <div className="w-full max-w-md">
-                {/* Logo Banner */}
-                <div className="mb-6 rounded-2xl overflow-hidden border border-white/10">
-                    <Image
-                        src="/dsa-dhurandhar-banner.png"
-                        alt="DSA Dhurandhar"
-                        width={600}
-                        height={300}
-                        className="w-full h-auto object-cover"
-                        priority
-                    />
-                </div>
-
-                {/* Tagline */}
-                <p className="text-center text-zinc-400 text-sm mb-4">LeetCode grind karo. Doston ko harao. 🔥</p>
-
-                {/* Roast Banner */}
-                <div className="mb-6 p-3 sm:p-4 bg-gradient-to-r from-red-500/10 to-orange-500/10 border border-red-500/20 rounded-xl">
-                    <div className="flex items-start gap-3">
-                        <Skull className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" />
-                        <p className="text-red-300 text-xs sm:text-sm font-medium">{roast}</p>
+        <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 font-sans text-[#202124]">
+            
+            <div className="w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-500">
+                {/* Minimal Logo */}
+                <div className="flex flex-col items-center justify-center mb-2">
+                    <div className="relative w-32 h-32 mb-0">
+                         <Image src="/logo.png" alt="DSA Grinders" width={128} height={128} className="object-contain" priority />
                     </div>
+                    <span className="text-2xl font-normal text-gray-500 tracking-tight text-center">
+                        DSA <span className="font-medium text-gray-900">Grinders</span>
+                    </span>
                 </div>
 
-                {/* Auth Card */}
-                <div className="rounded-2xl border border-white/10 bg-white/[0.02] backdrop-blur-xl p-4 sm:p-6">
-                    <Tabs defaultValue="login" className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 mb-6 bg-white/5">
-                            <TabsTrigger
-                                value="login"
-                                className="flex items-center gap-2 text-sm data-[state=active]:bg-white/10"
-                            >
-                                <LogIn className="h-4 w-4" /> Login
-                            </TabsTrigger>
-                            <TabsTrigger
-                                value="register"
-                                className="flex items-center gap-2 text-sm data-[state=active]:bg-white/10"
-                            >
-                                <UserPlus className="h-4 w-4" /> Sign Up
-                            </TabsTrigger>
-                        </TabsList>
+                <div className="bg-white rounded-[28px] border border-gray-200 p-6 sm:p-8 shadow-[0_1px_2px_0_rgba(60,64,67,0.3),0_1px_3px_1px_rgba(60,64,67,0.15)]">
+                    <h2 className="text-2xl font-normal text-center mb-2">
+                        {isLogin ? "Sign in" : "Create account"}
+                    </h2>
+                    <p className="text-center text-gray-500 mb-8 text-sm">
+                        {isLogin ? "to continue to DSA Grinders" : "to start competing with friends"}
+                    </p>
 
-                        {error && (
-                            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
-                                {error}
+                    {error && (
+                        <div className="mb-6 bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm border border-red-100 flex items-center gap-2">
+                             <span className="h-1.5 w-1.5 rounded-full bg-red-600 flex-shrink-0" />
+                             {error}
+                        </div>
+                    )}
+
+                    <form onSubmit={handleSubmit} className="space-y-5">
+                        {!isLogin && (
+                            <div className="space-y-1.5">
+                                <Label htmlFor="name" className="text-gray-700 font-medium text-sm ml-1">Full Name</Label>
+                                <Input
+                                    id="name"
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required={!isLogin}
+                                    disabled={isLoading}
+                                    className="h-12 px-4 bg-gray-50 border-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all rounded-xl text-base"
+                                    placeholder="John Doe"
+                                />
+                            </div>
+                        )}
+                        
+                        <div className="space-y-1.5">
+                            <Label htmlFor="email" className="text-gray-700 font-medium text-sm ml-1">Email</Label>
+                            <Input
+                                id="email"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                disabled={isLoading}
+                                className="h-12 px-4 bg-gray-50 border-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all rounded-xl text-base"
+                                placeholder="name@example.com"
+                            />
+                        </div>
+
+                        {!isLogin && (
+                            <div className="space-y-1.5">
+                                <Label htmlFor="leetcode" className="text-gray-700 font-medium text-sm ml-1">LeetCode Username</Label>
+                                <Input
+                                    id="leetcode"
+                                    type="text"
+                                    value={leetcode}
+                                    onChange={(e) => setLeetcode(e.target.value)}
+                                    required={!isLogin}
+                                    disabled={isLoading}
+                                    className="h-12 px-4 bg-gray-50 border-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all rounded-xl text-base"
+                                    placeholder="leetcode_user"
+                                />
                             </div>
                         )}
 
-                        <TabsContent value="login">
-                            <form onSubmit={handleLogin} className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="login-email" className="text-zinc-300">Email</Label>
-                                    <Input
-                                        id="login-email"
-                                        type="email"
-                                        placeholder="you@example.com"
-                                        value={loginEmail}
-                                        onChange={(e) => setLoginEmail(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-cyan-500"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="login-password" className="text-zinc-300">Password</Label>
-                                    <Input
-                                        id="login-password"
-                                        type="password"
-                                        placeholder="••••••••"
-                                        value={loginPassword}
-                                        onChange={(e) => setLoginPassword(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-cyan-500"
-                                    />
-                                </div>
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Login ho raha hai...
-                                        </>
-                                    ) : (
-                                        "Login Karo 🚀"
-                                    )}
-                                </Button>
-                            </form>
-                        </TabsContent>
+                        <div className="space-y-1.5">
+                            <Label htmlFor="password" className="text-gray-700 font-medium text-sm ml-1">Password</Label>
+                            <Input
+                                id="password"
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                minLength={6}
+                                disabled={isLoading}
+                                className="h-12 px-4 bg-gray-50 border-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all rounded-xl text-base"
+                                placeholder="Min. 6 characters"
+                            />
+                        </div>
 
-                        <TabsContent value="register">
-                            <form onSubmit={handleRegister} className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="reg-name" className="text-zinc-300">Full Name</Label>
-                                    <Input
-                                        id="reg-name"
-                                        type="text"
-                                        placeholder="Rahul Sharma"
-                                        value={regName}
-                                        onChange={(e) => setRegName(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-cyan-500"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="reg-email" className="text-zinc-300">Email</Label>
-                                    <Input
-                                        id="reg-email"
-                                        type="email"
-                                        placeholder="you@example.com"
-                                        value={regEmail}
-                                        onChange={(e) => setRegEmail(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-cyan-500"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="reg-password" className="text-zinc-300">Password</Label>
-                                    <Input
-                                        id="reg-password"
-                                        type="password"
-                                        placeholder="Min. 6 characters"
-                                        value={regPassword}
-                                        onChange={(e) => setRegPassword(e.target.value)}
-                                        required
-                                        minLength={6}
-                                        disabled={isLoading}
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-cyan-500"
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="reg-leetcode" className="text-zinc-300">LeetCode Username</Label>
-                                    <Input
-                                        id="reg-leetcode"
-                                        type="text"
-                                        placeholder="your_leetcode_username"
-                                        value={regLeetcode}
-                                        onChange={(e) => setRegLeetcode(e.target.value)}
-                                        required
-                                        disabled={isLoading}
-                                        className="bg-white/5 border-white/10 text-white placeholder:text-zinc-500 focus:border-cyan-500"
-                                    />
-                                    <p className="text-xs text-zinc-500">
-                                        Hum verify karenge ki tu sach mein LeetCode pe hai ya bas timepass 😏
-                                    </p>
-                                </div>
-                                <Button
-                                    type="submit"
-                                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold"
-                                    disabled={isLoading}
-                                >
-                                    {isLoading ? (
-                                        <>
-                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                            Account ban raha hai...
-                                        </>
-                                    ) : (
-                                        "Account Banao 💪"
-                                    )}
-                                </Button>
-                            </form>
-                        </TabsContent>
-                    </Tabs>
+                        <div className="pt-2">
+                            <Button
+                                type="submit"
+                                className="w-full h-12 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-medium rounded-full text-base shadow-none transition-all flex items-center justify-center gap-2"
+                                disabled={isLoading}
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="h-5 w-5 animate-spin" />
+                                ) : (
+                                    <>
+                                        {isLogin ? "Sign in" : "Create Account"}
+                                        <ArrowRight className="h-4 w-4" />
+                                    </>
+                                )}
+                            </Button>
+                        </div>
+                    </form>
+                    
+                    <div className="mt-8 text-center pt-6 border-t border-gray-100">
+                        <button 
+                            onClick={() => {
+                                setIsLogin(!isLogin);
+                                setError(null);
+                            }}
+                            className="text-[#1a73e8] hover:text-[#1557b0] text-sm font-medium hover:underline px-2 py-1 rounded-md"
+                        >
+                            {isLogin 
+                                ? "Create an account" 
+                                : "Already have an account? Sign in"
+                            }
+                        </button>
+                    </div>
                 </div>
-
-                {/* Footer */}
-                <p className="text-center text-zinc-600 text-xs mt-6 px-4">
-                    DSA karle bhai varna JOB nahi lagegi! 💀🔥
-                </p>
+                
+                <div className="mt-8 flex justify-center gap-6 text-xs text-gray-400">
+                    <span className="hover:text-gray-600 cursor-pointer">Help</span>
+                    <span className="hover:text-gray-600 cursor-pointer">Privacy</span>
+                    <span className="hover:text-gray-600 cursor-pointer">Terms</span>
+                </div>
             </div>
         </div>
     );
