@@ -6,27 +6,27 @@ const LEETCODE_GRAPHQL = 'https://leetcode.com/graphql';
 // Calculate current streak from submission calendar
 function calculateStreak(calendarData: string): number {
   if (!calendarData) return 0;
-  
+
   try {
     const calendar = JSON.parse(calendarData);
     const timestamps = Object.keys(calendar).map(Number).sort((a, b) => b - a);
-    
+
     if (timestamps.length === 0) return 0;
-    
+
     let streak = 0;
     const oneDayInSeconds = 86400;
     const now = Math.floor(Date.now() / 1000);
     const todayStart = now - (now % oneDayInSeconds);
-    
+
     // Check if solved today or yesterday (to account for timezone)
     const mostRecent = timestamps[0];
     if (mostRecent < todayStart - oneDayInSeconds) return 0;
-    
+
     let currentDay = todayStart;
-    
+
     for (const timestamp of timestamps) {
       const dayStart = timestamp - (timestamp % oneDayInSeconds);
-      
+
       if (dayStart === currentDay || dayStart === currentDay - oneDayInSeconds) {
         if (dayStart < currentDay) {
           streak++;
@@ -36,7 +36,7 @@ function calculateStreak(calendarData: string): number {
         break;
       }
     }
-    
+
     return streak;
   } catch (error) {
     console.error('Error calculating streak:', error);
@@ -68,12 +68,13 @@ async function fetchLeetCodeUser(username: string) {
 
   const response = await fetch(LEETCODE_GRAPHQL, {
     method: 'POST',
-    headers: { 
+    headers: {
       'Content-Type': 'application/json',
       'User-Agent': 'Mozilla/5.0',
       'Referer': 'https://leetcode.com',
     },
     body: JSON.stringify({ query, variables: { username } }),
+    cache: 'no-store', // Disable caching to ensure fresh data
   });
 
   if (!response.ok) {
@@ -83,10 +84,10 @@ async function fetchLeetCodeUser(username: string) {
   }
 
   const data = await response.json();
-  
+
   // Log the response to debug
   console.log(`[LeetCode API] Response for ${username}:`, JSON.stringify(data, null, 2));
-  
+
   return data.data;
 }
 
@@ -109,15 +110,15 @@ export async function fetchLeetCodeStats(username: string) {
     const hard = acNum.find((s: any) => s.difficulty === 'Hard')?.count || 0;
     const total = acNum.find((s: any) => s.difficulty === 'All')?.count || 0;
     const ranking = userStats.matchedUser.profile?.ranking || 0;
-    
+
     // LeetCode's public API doesn't return avatars, so we construct the URL
     // Format: https://assets.leetcode.com/users/avatars/avatar_{timestamp}_{username}.png
     // Since we can't get the exact URL, we'll use LeetCode's default or a placeholder service
     const avatarFromAPI = userStats.matchedUser.profile?.userAvatar;
     const avatar = avatarFromAPI || `https://ui-avatars.com/api/?name=${encodeURIComponent(username)}&background=1a73e8&color=fff&size=128`;
-    
+
     const country = userStats.matchedUser.profile?.countryName || '';
-    
+
     // Debug: Log avatar data
     console.log(`[LeetCode] Fetched data for ${username}:`, {
       avatarFromAPI,
@@ -125,11 +126,11 @@ export async function fetchLeetCodeStats(username: string) {
       country,
       hasProfile: !!userStats.matchedUser.profile,
     });
-    
+
     // Calculate streak from submission calendar
     const calendar = userStats.matchedUser.submissionCalendar;
     const streak = calculateStreak(calendar);
-    
+
     // Get last submission timestamp from calendar
     let lastSubmission = null;
     if (calendar) {

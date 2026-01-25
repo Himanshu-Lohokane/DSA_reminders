@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, Trophy, Target, Crown, LogOut } from "lucide-react";
+import { Loader2, RefreshCw, Trophy, Target, Crown, LogOut, Github, Linkedin } from "lucide-react";
 
 interface LeaderboardEntry {
     id: string;
@@ -24,6 +24,8 @@ interface LeaderboardEntry {
     streak?: number;
     lastSubmission?: string;
     recentProblems?: string[];
+    github?: string;
+    linkedin?: string;
     rank: number;
 }
 
@@ -48,7 +50,7 @@ function getTimeAgo(timestamp: string | null | undefined): string {
     const diff = now - then;
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    
+
     if (hours < 1) return 'Just now';
     if (hours < 24) return `${hours}h ago`;
     if (days < 7) return `${days}d ago`;
@@ -64,11 +66,13 @@ export default function HomePage() {
     const [lastRefresh, setLastRefresh] = useState<Date | null>(null);
     const [roast] = useState(getRandomRoast());
 
+    const [leaderboardType, setLeaderboardType] = useState<'daily' | 'allTime'>('daily');
+
     const fetchLeaderboard = useCallback(async (showLoader = true) => {
         if (showLoader) setIsLoading(true);
         setIsRefreshing(true);
         try {
-            const res = await fetch("/api/leaderboard");
+            const res = await fetch(`/api/leaderboard?type=${leaderboardType}`);
             const data = await res.json();
             if (Array.isArray(data)) {
                 setLeaderboard(data);
@@ -80,7 +84,7 @@ export default function HomePage() {
             setIsLoading(false);
             setIsRefreshing(false);
         }
-    }, []);
+    }, [leaderboardType]);
 
     const refreshStats = async () => {
         if (!user || !token) return;
@@ -140,10 +144,10 @@ export default function HomePage() {
                             DSA <span className="text-gray-900 font-semibold">Grinders</span>
                         </span>
                     </div>
-                    
+
                     <div className="flex items-center gap-3">
                         <Button
-                            variant="ghost" 
+                            variant="ghost"
                             size="sm"
                             onClick={refreshStats}
                             disabled={isRefreshing}
@@ -175,7 +179,7 @@ export default function HomePage() {
             </header>
 
             <main className="max-w-[1000px] mx-auto pt-24 pb-12 px-6">
-                
+
                 {/* Minimalist Welcome/Roast */}
                 <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <h1 className="text-4xl sm:text-5xl font-normal tracking-tight text-gray-900 mb-4">
@@ -191,7 +195,7 @@ export default function HomePage() {
                     {/* Today's Points */}
                     <div className="bg-white rounded-3xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-shadow border border-gray-100 flex flex-col items-center justify-center text-center group">
                         <div className="h-12 w-12 bg-blue-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-blue-600">
-                           <Target className="h-6 w-6" />
+                            <Target className="h-6 w-6" />
                         </div>
                         <p className="text-4xl font-normal text-gray-900 mb-2">{myPoints}</p>
                         <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Points Today</p>
@@ -200,7 +204,7 @@ export default function HomePage() {
                     {/* Rank */}
                     <div className="bg-white rounded-3xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-shadow border border-gray-100 flex flex-col items-center justify-center text-center group">
                         <div className="h-12 w-12 bg-yellow-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-yellow-600">
-                           <Crown className="h-6 w-6" />
+                            <Crown className="h-6 w-6" />
                         </div>
                         <p className="text-4xl font-normal text-gray-900 mb-2">#{myRank}</p>
                         <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Current Rank</p>
@@ -209,7 +213,7 @@ export default function HomePage() {
                     {/* Total Problems */}
                     <div className="bg-white rounded-3xl p-8 shadow-[0_1px_3px_rgba(0,0,0,0.12)] hover:shadow-[0_4px_12px_rgba(0,0,0,0.1)] transition-shadow border border-gray-100 flex flex-col items-center justify-center text-center group">
                         <div className="h-12 w-12 bg-green-50 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform text-green-600">
-                           <Trophy className="h-6 w-6" />
+                            <Trophy className="h-6 w-6" />
                         </div>
                         <p className="text-4xl font-normal text-gray-900 mb-2">{currentUserEntry?.totalProblems || 0}</p>
                         <p className="text-sm font-medium text-gray-500 uppercase tracking-wider">Lifetime Solved</p>
@@ -219,14 +223,36 @@ export default function HomePage() {
                 {/* Leaderboard Table */}
                 <div className="bg-white rounded-3xl overflow-hidden border border-gray-200 shadow-sm">
                     <div className="px-8 py-6 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
-                        <h2 className="text-xl font-normal text-gray-800">Leaderboard</h2>
+                        <div className="flex items-center gap-4">
+                            <h2 className="text-xl font-normal text-gray-800">Leaderboard</h2>
+                            <div className="flex bg-gray-100 p-1 rounded-lg">
+                                <button
+                                    onClick={() => setLeaderboardType('daily')}
+                                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${leaderboardType === 'daily'
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
+                                        }`}
+                                >
+                                    Daily
+                                </button>
+                                <button
+                                    onClick={() => setLeaderboardType('allTime')}
+                                    className={`px-3 py-1 text-xs font-medium rounded-md transition-all ${leaderboardType === 'allTime'
+                                        ? 'bg-white text-gray-900 shadow-sm'
+                                        : 'text-gray-500 hover:text-gray-700'
+                                        }`}
+                                >
+                                    All Time
+                                </button>
+                            </div>
+                        </div>
                         {lastRefresh && (
                             <span className="text-xs font-medium text-gray-400 bg-white px-3 py-1 rounded-full border border-gray-200">
-                                Updated {lastRefresh.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
+                                Updated {lastRefresh.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </span>
                         )}
                     </div>
-                    
+
                     {isLoading ? (
                         <div className="h-64 flex items-center justify-center">
                             <Loader2 className="h-8 w-8 animate-spin text-blue-600 opacity-50" />
@@ -254,15 +280,14 @@ export default function HomePage() {
                                     </div>
                                 </div>
                             </div>
-                            
+
                             {/* Data Rows */}
                             <div className="divide-y divide-gray-100">
                                 {leaderboard.map((entry, index) => (
-                                    <div 
-                                        key={entry.id} 
-                                        className={`px-8 py-4 flex items-center gap-6 transition-colors hover:bg-gray-50 ${
-                                            entry.email === user.email ? 'bg-blue-50/30' : ''
-                                        }`}
+                                    <div
+                                        key={entry.id}
+                                        className={`px-8 py-4 flex items-center gap-6 transition-colors hover:bg-gray-50 ${entry.email === user.email ? 'bg-blue-50/30' : ''
+                                            }`}
                                     >
                                         {/* Avatar */}
                                         <div className="w-11 h-11 rounded-full overflow-hidden bg-gray-100 flex-shrink-0 border border-gray-200">
@@ -274,10 +299,10 @@ export default function HomePage() {
                                                 </div>
                                             )}
                                         </div>
-                                        
+
                                         <div className="flex-1 min-w-0 relative group/profile">
                                             <div className="flex items-center gap-2">
-                                                <a 
+                                                <a
                                                     href={`https://leetcode.com/${entry.leetcodeUsername}`}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
@@ -285,6 +310,28 @@ export default function HomePage() {
                                                 >
                                                     {entry.name}
                                                 </a>
+                                                {entry.github && (
+                                                    <a
+                                                        href={entry.github}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-gray-400 hover:text-gray-900 transition-colors"
+                                                        title="GitHub Profile"
+                                                    >
+                                                        <Github className="w-3.5 h-3.5" />
+                                                    </a>
+                                                )}
+                                                {entry.linkedin && (
+                                                    <a
+                                                        href={entry.linkedin}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="text-gray-400 hover:text-[#0077b5] transition-colors"
+                                                        title="LinkedIn Profile"
+                                                    >
+                                                        <Linkedin className="w-3.5 h-3.5" />
+                                                    </a>
+                                                )}
                                                 {entry.email === user.email && (
                                                     <span className="text-[10px] font-bold tracking-wide text-blue-600 bg-blue-100 px-2 py-0.5 rounded-full uppercase">You</span>
                                                 )}
@@ -298,7 +345,7 @@ export default function HomePage() {
                                                     <span className="text-xs text-gray-400">• {getTimeAgo(entry.lastSubmission)}</span>
                                                 )}
                                             </div>
-                                            
+
                                             {/* Profile Hover Card */}
                                             <div className="absolute left-0 top-full mt-2 opacity-0 invisible group-hover/profile:opacity-100 group-hover/profile:visible transition-all duration-150 z-50 pointer-events-none">
                                                 <div className="bg-white rounded-xl p-4 shadow-[0_4px_20px_rgba(0,0,0,0.15)] border border-gray-100 w-64">
@@ -313,11 +360,35 @@ export default function HomePage() {
                                                             )}
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <div className="font-medium text-gray-900 truncate text-sm">{entry.name}</div>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <div className="font-medium text-gray-900 truncate text-sm">{entry.name}</div>
+                                                                {entry.github && (
+                                                                    <a
+                                                                        href={entry.github}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-gray-400 hover:text-gray-900 transition-colors"
+                                                                        title="GitHub Profile"
+                                                                    >
+                                                                        <Github className="w-3 h-3" />
+                                                                    </a>
+                                                                )}
+                                                                {entry.linkedin && (
+                                                                    <a
+                                                                        href={entry.linkedin}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-gray-400 hover:text-[#0077b5] transition-colors"
+                                                                        title="LinkedIn Profile"
+                                                                    >
+                                                                        <Linkedin className="w-3 h-3" />
+                                                                    </a>
+                                                                )}
+                                                            </div>
                                                             <div className="text-xs text-gray-500 truncate">@{entry.leetcodeUsername}</div>
                                                         </div>
                                                     </div>
-                                                    
+
                                                     <div className="space-y-2.5 text-xs">
                                                         {entry.ranking && entry.ranking > 0 && (
                                                             <div className="flex items-center justify-between">
@@ -351,7 +422,7 @@ export default function HomePage() {
                                                                 <span className="text-gray-900 font-medium">{getTimeAgo(entry.lastSubmission)}</span>
                                                             </div>
                                                         )}
-                                                        
+
                                                         <div className="pt-2.5 mt-2.5 border-t border-gray-100">
                                                             <div className="text-[10px] text-gray-400 uppercase tracking-wider mb-2">Problem Breakdown</div>
                                                             <div className="grid grid-cols-3 gap-2 text-center">
@@ -373,7 +444,7 @@ export default function HomePage() {
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <div className="flex gap-12 items-center">
                                             <div className="text-center w-20">
                                                 {entry.streak && entry.streak > 0 ? (

@@ -19,6 +19,8 @@ export default function AuthPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [leetcode, setLeetcode] = useState("");
+    const [github, setGithub] = useState("");
+    const [linkedin, setLinkedin] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -30,7 +32,7 @@ export default function AuthPage() {
             if (isLogin) {
                 await login(email, password);
             } else {
-                await register(name, email, password, leetcode, phoneNumber.trim() || undefined);
+                await register(name, email, password, leetcode, github, linkedin.trim() || undefined, phoneNumber.trim() || undefined);
             }
         } catch (err: any) {
             setError(err.message);
@@ -41,12 +43,12 @@ export default function AuthPage() {
 
     return (
         <div className="min-h-screen bg-white flex flex-col items-center justify-center p-4 font-sans text-[#202124]">
-            
+
             <div className="w-full max-w-[400px] animate-in fade-in zoom-in-95 duration-500">
                 {/* Minimal Logo */}
                 <div className="flex flex-col items-center justify-center mb-2">
                     <div className="relative w-32 h-32 mb-0">
-                         <Image src="/logo.png" alt="DSA Grinders" width={128} height={128} className="object-contain" priority />
+                        <Image src="/logo.png" alt="DSA Grinders" width={128} height={128} className="object-contain" priority />
                     </div>
                     <span className="text-2xl font-normal text-gray-500 tracking-tight text-center">
                         DSA <span className="font-medium text-gray-900">Grinders</span>
@@ -63,8 +65,8 @@ export default function AuthPage() {
 
                     {error && (
                         <div className="mb-6 bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm border border-red-100 flex items-center gap-2">
-                             <span className="h-1.5 w-1.5 rounded-full bg-red-600 flex-shrink-0" />
-                             {error}
+                            <span className="h-1.5 w-1.5 rounded-full bg-red-600 flex-shrink-0" />
+                            {error}
                         </div>
                     )}
 
@@ -84,7 +86,7 @@ export default function AuthPage() {
                                 />
                             </div>
                         )}
-                        
+
                         <div className="space-y-1.5">
                             <Label htmlFor="email" className="text-gray-700 font-medium text-sm ml-1">Email</Label>
                             <Input
@@ -111,6 +113,39 @@ export default function AuthPage() {
                                     disabled={isLoading}
                                     className="h-12 px-4 bg-gray-50 border-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all rounded-xl text-base"
                                     placeholder="leetcode_user"
+                                />
+                            </div>
+                        )}
+
+                        {!isLogin && (
+                            <div className="space-y-1.5">
+                                <Label htmlFor="github" className="text-gray-700 font-medium text-sm ml-1">GitHub Profile URL</Label>
+                                <Input
+                                    id="github"
+                                    type="url"
+                                    value={github}
+                                    onChange={(e) => setGithub(e.target.value)}
+                                    required={!isLogin}
+                                    disabled={isLoading}
+                                    className="h-12 px-4 bg-gray-50 border-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all rounded-xl text-base"
+                                    placeholder="https://github.com/username"
+                                />
+                            </div>
+                        )}
+
+                        {!isLogin && (
+                            <div className="space-y-1.5">
+                                <Label htmlFor="linkedin" className="text-gray-700 font-medium text-sm ml-1">
+                                    LinkedIn Profile URL <span className="text-gray-400 font-normal">(Optional)</span>
+                                </Label>
+                                <Input
+                                    id="linkedin"
+                                    type="url"
+                                    value={linkedin}
+                                    onChange={(e) => setLinkedin(e.target.value)}
+                                    disabled={isLoading}
+                                    className="h-12 px-4 bg-gray-50 border-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all rounded-xl text-base"
+                                    placeholder="https://linkedin.com/in/username"
                                 />
                             </div>
                         )}
@@ -165,23 +200,23 @@ export default function AuthPage() {
                             </Button>
                         </div>
                     </form>
-                    
+
                     <div className="mt-8 text-center pt-6 border-t border-gray-100">
-                        <button 
+                        <button
                             onClick={() => {
                                 setIsLogin(!isLogin);
                                 setError(null);
                             }}
                             className="text-[#1a73e8] hover:text-[#1557b0] text-sm font-medium hover:underline px-2 py-1 rounded-md"
                         >
-                            {isLogin 
-                                ? "Create an account" 
+                            {isLogin
+                                ? "Create an account"
                                 : "Already have an account? Sign in"
                             }
                         </button>
                     </div>
                 </div>
-                
+
                 <div className="mt-8 flex justify-center gap-6 text-xs text-gray-400">
                     <span className="hover:text-gray-600 cursor-pointer">Help</span>
                     <span className="hover:text-gray-600 cursor-pointer">Privacy</span>

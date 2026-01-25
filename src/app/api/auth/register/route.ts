@@ -6,12 +6,12 @@ import { fetchLeetCodeStats, updateDailyStatsForUser } from '@/lib/leetcode';
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password, leetcodeUsername, phoneNumber } = await req.json();
+        const { name, email, password, leetcodeUsername, phoneNumber, github, linkedin } = await req.json();
 
         // Validate required fields
-        if (!name || !email || !password || !leetcodeUsername) {
+        if (!name || !email || !password || !leetcodeUsername || !github) {
             return NextResponse.json(
-                { error: 'All fields are required: name, email, password, leetcodeUsername' },
+                { error: 'All fields are required: name, email, password, leetcodeUsername, github' },
                 { status: 400 }
             );
         }
@@ -33,8 +33,8 @@ export async function POST(req: Request) {
         }
 
         // Check if this is an admin account
-        const isAdminAccount = email.toLowerCase().includes('admin') || 
-                              email.toLowerCase() === 'admin@dsagrinders.com';
+        const isAdminAccount = email.toLowerCase().includes('admin') ||
+            email.toLowerCase() === 'admin@dsagrinders.com';
 
         // Verify LeetCode username exists (skip for admin accounts)
         if (!isAdminAccount) {
@@ -69,7 +69,12 @@ export async function POST(req: Request) {
             email: email.toLowerCase(),
             password,
             leetcodeUsername,
+            github,
         };
+
+        if (linkedin) {
+            userData.linkedin = linkedin;
+        }
 
         if (phoneNumber) {
             userData.phoneNumber = phoneNumber.replace(/\s/g, ''); // Remove spaces
@@ -97,6 +102,8 @@ export async function POST(req: Request) {
                 name: user.name,
                 email: user.email,
                 leetcodeUsername: user.leetcodeUsername,
+                github: user.github,
+                linkedin: user.linkedin,
                 phoneNumber: user.phoneNumber,
             },
         });

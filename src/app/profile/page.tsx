@@ -7,10 +7,10 @@ import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, ArrowLeft, Save, Phone, User, MessageCircle } from "lucide-react";
+import { Loader2, ArrowLeft, Save, Phone, User, MessageCircle, Github, Linkedin } from "lucide-react";
 
 export default function ProfilePage() {
-    const { user, token, isLoading: authLoading } = useAuth();
+    const { user, token, isLoading: authLoading, updateUser } = useAuth();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -20,6 +20,8 @@ export default function ProfilePage() {
     // Form state
     const [name, setName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
+    const [github, setGithub] = useState("");
+    const [linkedin, setLinkedin] = useState("");
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -31,6 +33,8 @@ export default function ProfilePage() {
         if (user) {
             setName(user.name || "");
             setPhoneNumber(user.phoneNumber || "");
+            setGithub(user.github || "");
+            setLinkedin(user.linkedin || "");
         }
     }, [user]);
 
@@ -49,20 +53,25 @@ export default function ProfilePage() {
                 },
                 body: JSON.stringify({
                     name: name.trim(),
-                    phoneNumber: phoneNumber.trim() || null
+                    phoneNumber: phoneNumber.trim() || null,
+                    github: github.trim(),
+                    linkedin: linkedin.trim() || null
                 }),
             });
 
             const data = await res.json();
-            
+
             if (!res.ok) {
                 throw new Error(data.error || "Failed to update profile");
             }
 
             setSuccess("Profile updated successfully!");
-            
+
             // Update the auth context with new user data
-            // Note: You might want to add an updateUser method to AuthContext
+            if (data.user) {
+                updateUser(data.user);
+            }
+
             setTimeout(() => {
                 setSuccess(null);
             }, 3000);
@@ -98,7 +107,7 @@ export default function ProfilePage() {
             });
 
             const data = await res.json();
-            
+
             if (!res.ok) {
                 throw new Error(data.error || "Failed to send WhatsApp message");
             }
@@ -153,7 +162,7 @@ export default function ProfilePage() {
             </header>
 
             <main className="max-w-[600px] mx-auto pt-24 pb-12 px-6">
-                
+
                 {/* Page Title */}
                 <div className="text-center mb-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
                     <h1 className="text-4xl font-normal tracking-tight text-gray-900 mb-4">
@@ -166,7 +175,7 @@ export default function ProfilePage() {
 
                 {/* Profile Form */}
                 <div className="bg-white rounded-3xl border border-gray-200 p-8 shadow-[0_1px_3px_rgba(0,0,0,0.12)] mb-8">
-                    
+
                     {error && (
                         <div className="mb-6 bg-red-50 text-red-600 px-4 py-3 rounded-xl text-sm border border-red-100 flex items-center gap-2">
                             <span className="h-1.5 w-1.5 rounded-full bg-red-600 flex-shrink-0" />
@@ -182,7 +191,7 @@ export default function ProfilePage() {
                     )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
-                        
+
                         {/* Name Field */}
                         <div className="space-y-2">
                             <Label htmlFor="name" className="text-gray-700 font-medium text-sm ml-1 flex items-center gap-2">
@@ -223,6 +232,42 @@ export default function ProfilePage() {
                                 className="h-12 px-4 bg-gray-100 border-transparent text-gray-500 rounded-xl text-base cursor-not-allowed"
                             />
                             <p className="text-xs text-gray-400 ml-1">LeetCode username cannot be changed</p>
+                        </div>
+
+                        {/* GitHub Profile URL */}
+                        <div className="space-y-2">
+                            <Label htmlFor="github" className="text-gray-700 font-medium text-sm ml-1 flex items-center gap-2">
+                                <Github className="h-4 w-4" />
+                                GitHub Profile URL
+                            </Label>
+                            <Input
+                                id="github"
+                                type="url"
+                                value={github}
+                                onChange={(e) => setGithub(e.target.value)}
+                                required
+                                disabled={isSaving}
+                                className="h-12 px-4 bg-gray-50 border-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all rounded-xl text-base"
+                                placeholder="https://github.com/username"
+                            />
+                        </div>
+
+                        {/* LinkedIn Profile URL */}
+                        <div className="space-y-2">
+                            <Label htmlFor="linkedin" className="text-gray-700 font-medium text-sm ml-1 flex items-center gap-2">
+                                <Linkedin className="h-4 w-4" />
+                                LinkedIn Profile URL
+                                <span className="text-xs text-gray-400 font-normal">(Optional)</span>
+                            </Label>
+                            <Input
+                                id="linkedin"
+                                type="url"
+                                value={linkedin}
+                                onChange={(e) => setLinkedin(e.target.value)}
+                                disabled={isSaving}
+                                className="h-12 px-4 bg-gray-50 border-transparent hover:bg-gray-100 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all rounded-xl text-base"
+                                placeholder="https://linkedin.com/in/username"
+                            />
                         </div>
 
                         {/* Phone Number Field */}

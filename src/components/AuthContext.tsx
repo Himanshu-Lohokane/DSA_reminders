@@ -9,6 +9,8 @@ interface User {
     email: string;
     leetcodeUsername: string;
     phoneNumber?: string;
+    github: string;
+    linkedin?: string;
 }
 
 interface AuthContextType {
@@ -16,7 +18,8 @@ interface AuthContextType {
     token: string | null;
     isLoading: boolean;
     login: (email: string, password: string) => Promise<void>;
-    register: (name: string, email: string, password: string, leetcodeUsername: string, phoneNumber?: string) => Promise<void>;
+    register: (name: string, email: string, password: string, leetcodeUsername: string, github: string, linkedin?: string, phoneNumber?: string) => Promise<void>;
+    updateUser: (userData: Partial<User>) => void;
     logout: () => void;
 }
 
@@ -74,11 +77,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('token', data.token);
         setToken(data.token);
         setUser(data.user);
-        
+
         // Check if user is admin and redirect accordingly
-        const isAdmin = data.user.email.toLowerCase().includes('admin') || 
-                       data.user.email.toLowerCase() === 'admin@dsagrinders.com'
-        
+        const isAdmin = data.user.email.toLowerCase().includes('admin') ||
+            data.user.email.toLowerCase() === 'admin@dsagrinders.com'
+
         if (isAdmin) {
             router.push('/admin');
         } else {
@@ -86,8 +89,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
-    const register = async (name: string, email: string, password: string, leetcodeUsername: string, phoneNumber?: string) => {
-        const body: any = { name, email, password, leetcodeUsername };
+    const register = async (name: string, email: string, password: string, leetcodeUsername: string, github: string, linkedin?: string, phoneNumber?: string) => {
+        const body: any = { name, email, password, leetcodeUsername, github };
+        if (linkedin) {
+            body.linkedin = linkedin;
+        }
         if (phoneNumber) {
             body.phoneNumber = phoneNumber;
         }
@@ -106,15 +112,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.setItem('token', data.token);
         setToken(data.token);
         setUser(data.user);
-        
+
         // Check if user is admin and redirect accordingly
-        const isAdmin = data.user.email.toLowerCase().includes('admin') || 
-                       data.user.email.toLowerCase() === 'admin@dsagrinders.com'
-        
+        const isAdmin = data.user.email.toLowerCase().includes('admin') ||
+            data.user.email.toLowerCase() === 'admin@dsagrinders.com'
+
         if (isAdmin) {
             router.push('/admin');
         } else {
             router.push('/home');
+        }
+    };
+
+    const updateUser = (userData: Partial<User>) => {
+        if (user) {
+            setUser({ ...user, ...userData });
         }
     };
 
@@ -126,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, isLoading, login, register, logout }}>
+        <AuthContext.Provider value={{ user, token, isLoading, login, register, updateUser, logout }}>
             {children}
         </AuthContext.Provider>
     );

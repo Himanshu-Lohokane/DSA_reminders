@@ -15,6 +15,8 @@ export async function GET(req: NextRequest) {
                 name: user.name,
                 email: user.email,
                 leetcodeUsername: user.leetcodeUsername,
+                github: user.github,
+                linkedin: user.linkedin,
                 phoneNumber: user.phoneNumber,
             },
         });

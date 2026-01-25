@@ -5,7 +5,7 @@ import { User } from '@/models/User';
 
 export const PUT = requireAuth(async (req: NextRequest, user: any) => {
   try {
-    const { name, phoneNumber } = await req.json();
+    const { name, phoneNumber, github, linkedin } = await req.json();
 
     // Validate phone number format if provided
     if (phoneNumber && !/^\+?[1-9]\d{1,14}$/.test(phoneNumber.replace(/\s/g, ''))) {
@@ -19,6 +19,9 @@ export const PUT = requireAuth(async (req: NextRequest, user: any) => {
 
     const updateData: any = {};
     if (name) updateData.name = name;
+    if (github) updateData.github = github;
+    if (linkedin !== undefined) updateData.linkedin = linkedin; // Allow empty string to remove it
+
     if (phoneNumber !== undefined) {
       updateData.phoneNumber = phoneNumber ? phoneNumber.replace(/\s/g, '') : null;
     }
@@ -42,6 +45,8 @@ export const PUT = requireAuth(async (req: NextRequest, user: any) => {
         name: updatedUser.name,
         email: updatedUser.email,
         leetcodeUsername: updatedUser.leetcodeUsername,
+        github: updatedUser.github,
+        linkedin: updatedUser.linkedin,
         phoneNumber: updatedUser.phoneNumber,
       },
     });

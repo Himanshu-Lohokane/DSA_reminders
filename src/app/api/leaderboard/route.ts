@@ -1,21 +1,21 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, NextRequest } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import { User } from '@/models/User';
 import { DailyStat } from '@/models/DailyStat';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
     await dbConnect();
-    
+
     // Exclude admin accounts from leaderboard
     const adminEmails = ['admin@dsagrinders.com'];
     const users = await User.find({
-      email: { 
+      email: {
         $nin: adminEmails,
         $not: /admin/i // Exclude any email containing 'admin'
       }
     }).select('-password');
-    
+
     const today = new Date().toISOString().split('T')[0];
 
     const leaderboard = [];
@@ -46,12 +46,23 @@ export async function GET() {
         lastSubmission: latestStat?.lastSubmission || null,
         recentProblems: latestStat?.recentProblems || [],
         lastUpdated: latestStat?.date || null,
+        github: user.github || null,
+        linkedin: user.linkedin || null,
         rank: 0,
       });
     }
 
-    // Sort by total score (descending), then by today's points
-    leaderboard.sort((a, b) => b.totalScore - a.totalScore || b.todayPoints - a.todayPoints);
+    // Sort based on type
+    const searchParams = new URL(request.url).searchParams;
+    const type = searchParams.get('type') || 'daily'; // Default to daily
+
+    if (type === 'daily') {
+      // Sort by today's points (descending), then total score
+      leaderboard.sort((a, b) => b.todayPoints - a.todayPoints || b.totalScore - a.totalScore);
+    } else {
+      // Sort by total score (descending), then today's points
+      leaderboard.sort((a, b) => b.totalScore - a.totalScore || b.todayPoints - a.todayPoints);
+    }
 
     // Add rank
     leaderboard.forEach((entry, index) => {
