@@ -15,44 +15,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Fallback roasts and insults
-const ROASTS = [
-  "Abe gadhe, DSA kar varna Swiggy pe delivery karega zindagi bhar! 🛵",
-  "Oye nikamme! Netflix band kar, LeetCode khol! Nahi toh jobless marega! 💀",
-  "Tere dost Google join kar rahe, tu abhi bhi Two Sum mein atka hai ullu! 😭",
-  "DSA nahi aati? Koi baat nahi, Chai Ka Thela khol le nalayak! ☕",
-  "Ek problem bhi solve nahi karta? Teri toh kismat hi kharab hai bhai! 🏫",
-  "Array reverse karna nahi aata? Teri life reverse ho jayegi bekaar! 🔄",
-  "Bro itna useless kaun hota hai? Thoda toh padhle kamina! 🙈",
-  "Teri struggle story LinkedIn pe viral hogi... rejection ke saath! 😅",
-  "Placement season mein tujhe dekhke HR log bhi hasenge! 🤣",
-  "Recursion samajh nahi aata? Tu khud ek infinite loop hai bc! 🔁",
-];
-
-const INSULTS = [
-  "Even low-tier companies will reject you! 🚫",
-  "Your LeetCode streak makes coding itself cry! 😭",
-  "You're so slow, even a turtle would win the race! 🐢",
-  "Your code has so many bugs, you should open a pesticide company! 🐛",
-  "Your problem-solving speed is slower than Windows 95! 💻",
-];
-
-function getRandomRoast() {
-  return ROASTS[Math.floor(Math.random() * ROASTS.length)];
-}
-
-function getRandomInsult() {
-  return INSULTS[Math.floor(Math.random() * INSULTS.length)];
-}
-
 // Replace template variables with actual values
-function replaceTemplateVariables(content: string, user: any, roast?: string, insult?: string): string {
+function replaceTemplateVariables(content: string, user: any, roast: string = '', insult: string = ''): string {
   return content
     .replace(/\{userName\}/g, user.name)
     .replace(/\{email\}/g, user.email)
     .replace(/\{leetcodeUsername\}/g, user.leetcodeUsername)
-    .replace(/\{roast\}/g, roast || getRandomRoast())
-    .replace(/\{insult\}/g, insult || getRandomInsult());
+    .replace(/\{roast\}/g, roast)
+    .replace(/\{insult\}/g, insult);
 }
 
 async function sendTemplatedEmail(user: any, template: any, roast: string, insult: string) {
@@ -101,10 +71,7 @@ export const POST = requireAdmin(async (req, user) => {
       isActive: true
     });
 
-    console.log('Admin triggered manual roast sending - Templates:', {
-      whatsapp: !!whatsappTemplate,
-      email: !!emailTemplate
-    });
+    console.log('Admin triggered manual roast sending');
 
     // Get all users
     const users = await User.find({}).select('-password');
@@ -125,28 +92,16 @@ export const POST = requireAdmin(async (req, user) => {
       errors: [] as string[],
     };
 
-    // Generate random roast and insult for this batch
-    const batchRoast = getRandomRoast();
-    const batchInsult = getRandomInsult();
+    // For manual sends, these are usually empty unless you want to customize
+    const batchRoast = '';
+    const batchInsult = '';
 
     // Send roasts to each user
     for (const targetUser of users) {
-      console.log(`Processing user: ${targetUser.name} (${targetUser.email})`);
-
       // Send email roast using template
       try {
         if (emailTemplate) {
           const emailResult = await sendTemplatedEmail(targetUser, emailTemplate, batchRoast, batchInsult);
-          if (emailResult.success) {
-            results.emailsSent++;
-          } else {
-            results.emailsFailed++;
-            results.errors.push(`Email failed for ${targetUser.name}: ${emailResult.error}`);
-          }
-        } else {
-          // Fallback to original email function
-          const { sendDSAReminder } = await import('@/lib/email');
-          const emailResult = await sendDSAReminder(targetUser.email, targetUser.name);
           if (emailResult.success) {
             results.emailsSent++;
           } else {
@@ -164,16 +119,6 @@ export const POST = requireAdmin(async (req, user) => {
         try {
           if (whatsappTemplate) {
             const whatsappResult = await sendTemplatedWhatsApp(targetUser, whatsappTemplate, batchRoast, batchInsult);
-            if (whatsappResult.success) {
-              results.whatsappSent++;
-            } else {
-              results.whatsappFailed++;
-              results.errors.push(`WhatsApp failed for ${targetUser.name}: ${whatsappResult.error}`);
-            }
-          } else {
-            // Fallback to original WhatsApp function
-            const { sendDSAWhatsAppReminder } = await import('@/lib/whatsapp');
-            const whatsappResult = await sendDSAWhatsAppReminder(targetUser.phoneNumber, targetUser.name);
             if (whatsappResult.success) {
               results.whatsappSent++;
             } else {
@@ -201,14 +146,11 @@ export const POST = requireAdmin(async (req, user) => {
     if (results.whatsappFailed > 0) summary.push(`${results.whatsappFailed} WhatsApp roasts failed`);
     if (results.whatsappSkipped > 0) summary.push(`${results.whatsappSkipped} WhatsApp skipped (no phone)`);
 
-    console.log('Manual roast sending completed:', summary.join(', '));
-
     return NextResponse.json({
       success: true,
       results,
       summary: summary.join(', '),
       totalUsers: users.length,
-      usersWithWhatsApp: users.filter(u => u.phoneNumber && u.phoneNumber.trim()).length,
     });
 
   } catch (error: any) {

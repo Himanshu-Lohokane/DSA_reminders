@@ -16,35 +16,44 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Roasts and insults arrays (fallback if templates don't exist)
-const ROASTS = [
-  "Learn DSA or you'll be delivering food your entire life!",
-  "Hey slacker! Close Netflix, open LeetCode! Or stay jobless!",
-  "Your friends are joining Google, you're still stuck on Two Sum!",
-  "Don't know DSA? No worries, start a food truck business!",
-  "Can't solve even one problem? Your luck is terrible dude!",
-  "Can't reverse an array? Your life will reverse too!",
-  "Bro who is this useless? Study a little bit!",
-  "Your struggle story will go viral on LinkedIn... with rejections!",
-  "During placement season, even HR will laugh at you!",
-  "Don't understand recursion? You're an infinite loop yourself!",
-  "Did nothing again today? Your productivity is worse than a pandemic!",
-  "Does your resume only have WhatsApp forwarding experience?",
-  "Came to be a DSA grinder, became a DSA disgrace!",
-];
 
-const INSULTS = [
-  "Even low-tier companies will reject you!",
-  "Your LeetCode streak makes coding itself cry!",
-  "You're so slow, even a turtle would win the race!",
-  "Bro you're so weak, can't even run a loop properly!",
-  "Your code has so many bugs, you should open a pesticide company!",
-];
+// Helper function to check if today should be skipped
+function shouldSkipToday(settings: any): boolean {
+  const now = new Date();
+  const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
 
-function getRandomRoast() {
-  return ROASTS[Math.floor(Math.random() * ROASTS.length)];
+  // Skip weekends if enabled
+  if (settings.skipWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
+    return true;
+  }
+
+  // Check custom skip dates
+  const today = now.toDateString();
+  if (settings.customSkipDates && settings.customSkipDates.some((date: Date) =>
+    new Date(date).toDateString() === today
+  )) {
+    return true;
+  }
+
+  return false;
 }
 
+// Helper function to reset daily counters if needed
+async function resetDailyCountersIfNeeded(settings: any): Promise<any> {
+  const now = new Date();
+  const lastReset = new Date(settings.lastResetDate);
+
+  // Check if it's a new day
+  if (now.toDateString() !== lastReset.toDateString()) {
+    settings.emailsSentToday = 0;
+    settings.whatsappSentToday = 0;
+    settings.lastResetDate = now;
+    await settings.save();
+    console.log('Daily counters reset for new day');
+  }
+
+  return settings;
+}
 
 // Helper function to check if current time matches any scheduled time
 function isTimeToSend(scheduledTimes: string[] | undefined, timezone: string = 'Asia/Kolkata', devMode: boolean = false): boolean {
@@ -86,56 +95,14 @@ function isTimeToSend(scheduledTimes: string[] | undefined, timezone: string = '
   return isTime;
 }
 
-// Helper function to check if today should be skipped
-function shouldSkipToday(settings: any): boolean {
-  const now = new Date();
-  const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
-
-  // Skip weekends if enabled
-  if (settings.skipWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
-    return true;
-  }
-
-  // Check custom skip dates
-  const today = now.toDateString();
-  if (settings.customSkipDates && settings.customSkipDates.some((date: Date) =>
-    new Date(date).toDateString() === today
-  )) {
-    return true;
-  }
-
-  return false;
-}
-
-// Helper function to reset daily counters if needed
-async function resetDailyCountersIfNeeded(settings: any): Promise<any> {
-  const now = new Date();
-  const lastReset = new Date(settings.lastResetDate);
-
-  // Check if it's a new day
-  if (now.toDateString() !== lastReset.toDateString()) {
-    settings.emailsSentToday = 0;
-    settings.whatsappSentToday = 0;
-    settings.lastResetDate = now;
-    await settings.save();
-    console.log('Daily counters reset for new day');
-  }
-
-  return settings;
-}
-
-function getRandomInsult() {
-  return INSULTS[Math.floor(Math.random() * INSULTS.length)];
-}
-
 // Replace template variables with actual values
-function replaceTemplateVariables(content: string, user: any, roast?: string, insult?: string): string {
+function replaceTemplateVariables(content: string, user: any, roast: string = '', insult: string = ''): string {
   return content
     .replace(/\{userName\}/g, user.name)
     .replace(/\{email\}/g, user.email)
     .replace(/\{leetcodeUsername\}/g, user.leetcodeUsername)
-    .replace(/\{roast\}/g, roast || getRandomRoast())
-    .replace(/\{insult\}/g, insult || getRandomInsult());
+    .replace(/\{roast\}/g, roast)
+    .replace(/\{insult\}/g, insult);
 }
 
 async function sendTemplatedEmail(user: any, template: any, roast: string, insult: string) {
@@ -308,9 +275,9 @@ export async function GET(req: Request) {
     let emailsSentCount = 0;
     let whatsappSentCount = 0;
 
-    // Generate random roast and insult for this batch (same for all users)
-    const batchRoast = getRandomRoast();
-    const batchInsult = getRandomInsult();
+    // For manual sends, these are usually custom messages
+    const batchRoast = '';
+    const batchInsult = '';
 
     console.log(`Processing ${users.length} users - Batch roast: ${batchRoast.substring(0, 50)}...`);
 
