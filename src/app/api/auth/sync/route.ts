@@ -33,26 +33,62 @@ export async function POST(req: Request) {
             // so we need to provide defaults or change schema.
             // Since it's mandatory onboarding, we'll use a placeholder and then the modal will update it.
 
-            const [newUser] = await db.insert(users).values({
-                name: user.user_metadata?.full_name || user.user_metadata?.name || 'New User',
-                email: email,
-                leetcodeUsername: `pending_${Math.random().toString(36).substring(7)}`,
-                github: 'pending',
-                role: 'user',
-            }).returning();
+            try {
+                const [newUser] = await db.insert(users).values({
+                    name: user.user_metadata?.full_name || user.user_metadata?.name || 'New User',
+                    email: email,
+                    leetcodeUsername: `pending_${Math.random().toString(36).substring(7)}`,
+                    github: 'pending',
+                    role: 'user',
+                }).returning();
 
-            return NextResponse.json({
-                user: {
-                    id: newUser.id,
-                    name: newUser.name,
-                    email: newUser.email,
-                    leetcodeUsername: newUser.leetcodeUsername,
-                    github: newUser.github,
-                    role: newUser.role,
-                    isProfileIncomplete: true,
-                },
-                message: 'User created. Profile completion required.',
-            });
+                return NextResponse.json({
+                    user: {
+                        id: newUser.id,
+                        name: newUser.name,
+                        email: newUser.email,
+                        leetcodeUsername: newUser.leetcodeUsername,
+                        github: newUser.github,
+                        role: newUser.role,
+                        isProfileIncomplete: true,
+                    },
+                    message: 'User created. Profile completion required.',
+                });
+            } catch (insertError: any) {
+                // If it's a unique constraint violation, it means the user was created concurrently.
+                // We should fetch the user again.
+                // details: Postgres error 23505 is unique_violation
+                const errorCode = insertError.code || insertError.cause?.code;
+
+                if (errorCode === '23505') {
+                    const [retryUser] = await db.select().from(users).where(eq(users.email, email)).limit(1);
+                    if (retryUser) {
+                        // Proceed to handle as existing user (fall through to existing logic below isn't easy here, so return immediately)
+                        const isProfileIncomplete =
+                            !retryUser.leetcodeUsername ||
+                            retryUser.leetcodeUsername.startsWith('pending_') ||
+                            !retryUser.github ||
+                            retryUser.github === 'pending' ||
+                            !retryUser.phoneNumber ||
+                            !retryUser.linkedin;
+
+                        return NextResponse.json({
+                            user: {
+                                id: retryUser.id,
+                                name: retryUser.name,
+                                email: retryUser.email,
+                                leetcodeUsername: retryUser.leetcodeUsername,
+                                github: retryUser.github,
+                                linkedin: retryUser.linkedin,
+                                phoneNumber: retryUser.phoneNumber,
+                                role: retryUser.role,
+                                isProfileIncomplete,
+                            },
+                        });
+                    }
+                }
+                throw insertError; // Re-throw if it's not the unique constraint error
+            }
         }
 
         // User exists, check if profile is incomplete

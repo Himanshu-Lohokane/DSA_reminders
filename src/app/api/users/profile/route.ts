@@ -55,9 +55,14 @@ export const PUT = requireAuth(async (req: NextRequest, user: any) => {
     if (leetcodeUsername) {
       try {
         await updateDailyStatsForUser(updatedUser.id, updatedUser.leetcodeUsername);
-      } catch (syncError) {
+      } catch (syncError: any) {
         console.error('Initial LeetCode sync failed:', syncError);
-        // We don't fail the whole request, but we log it
+        // If the user is not found, we should inform the client
+        if (syncError.message.includes('not found') || syncError.message.includes('does not exist')) {
+          return NextResponse.json({
+            error: syncError.message
+          }, { status: 400 });
+        }
       }
     }
 
