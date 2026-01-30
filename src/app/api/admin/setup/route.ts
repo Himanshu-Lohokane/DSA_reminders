@@ -6,12 +6,11 @@ import { eq } from 'drizzle-orm';
 
 export const GET = requireAuth(async (req, user) => {
   try {
-    // Secret key check to prevent unauthorized use (optional but recommended)
+   
     const url = new URL(req.url);
     const secret = url.searchParams.get('secret');
 
-    // In production, you should use a strong secret env variable
-    // For now, checking if secret is 'dsa-admin-claim'
+  
     if (secret !== 'dsa-admin-claim') {
       return NextResponse.json({ error: 'Invalid secret key' }, { status: 403 });
     }

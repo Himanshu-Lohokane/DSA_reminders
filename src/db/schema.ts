@@ -70,6 +70,8 @@ export const dailyStats = pgTable('daily_stats', {
   todayPoints: integer('today_points').default(0),
 }, (table) => ({
   uniq: uniqueIndex('user_date_idx').on(table.userId, table.date),
+  dateIdx: index('date_idx').on(table.date),
+  userIdIdx: index('user_id_idx').on(table.userId),
 }));
 
 export type User = typeof users.$inferSelect;
