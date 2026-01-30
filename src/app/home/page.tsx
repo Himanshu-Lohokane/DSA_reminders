@@ -96,6 +96,7 @@ export default function HomePage() {
     const [modalError, setModalError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
 
+
     const fetchUserGroups = useCallback(async () => {
         if (!token) return;
         try {
@@ -292,7 +293,7 @@ export default function HomePage() {
     const handleShareGroup = async (group: Group) => {
         try {
             const baseUrl = getBaseUrl();
-            const shareUrl = `${baseUrl}?join=${group.code}`;
+            const shareUrl = `${baseUrl}/home?join=${group.code}`;
 
             await navigator.clipboard.writeText(shareUrl);
             toast.success('Share link copied!', {
@@ -944,6 +945,7 @@ export default function HomePage() {
                     </form>
                 </DialogContent>
             </Dialog>
+
 
             {/* PWA Install Prompt */}
             <PWAInstallPrompt />
