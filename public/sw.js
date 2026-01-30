@@ -139,10 +139,10 @@ self.addEventListener('message', (event) => {
 
   // Clear leaderboard cache on demand (for manual sync)
   if (event.data && event.data.type === 'CLEAR_LEADERBOARD_CACHE') {
-    caches.open(LEADERBOARD_CACHE).then((cache) => {
-      cache.delete('/api/leaderboard').then(() => {
-        console.log('SW: Leaderboard cache cleared');
-      });
-    });
+    caches.open(LEADERBOARD_CACHE).then(async (cache) => {
+    const keys = await cache.keys();
+    await Promise.all(keys.map(key => cache.delete(key)));
+    console.log('SW: Leaderboard cache cleared');
+  });
   }
 });

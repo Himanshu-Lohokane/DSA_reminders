@@ -20,10 +20,10 @@ export default function AuthPage() {
         }
     }, [user, authLoading, router]);
 
-    const handleGoogleSignIn = async (forceAccountSelection = false) => {
+    const handleGoogleSignIn = async () => {
         setIsRedirecting(true);
         try {
-            await signInWithGoogle(forceAccountSelection);
+            await signInWithGoogle();
         } catch (error) {
             console.error("Sign in error:", error);
             setIsRedirecting(false);
