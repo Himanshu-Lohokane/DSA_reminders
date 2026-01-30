@@ -68,12 +68,6 @@ export default function Home() {
             </div>
             <span className="text-base md:text-lg font-medium text-gray-900">DSA Grinders</span>
           </div>
-          <Link
-            href="/login"
-            className="px-4 md:px-5 py-2 md:py-2.5 bg-gray-900 hover:bg-gray-800 text-white text-xs md:text-sm font-medium rounded-full transition-colors flex items-center justify-center min-h-[44px]"
-          >
-            Sign in
-          </Link>
         </nav>
 
         {/* Hero - Centered */}
