@@ -381,7 +381,7 @@ export default function HomePage() {
 
                 {/* Personal Dashboard Overview - GROWTH & ONBOARDING focus */}
                 <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                    <div className="bg-gradient-to-br from-[#4285F4] to-[#174EA6] rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-[0_8px_30px_rgba(66,133,244,0.25)]">
+                    <div className="bg-linear-to-br from-[#4285F4] to-[#174EA6] rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-[0_8px_30px_rgba(66,133,244,0.25)]">
                         {/* Decorative Circles - removed blur for cleaner look */}
                         <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32" />
                         <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24" />
