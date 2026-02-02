@@ -4,6 +4,7 @@ import { db } from '@/db/drizzle';
 import { users, User } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { updateDailyStatsForUser, LeetCodeError } from '@/lib/leetcode';
+import { updateDailyStatsForUserGFG, GFGError } from '@/lib/gfg';
 import { profileUpdateSchema, validateRequest, createErrorResponse } from '@/lib/validation';
 import type { AuthenticatedUser } from '@/types';
 
@@ -13,6 +14,7 @@ interface UserUpdatePayload {
   github?: string;
   linkedin?: string | null;
   leetcodeUsername?: string;
+  gfgUsername?: string | null;
   phoneNumber?: string | null;
 }
 
@@ -37,7 +39,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
       );
     }
 
-    const { name, phoneNumber, github, linkedin, leetcodeUsername } = validation.data;
+    const { name, phoneNumber, github, linkedin, leetcodeUsername, gfgUsername } = validation.data;
 
     const updateData: UserUpdatePayload = {};
     if (name) updateData.name = name;
@@ -56,6 +58,10 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
     }
 
     if (leetcodeUsername) updateData.leetcodeUsername = leetcodeUsername;
+
+    if (gfgUsername !== undefined) {
+      updateData.gfgUsername = gfgUsername || null;
+    }
 
     if (phoneNumber !== undefined) {
       updateData.phoneNumber = phoneNumber ? phoneNumber.replace(/\s/g, '') : null;
@@ -97,6 +103,22 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
       }
     }
 
+    // Trigger immediate GFG sync if username was set
+    if (gfgUsername && updatedUser.gfgUsername) {
+      try {
+        await updateDailyStatsForUserGFG(updatedUser.id, updatedUser.gfgUsername);
+      } catch (syncError) {
+        console.error('Initial GFG sync failed:', syncError);
+        // Handle GFG-specific errors with user-friendly messages
+        if (syncError instanceof GFGError) {
+          return NextResponse.json(
+            createErrorResponse(syncError.message, syncError.code),
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     // Calculate isProfileIncomplete using the same logic as auth sync
     const isProfileIncomplete =
       !updatedUser.leetcodeUsername ||
@@ -111,6 +133,7 @@ export const PUT = requireAuth(async (req: NextRequest, user) => {
       name: updatedUser.name,
       email: updatedUser.email,
       leetcodeUsername: updatedUser.leetcodeUsername,
+      gfgUsername: updatedUser.gfgUsername,
       github: updatedUser.github,
       linkedin: updatedUser.linkedin,
       phoneNumber: updatedUser.phoneNumber,

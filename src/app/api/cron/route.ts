@@ -1,9 +1,9 @@
-import path from 'path';
 import { NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { users, settings, User, Setting } from '@/db/schema';
 import { eq, ne, and, notLike } from 'drizzle-orm';
 import { updateDailyStatsForUser } from '@/lib/leetcode';
+import { updateDailyStatsForUserGFG } from '@/lib/gfg';
 import { sendConfigEmail, sendConfigWhatsApp } from '@/lib/messaging';
 import { getTodayDate } from '@/lib/utils';
 import { generateDynamicRoast, DynamicContent } from '@/lib/ai';
@@ -191,9 +191,11 @@ export async function GET(req: Request) {
 
     interface UserResult {
       username: string;
+      gfgUsername: string | null;
       email: string;
       phoneNumber: string | null;
-      statsUpdate: { success: boolean; error?: string };
+      leetcodeStatsUpdate: { success: boolean; error?: string };
+      gfgStatsUpdate: { success: boolean; error?: string; skipped?: boolean };
       emailSent: { success: boolean; skipped?: boolean; reason?: string; error?: string };
       whatsappSent: { success: boolean; skipped?: boolean; reason?: string; error?: string };
     }
@@ -204,9 +206,11 @@ export async function GET(req: Request) {
     const processUser = async (user: User): Promise<UserResult> => {
       const userResult: UserResult = {
         username: user.leetcodeUsername,
+        gfgUsername: user.gfgUsername || null,
         email: user.email,
         phoneNumber: user.phoneNumber || null,
-        statsUpdate: { success: false },
+        leetcodeStatsUpdate: { success: false },
+        gfgStatsUpdate: { success: false, skipped: false },
         emailSent: { success: false, skipped: false },
         whatsappSent: { success: false, skipped: false }
       };
@@ -214,9 +218,21 @@ export async function GET(req: Request) {
       // 1. Update LeetCode stats
       try {
         await updateDailyStatsForUser(user.id, user.leetcodeUsername);
-        userResult.statsUpdate = { success: true };
+        userResult.leetcodeStatsUpdate = { success: true };
       } catch (error) {
-        userResult.statsUpdate = { success: false, error: error instanceof Error ? error.message : 'Stats update failed' };
+        userResult.leetcodeStatsUpdate = { success: false, error: error instanceof Error ? error.message : 'LeetCode stats update failed' };
+      }
+
+      // 2. Update GFG stats (if user has GFG username)
+      if (user.gfgUsername) {
+        try {
+          await updateDailyStatsForUserGFG(user.id, user.gfgUsername);
+          userResult.gfgStatsUpdate = { success: true };
+        } catch (error) {
+          userResult.gfgStatsUpdate = { success: false, error: error instanceof Error ? error.message : 'GFG stats update failed' };
+        }
+      } else {
+        userResult.gfgStatsUpdate = { success: false, skipped: true };
       }
 
       // Personalize the AI content for this user
@@ -271,7 +287,9 @@ export async function GET(req: Request) {
 
     const summary = {
       totalUsers: allUsers.length,
-      statsUpdated: results.filter(r => r.statsUpdate.success).length,
+      leetcodeStatsUpdated: results.filter(r => r.leetcodeStatsUpdate.success).length,
+      gfgStatsUpdated: results.filter(r => r.gfgStatsUpdate.success).length,
+      gfgStatsSkipped: results.filter(r => r.gfgStatsUpdate.skipped).length,
       emailsSent: emailsSentCount,
       whatsappSent: whatsappSentCount,
       emailsSkipped: results.filter(r => r.emailSent.skipped).length,

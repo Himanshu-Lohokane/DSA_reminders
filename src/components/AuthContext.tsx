@@ -9,6 +9,7 @@ interface User {
     name: string;
     email: string;
     leetcodeUsername: string;
+    gfgUsername?: string | null;
     phoneNumber?: string;
     github: string;
     linkedin?: string;
@@ -100,10 +101,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signInWithGoogle = async (forceAccountSelection = false) => {
+        // Use the current origin for development, fallback to env variable for production
+        const redirectUrl = typeof window !== 'undefined' 
+            ? `${window.location.origin}/auth/callback`
+            : `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`;
+            
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: redirectUrl,
                 ...(forceAccountSelection && {
                     queryParams: {
                         prompt: 'select_account',
@@ -111,7 +117,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 }),
             },
         });
-        if (error) throw error;
+        if (error) {
+            console.error('Google sign-in error:', error);
+            throw error;
+        }
     };
 
     const updateUser = (userData: Partial<User>) => {

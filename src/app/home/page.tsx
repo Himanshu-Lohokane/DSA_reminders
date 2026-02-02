@@ -62,7 +62,7 @@ export default function HomePage() {
         queryFn: async () => {
             const endpoint = activeGroup
                 ? `/api/groups/${activeGroup.id}/leaderboard?type=${leaderboardType}`
-                : `/api/leaderboard?type=${leaderboardType}`;
+                : `/api/leaderboard?type=${leaderboardType}&platform=separate`;
 
             const res = await fetch(endpoint, {
                 headers: token ? { "Authorization": `Bearer ${token}` } : {}
@@ -467,13 +467,17 @@ export default function HomePage() {
                                                 <div className="h-3 w-16 md:w-20 bg-gray-150 rounded" style={{ backgroundColor: '#f0f0f0' }} />
                                             </div>
                                         </div>
-                                        <div className="flex gap-4 md:gap-10 items-center shrink-0">
+                                        <div className="flex gap-2 md:gap-6 items-center shrink-0">
                                             <div className="hidden lg:block w-16"><div className="h-10 w-full bg-gray-200 rounded-2xl" /></div>
-                                            <div className="w-16 md:w-24 space-y-1">
+                                            <div className="w-16 md:w-20 space-y-1">
                                                 <div className="h-2 w-10 bg-gray-200 rounded ml-auto" />
                                                 <div className="h-5 w-12 bg-gray-200 rounded ml-auto" />
                                             </div>
-                                            <div className="w-16 md:w-24 space-y-1">
+                                            <div className="w-16 md:w-20 space-y-1">
+                                                <div className="h-2 w-10 bg-gray-200 rounded ml-auto" />
+                                                <div className="h-5 w-12 bg-gray-200 rounded ml-auto" />
+                                            </div>
+                                            <div className="w-16 md:w-20 space-y-1">
                                                 <div className="h-2 w-10 bg-gray-200 rounded ml-auto" />
                                                 <div className="h-5 w-8 bg-gray-200 rounded ml-auto" />
                                             </div>
@@ -495,15 +499,24 @@ export default function HomePage() {
                                         <div className="w-12 md:w-14 shrink-0 opacity-0" />
                                         <span className="text-[10px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">User</span>
                                     </div>
-                                    <div className="flex gap-4 md:gap-10 items-center shrink-0">
+                                    <div className="flex gap-2 md:gap-6 items-center shrink-0">
                                         <div className="hidden lg:flex justify-center w-16">
                                             <span className="text-[10px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Streak</span>
                                         </div>
-                                        <div className="text-right w-16 md:w-24">
-                                            <span className="text-[10px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Score</span>
+                                        <div className="text-right w-16 md:w-20">
+                                            <div className="flex items-center justify-end gap-1 mb-1">
+                                                <span className="w-3 h-3 bg-orange-500 rounded text-white text-[6px] font-bold flex items-center justify-center">LC</span>
+                                                <span className="text-[8px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Score</span>
+                                            </div>
                                         </div>
-                                        <div className="text-right w-16 md:w-24">
-                                            <span className="text-[10px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Today</span>
+                                        <div className="text-right w-16 md:w-20">
+                                            <div className="flex items-center justify-end gap-1 mb-1">
+                                                <span className="w-3 h-3 bg-green-600 rounded text-white text-[6px] font-bold flex items-center justify-center">GFG</span>
+                                                <span className="text-[8px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Score</span>
+                                            </div>
+                                        </div>
+                                        <div className="text-right w-16 md:w-20">
+                                            <span className="text-[8px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Today</span>
                                         </div>
                                     </div>
                                 </div>

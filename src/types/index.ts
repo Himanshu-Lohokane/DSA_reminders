@@ -11,6 +11,7 @@ export interface AuthenticatedUser {
     name: string;
     email: string;
     leetcodeUsername: string;
+    gfgUsername?: string | null; // New field
     github: string;
     linkedin: string | null;
     phoneNumber: string | null;
@@ -59,14 +60,78 @@ export interface LeetCodeAPIError {
 }
 
 // ============================================================
-// Leaderboard Types
+// GeeksforGeeks Types
 // ============================================================
+
+export interface GFGSubmission {
+    id: string;
+    title: string;
+    titleSlug: string;
+    timestamp: string;
+}
+
+export interface GFGStats {
+    easy: number;
+    medium: number;
+    hard: number;
+    total: number;
+    ranking: number;
+    avatar: string;
+    country: string;
+    recentSubmissions: GFGSubmission[];
+    streak: number;
+    lastSubmission: string | null;
+}
+
+export interface GFGAPIError {
+    code: 'USER_NOT_FOUND' | 'PROFILE_PRIVATE' | 'RATE_LIMITED' | 'NETWORK_ERROR' | 'SCRAPING_ERROR';
+    message: string;
+    retryable: boolean;
+}
+
+// ============================================================
+// Multi-Platform Types
+// ============================================================
+
+export interface PlatformStats {
+    easy: number;
+    medium: number;
+    hard: number;
+    total: number;
+    todayPoints: number;
+    ranking?: number;
+    avatar?: string;
+    country?: string;
+    streak?: number;
+    lastSubmission?: string | null;
+}
+
+export interface MultiPlatformUser {
+    id: number;
+    name: string;
+    email: string;
+    leetcodeUsername: string;
+    gfgUsername?: string | null;
+    platforms: {
+        leetcode?: PlatformStats;
+        gfg?: PlatformStats;
+    };
+    combinedStats: {
+        totalEasy: number;
+        totalMedium: number;
+        totalHard: number;
+        totalProblems: number;
+        totalTodayPoints: number;
+        totalScore: number;
+    };
+}
 
 export interface LeaderboardEntry {
     id: number;
     name: string;
     email: string;
     leetcodeUsername: string;
+    gfgUsername?: string | null; // New field
     todayPoints: number;
     totalScore: number;
     totalProblems: number;
@@ -82,6 +147,10 @@ export interface LeaderboardEntry {
     github?: string;
     linkedin?: string;
     rank: number;
+    platforms?: {
+        leetcode?: PlatformStats;
+        gfg?: PlatformStats;
+    }; // New field for platform breakdown
 }
 
 // ============================================================
@@ -134,6 +203,7 @@ export interface ProfileUpdateRequest {
     github?: string;
     linkedin?: string | null;
     leetcodeUsername?: string;
+    gfgUsername?: string | null; // New field
 }
 
 export interface ProfileUpdateResponse {

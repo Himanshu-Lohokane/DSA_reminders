@@ -22,6 +22,7 @@ export default function ProfilePage() {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [github, setGithub] = useState("");
     const [linkedin, setLinkedin] = useState("");
+    const [gfgUsername, setGfgUsername] = useState("");
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -33,6 +34,7 @@ export default function ProfilePage() {
         if (user) {
             setName(user.name || "");
             setPhoneNumber(user.phoneNumber || "");
+            setGfgUsername(user.gfgUsername || "");
 
             // Strip domains for ease of editing
             const gh = user.github || "";
@@ -60,7 +62,8 @@ export default function ProfilePage() {
                     name: name.trim(),
                     phoneNumber: phoneNumber.trim() || null,
                     github: github.trim(),
-                    linkedin: linkedin.trim() || null
+                    linkedin: linkedin.trim() || null,
+                    gfgUsername: gfgUsername.trim() || null
                 }),
             });
 
@@ -246,6 +249,43 @@ export default function ProfilePage() {
                                 </div>
 
                                 <div className="pt-4 border-t border-gray-50">
+                                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-6 ml-1">Coding Platforms</h3>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        {/* LeetCode (Read-only) */}
+                                        <div className="space-y-2.5 opacity-70">
+                                            <Label className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                                <span className="w-3.5 h-3.5 bg-orange-500 rounded text-white text-[8px] font-bold flex items-center justify-center">LC</span>
+                                                LeetCode
+                                            </Label>
+                                            <Input
+                                                value={user.leetcodeUsername}
+                                                disabled
+                                                className="h-14 px-5 bg-gray-100/50 border-transparent text-gray-500 rounded-[1.25rem] text-base font-medium cursor-not-allowed"
+                                            />
+                                        </div>
+
+                                        {/* GeeksforGeeks */}
+                                        <div className="space-y-2.5">
+                                            <Label htmlFor="gfgUsername" className="text-xs font-bold text-gray-400 uppercase tracking-widest ml-1 flex items-center gap-2">
+                                                <span className="w-3.5 h-3.5 bg-green-600 rounded text-white text-[8px] font-bold flex items-center justify-center">GFG</span>
+                                                GeeksforGeeks
+                                            </Label>
+                                            <Input
+                                                id="gfgUsername"
+                                                value={gfgUsername}
+                                                onChange={(e) => setGfgUsername(e.target.value)}
+                                                disabled={isSaving}
+                                                className="h-14 px-5 bg-gray-50 border-gray-100/50 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 focus:bg-white transition-all rounded-[1.25rem] text-base font-medium"
+                                                placeholder="username (optional)"
+                                            />
+                                            <p className="text-xs text-gray-500 ml-1">
+                                                Optional: Add your GFG username to track practice stats from both platforms
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="pt-4 border-t border-gray-50">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8 items-end">
                                         {/* Phone Number */}
                                         <div className="space-y-2.5">
@@ -287,7 +327,8 @@ export default function ProfilePage() {
 
                     {/* Right Column: Platform Status */}
                     <div className="space-y-6">
-                        <div className="bg-linear-to-br from-blue-600 to-indigo-700 rounded-3xl md:rounded-4xl p-6 md:p-8 text-white shadow-xl shadow-blue-200/50 relative overflow-hidden group">
+                        {/* LeetCode Status */}
+                        <div className="bg-gradient-to-br from-orange-500 to-orange-600 rounded-3xl md:rounded-4xl p-6 md:p-8 text-white shadow-xl shadow-orange-200/50 relative overflow-hidden group">
                             <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
                             <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                                 <span className="bg-white/20 p-2 rounded-xl">⚡</span>
@@ -295,12 +336,36 @@ export default function ProfilePage() {
                             </h3>
                             <div className="space-y-4">
                                 <div>
-                                    <p className="text-blue-100/60 text-[10px] font-bold uppercase tracking-wider mb-1">Username</p>
+                                    <p className="text-orange-100/60 text-[10px] font-bold uppercase tracking-wider mb-1">Username</p>
                                     <p className="text-lg font-bold">@{user.leetcodeUsername}</p>
                                 </div>
                                 <div className="h-px bg-white/10 w-full" />
-                                <p className="text-sm text-blue-100/80 leading-relaxed font-medium italic">
+                                <p className="text-sm text-orange-100/80 leading-relaxed font-medium italic">
                                     "Your username cannot be changed. This ensures consistency in tracking your DSA grind history."
+                                </p>
+                            </div>
+                        </div>
+
+                        {/* GFG Status */}
+                        <div className="bg-gradient-to-br from-green-600 to-green-700 rounded-3xl md:rounded-4xl p-6 md:p-8 text-white shadow-xl shadow-green-200/50 relative overflow-hidden group">
+                            <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-white/10 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-700" />
+                            <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
+                                <span className="bg-white/20 p-2 rounded-xl">🚀</span>
+                                GeeksforGeeks Status
+                            </h3>
+                            <div className="space-y-4">
+                                <div>
+                                    <p className="text-green-100/60 text-[10px] font-bold uppercase tracking-wider mb-1">Username</p>
+                                    <p className="text-lg font-bold">
+                                        {user.gfgUsername ? `@${user.gfgUsername}` : 'Not configured'}
+                                    </p>
+                                </div>
+                                <div className="h-px bg-white/10 w-full" />
+                                <p className="text-sm text-green-100/80 leading-relaxed font-medium italic">
+                                    {user.gfgUsername 
+                                        ? "GFG stats will be tracked alongside your LeetCode progress."
+                                        : "Add your GFG username to track practice from both platforms."
+                                    }
                                 </p>
                             </div>
                         </div>
@@ -315,6 +380,10 @@ export default function ProfilePage() {
                                 <li className="flex gap-3 text-sm text-gray-600 font-medium">
                                     <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 mt-1.5 shrink-0" />
                                     WhatsApp roasts triggered by your grind stats.
+                                </li>
+                                <li className="flex gap-3 text-sm text-gray-600 font-medium">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-orange-500 mt-1.5 shrink-0" />
+                                    Multi-platform tracking for comprehensive progress.
                                 </li>
                             </ul>
                         </div>

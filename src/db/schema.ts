@@ -6,6 +6,7 @@ export const users = pgTable('users', {
   email: varchar('email', { length: 255 }).notNull().unique(),
   // NOTE: password field removed - app uses Google OAuth only
   leetcodeUsername: varchar('leetcode_username', { length: 255 }).notNull().unique(),
+  gfgUsername: varchar('gfg_username', { length: 255 }), // New field for GeeksforGeeks
   github: varchar('github', { length: 255 }).notNull(),
   linkedin: varchar('linkedin', { length: 255 }),
   phoneNumber: varchar('phone_number', { length: 32 }),
@@ -55,6 +56,7 @@ export const settings = pgTable('settings', {
 export const dailyStats = pgTable('daily_stats', {
   id: serial('id').primaryKey(),
   userId: integer('user_id').notNull().references(() => users.id, { onDelete: 'cascade' }),
+  platform: varchar('platform', { length: 32 }).notNull().default('leetcode'), // New field for platform
   date: varchar('date', { length: 16 }).notNull(),
   easy: integer('easy').default(0),
   medium: integer('medium').default(0),
@@ -69,9 +71,10 @@ export const dailyStats = pgTable('daily_stats', {
   previousTotal: integer('previous_total').default(0),
   todayPoints: integer('today_points').default(0),
 }, (table) => ({
-  uniq: uniqueIndex('user_date_idx').on(table.userId, table.date),
+  uniq: uniqueIndex('user_platform_date_idx').on(table.userId, table.platform, table.date),
   dateIdx: index('date_idx').on(table.date),
   userIdIdx: index('user_id_idx').on(table.userId),
+  platformIdx: index('platform_idx').on(table.platform),
 }));
 
 export type User = typeof users.$inferSelect;

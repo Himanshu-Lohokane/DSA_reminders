@@ -68,6 +68,9 @@ export default function LeaderboardRow({ entry, index, isCurrentUser }: Leaderbo
                                 <div className="min-w-0">
                                     <div className="font-black text-foreground text-xl pr-4">{entry.name.split(' ')[0]}</div>
                                     <div className="text-primary font-bold text-sm">@{entry.leetcodeUsername}</div>
+                                    {entry.gfgUsername && (
+                                        <div className="text-green-600 font-bold text-sm">GFG: @{entry.gfgUsername}</div>
+                                    )}
                                 </div>
                             </div>
 
@@ -82,29 +85,88 @@ export default function LeaderboardRow({ entry, index, isCurrentUser }: Leaderbo
                                 </div>
                             </div>
 
-                            <div className="space-y-4 relative z-10">
-                                <div className="flex justify-between items-center px-1">
-                                    <span className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">Problem Density</span>
-                                    <span className="text-[10px] font-black text-foreground bg-muted px-3 py-1 rounded-full uppercase tracking-wider">{entry.totalProblems} Solved</span>
-                                </div>
-                                <div className="space-y-3.5 px-1">
-                                    {[
-                                        { label: 'Easy', count: entry.easy, color: 'bg-[#34A853]', width: (entry.easy || 0) / (entry.totalProblems || 1) * 100 },
-                                        { label: 'Medium', count: entry.medium, color: 'bg-[#FBBC04]', width: (entry.medium || 0) / (entry.totalProblems || 1) * 100 },
-                                        { label: 'Hard', count: entry.hard, color: 'bg-[#EA4335]', width: (entry.hard || 0) / (entry.totalProblems || 1) * 100 }
-                                    ].map(stat => (
-                                        <div key={stat.label} className="space-y-1.5">
-                                            <div className="flex justify-between text-[9px] font-black text-muted-foreground uppercase tracking-widest">
-                                                <span>{stat.label}</span>
-                                                <span>{stat.count || 0}</span>
+                            {/* Platform-specific stats */}
+                            {entry.platforms && (entry.platforms.leetcode || entry.platforms.gfg) ? (
+                                <div className="space-y-4 relative z-10 mb-6">
+                                    <div className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em] px-1">Platform Stats</div>
+                                    
+                                    {entry.platforms.leetcode && (
+                                        <div className="bg-orange-50 dark:bg-orange-950/20 rounded-2xl p-4 border border-orange-200 dark:border-orange-800/30">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <span className="w-4 h-4 bg-orange-500 rounded text-white text-[8px] font-bold flex items-center justify-center">LC</span>
+                                                <span className="text-[10px] font-black text-orange-700 dark:text-orange-300 uppercase tracking-[0.2em]">LeetCode</span>
+                                                <span className="text-[10px] font-black text-orange-600 dark:text-orange-400 bg-orange-100 dark:bg-orange-900/30 px-2 py-0.5 rounded-full">
+                                                    {entry.platforms.leetcode.total} solved
+                                                </span>
                                             </div>
-                                            <div className="h-2 bg-muted rounded-full overflow-hidden">
-                                                <div className={`h-full ${stat.color} rounded-full`} style={{ width: `${stat.width}%` }} />
+                                            <div className="grid grid-cols-3 gap-2 text-center">
+                                                <div>
+                                                    <div className="text-xs font-black text-green-600">E</div>
+                                                    <div className="text-sm font-bold">{entry.platforms.leetcode.easy}</div>
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-black text-yellow-600">M</div>
+                                                    <div className="text-sm font-bold">{entry.platforms.leetcode.medium}</div>
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-black text-red-600">H</div>
+                                                    <div className="text-sm font-bold">{entry.platforms.leetcode.hard}</div>
+                                                </div>
                                             </div>
                                         </div>
-                                    ))}
+                                    )}
+
+                                    {entry.platforms.gfg && (
+                                        <div className="bg-green-50 dark:bg-green-950/20 rounded-2xl p-4 border border-green-200 dark:border-green-800/30">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <span className="w-4 h-4 bg-green-600 rounded text-white text-[8px] font-bold flex items-center justify-center">GFG</span>
+                                                <span className="text-[10px] font-black text-green-700 dark:text-green-300 uppercase tracking-[0.2em]">GeeksforGeeks</span>
+                                                <span className="text-[10px] font-black text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-full">
+                                                    {entry.platforms.gfg.total || 0} solved
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-3 gap-2 text-center">
+                                                <div>
+                                                    <div className="text-xs font-black text-green-600">E</div>
+                                                    <div className="text-sm font-bold">{entry.platforms.gfg.easy || 0}</div>
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-black text-yellow-600">M</div>
+                                                    <div className="text-sm font-bold">{entry.platforms.gfg.medium || 0}</div>
+                                                </div>
+                                                <div>
+                                                    <div className="text-xs font-black text-red-600">H</div>
+                                                    <div className="text-sm font-bold">{entry.platforms.gfg.hard || 0}</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
-                            </div>
+                            ) : (
+                                <div className="space-y-4 relative z-10">
+                                    <div className="flex justify-between items-center px-1">
+                                        <span className="text-[10px] text-muted-foreground font-black uppercase tracking-[0.2em]">Problem Density</span>
+                                        <span className="text-[10px] font-black text-foreground bg-muted px-3 py-1 rounded-full uppercase tracking-wider">{entry.totalProblems} Solved</span>
+                                    </div>
+                                    <div className="space-y-3.5 px-1">
+                                        {[
+                                            { label: 'Easy', count: entry.easy, color: 'bg-[#34A853]', width: (entry.easy || 0) / (entry.totalProblems || 1) * 100 },
+                                            { label: 'Medium', count: entry.medium, color: 'bg-[#FBBC04]', width: (entry.medium || 0) / (entry.totalProblems || 1) * 100 },
+                                            { label: 'Hard', count: entry.hard, color: 'bg-[#EA4335]', width: (entry.hard || 0) / (entry.totalProblems || 1) * 100 }
+                                        ].map(stat => (
+                                            <div key={stat.label} className="space-y-1.5">
+                                                <div className="flex justify-between text-[9px] font-black text-muted-foreground uppercase tracking-widest">
+                                                    <span>{stat.label}</span>
+                                                    <span>{stat.count || 0}</span>
+                                                </div>
+                                                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                                                    <div className={`h-full ${stat.color} rounded-full`} style={{ width: `${stat.width}%` }} />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
 
                             <div className="mt-6 pt-6 border-t border-border flex justify-end items-center relative z-10">
                                 {entry.streak && entry.streak > 0 && (
@@ -147,12 +209,11 @@ export default function LeaderboardRow({ entry, index, isCurrentUser }: Leaderbo
                 </div>
             </div>
 
-            {/* Stats - with improved design */}
-            <div className="flex gap-4 md:gap-10 items-center shrink-0">
+            {/* Stats - with separate platform scores */}
+            <div className="flex gap-2 md:gap-6 items-center shrink-0">
                 <div className="hidden lg:flex flex-col items-center w-16">
                     {entry.streak && entry.streak > 0 ? (
                         <div className="flex flex-col items-center justify-center p-2 rounded-2xl bg-orange-500/10 border border-orange-500/20 w-full">
-                            <span className="text-xs font-black text-orange-600 dark:text-orange-400 uppercase tracking-widest mb-0.5">Streak</span>
                             <span className="text-lg font-black text-orange-600 dark:text-orange-400 leading-none">🔥 {entry.streak}</span>
                         </div>
                     ) : (
@@ -162,20 +223,72 @@ export default function LeaderboardRow({ entry, index, isCurrentUser }: Leaderbo
                     )}
                 </div>
 
-                <div className="flex flex-col items-end w-16 md:w-24">
-                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">Score</span>
-                    <span className="text-lg md:text-2xl font-black text-foreground leading-none tabular-nums tracking-tighter">
-                        {entry.totalScore.toLocaleString()}
-                    </span>
-                </div>
+                {/* Platform-specific scores */}
+                {entry.platforms && (entry.platforms.leetcode || entry.platforms.gfg) ? (
+                    <>
+                        {/* LeetCode Score */}
+                        {entry.platforms.leetcode && (
+                            <div className="flex flex-col items-end w-16 md:w-20">
+                                <div className="flex items-center gap-1 mb-1">
+                                    <span className="w-3 h-3 bg-orange-500 rounded text-white text-[6px] font-bold flex items-center justify-center">LC</span>
+                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em]">Score</span>
+                                </div>
+                                <span className="text-sm md:text-lg font-black text-foreground leading-none tabular-nums tracking-tighter">
+                                    {((entry.platforms.leetcode.easy || 0) * 1 + (entry.platforms.leetcode.medium || 0) * 3 + (entry.platforms.leetcode.hard || 0) * 6).toLocaleString()}
+                                </span>
+                                <span className="text-[10px] text-muted-foreground font-medium">
+                                    {entry.platforms.leetcode.total || 0} solved
+                                </span>
+                            </div>
+                        )}
 
-                <div className="flex flex-col items-end w-16 md:w-24">
-                    <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">Today</span>
-                    <span className={`text-lg md:text-2xl font-black leading-none tabular-nums tracking-tighter ${entry.todayPoints > 0 ? 'text-primary' : 'text-muted-foreground'
-                        }`}>
-                        +{entry.todayPoints}
-                    </span>
-                </div>
+                        {/* GFG Score */}
+                        {entry.platforms && (
+                            <div className="flex flex-col items-end w-16 md:w-20">
+                                <div className="flex items-center gap-1 mb-1">
+                                    <span className="w-3 h-3 bg-green-600 rounded text-white text-[6px] font-bold flex items-center justify-center">GFG</span>
+                                    <span className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em]">Score</span>
+                                </div>
+                                <span className="text-sm md:text-lg font-black text-foreground leading-none tabular-nums tracking-tighter">
+                                    {((entry.platforms.gfg?.easy || 0) * 1 + (entry.platforms.gfg?.medium || 0) * 3 + (entry.platforms.gfg?.hard || 0) * 6).toLocaleString()}
+                                </span>
+                                <span className="text-[10px] text-muted-foreground font-medium">
+                                    {entry.platforms.gfg?.total || 0} solved
+                                </span>
+                            </div>
+                        )}
+
+                        {/* Today's Points */}
+                        <div className="flex flex-col items-end w-16 md:w-20">
+                            <span className="text-[8px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">Today</span>
+                            <span className={`text-sm md:text-lg font-black leading-none tabular-nums tracking-tighter ${entry.todayPoints > 0 ? 'text-primary' : 'text-muted-foreground'
+                                }`}>
+                                +{entry.todayPoints}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground font-medium">
+                                points
+                            </span>
+                        </div>
+                    </>
+                ) : (
+                    // Fallback to combined scores for backward compatibility
+                    <>
+                        <div className="flex flex-col items-end w-16 md:w-24">
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">Score</span>
+                            <span className="text-lg md:text-2xl font-black text-foreground leading-none tabular-nums tracking-tighter">
+                                {entry.totalScore.toLocaleString()}
+                            </span>
+                        </div>
+
+                        <div className="flex flex-col items-end w-16 md:w-24">
+                            <span className="text-[9px] font-black text-muted-foreground uppercase tracking-[0.2em] mb-1">Today</span>
+                            <span className={`text-lg md:text-2xl font-black leading-none tabular-nums tracking-tighter ${entry.todayPoints > 0 ? 'text-primary' : 'text-muted-foreground'
+                                }`}>
+                                +{entry.todayPoints}
+                            </span>
+                        </div>
+                    </>
+                )}
             </div>
         </motion.div>
     );

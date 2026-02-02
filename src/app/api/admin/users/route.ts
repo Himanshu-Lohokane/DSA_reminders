@@ -12,6 +12,7 @@ export const GET = requireAdmin(async (req, user) => {
       name: users.name,
       email: users.email,
       leetcodeUsername: users.leetcodeUsername,
+      gfgUsername: users.gfgUsername,
       phoneNumber: users.phoneNumber,
       role: users.role,
       createdAt: users.createdAt,

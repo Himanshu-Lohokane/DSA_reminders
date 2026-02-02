@@ -20,6 +20,7 @@ export const profileUpdateSchema = z.object({
     github: z.string().max(255).optional(),
     linkedin: z.string().max(255).optional().nullable(),
     leetcodeUsername: z.string().min(1).max(255).optional(),
+    gfgUsername: z.string().min(1).max(255).optional().nullable(),
 });
 
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
