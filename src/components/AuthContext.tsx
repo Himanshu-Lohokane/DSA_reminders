@@ -15,6 +15,9 @@ interface User {
     linkedin?: string;
     role: string;
     isProfileIncomplete?: boolean;
+    onboardingCompleted?: boolean;
+    roastIntensity?: 'mild' | 'medium' | 'savage';
+    dailyGrindTime?: string;
 }
 
 interface AuthContextType {

@@ -11,6 +11,9 @@ export const users = pgTable('users', {
   linkedin: varchar('linkedin', { length: 255 }),
   phoneNumber: varchar('phone_number', { length: 32 }),
   role: varchar('role', { length: 16 }).notNull().default('user'),
+  onboardingCompleted: boolean('onboarding_completed').default(false),
+  roastIntensity: varchar('roast_intensity', { length: 16 }).default('medium'),
+  dailyGrindTime: varchar('daily_grind_time', { length: 5 }),
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
 });
 
