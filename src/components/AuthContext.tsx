@@ -85,10 +85,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const data = await res.json();
                 setUser(data.user);
 
-                // If profile is complete and we are on landing/login, go home
-                if (!data.user.isProfileIncomplete) {
-                    const path = window.location.pathname;
-                    if (path === '/' || path === '/login' || path === '/register') {
+                // Smart routing based on profile completion and current path
+                const path = window.location.pathname;
+                
+                // Don't redirect if already on the right page
+                if (path === '/onboarding' || path === '/home' || path === '/auth/callback') {
+                    return;
+                }
+                
+                // Redirect from landing/login based on profile status
+                if (path === '/' || path === '/login') {
+                    if (data.user.isProfileIncomplete) {
+                        router.push('/onboarding');
+                    } else {
                         router.push('/home');
                     }
                 }

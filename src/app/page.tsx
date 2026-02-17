@@ -18,7 +18,12 @@ export default function Home() {
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.push('/home')
+      // Route based on profile completion
+      if (user.isProfileIncomplete) {
+        router.push('/onboarding')
+      } else {
+        router.push('/home')
+      }
     }
   }, [user, isLoading, router])
 

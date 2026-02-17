@@ -56,13 +56,12 @@ export async function getCurrentUser(req: NextRequest) {
 
 export function isProfileIncomplete(user: User | any): boolean {
     if (!user) return true;
+    // Only require leetcode and phone - github/linkedin are optional
     return (
         !user.leetcodeUsername ||
         user.leetcodeUsername.startsWith('pending_') ||
-        !user.github ||
-        user.github === 'pending' ||
         !user.phoneNumber ||
-        !user.linkedin
+        !user.onboardingCompleted  // Check if onboarding was completed
     );
 }
 
@@ -83,9 +82,10 @@ export function requireAuth(handler: AuthenticatedHandler) {
             });
         }
 
-        // Block actions if profile is incomplete (except for profile update route)
+        // Block actions if profile is incomplete (except for profile update and onboarding routes)
         const isProfileUpdate = req.nextUrl.pathname === '/api/users/profile';
-        if (user.isProfileIncomplete && !isProfileUpdate) {
+        const isOnboarding = req.nextUrl.pathname === '/api/users/onboarding';
+        if (user.isProfileIncomplete && !isProfileUpdate && !isOnboarding) {
             return new Response(JSON.stringify({ error: 'Profile completion required', isProfileIncomplete: true }), {
                 status: 403,
                 headers: { 'Content-Type': 'application/json' }

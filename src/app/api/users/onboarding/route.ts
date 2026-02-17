@@ -3,30 +3,44 @@ import { requireAuth } from '@/lib/auth';
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
 import { eq } from 'drizzle-orm';
+import { updateDailyStatsForUser } from '@/lib/leetcode';
+import { updateDailyStatsForUserGFG } from '@/lib/gfg';
 
 export const POST = requireAuth(async (req: NextRequest, user: any) => {
     try {
         const body = await req.json();
-        const { leetcodeUsername, phoneNumber, github, linkedin, gfgUsername, roastIntensity, onboardingCompleted } = body;
+        const { leetcodeUsername, phoneNumber, github, linkedin, gfgUsername, roastIntensity, dailyGrindTime, onboardingCompleted } = body;
 
-        console.log('Onboarding data:', { userId: user.id, leetcodeUsername, phoneNumber, github, linkedin, gfgUsername });
+        console.log('Onboarding data:', { userId: user.id, leetcodeUsername, phoneNumber, github, linkedin, gfgUsername, roastIntensity, dailyGrindTime });
 
-        // Build update object
+        // Build update object - only include leetcodeUsername if it's different
         const updateData: any = {
             phoneNumber,
+            roastIntensity,
+            dailyGrindTime,
             onboardingCompleted: onboardingCompleted ?? true
         };
 
-        // Only update leetcodeUsername if provided and not already set properly
-        if (leetcodeUsername && user.leetcodeUsername?.startsWith('pending_')) {
+        // Only update leetcodeUsername if it's different from current value
+        if (leetcodeUsername && leetcodeUsername !== user.leetcodeUsername) {
             updateData.leetcodeUsername = leetcodeUsername;
         }
 
-        // Update optional fields
-        if (github !== undefined) updateData.github = github || 'pending';
-        if (linkedin !== undefined) updateData.linkedin = linkedin || null;
-        if (gfgUsername !== undefined) updateData.gfgUsername = gfgUsername || null;
-        if (roastIntensity !== undefined) updateData.roastIntensity = roastIntensity || 'medium';
+        // Update GitHub and LinkedIn if provided (set default if skipped)
+        if (github !== undefined && github !== '') {
+            updateData.github = github;
+        } else if (!user.github || user.github === 'pending') {
+            updateData.github = 'not-provided';  // Default for skipped field
+        }
+        
+        if (linkedin !== undefined && linkedin !== '') {
+            updateData.linkedin = linkedin;
+        } else if (!user.linkedin) {
+            updateData.linkedin = null;  // Keep as optional (null allowed)
+        }
+        if (gfgUsername !== undefined) {
+            updateData.gfgUsername = gfgUsername || null;
+        }
 
         // Update user with onboarding data
         const [updatedUser] = await db
@@ -37,6 +51,25 @@ export const POST = requireAuth(async (req: NextRequest, user: any) => {
 
         if (!updatedUser) {
             return NextResponse.json({ error: 'User not found' }, { status: 404 });
+        }
+
+        // Trigger immediate LeetCode sync to populate stats
+        try {
+            await updateDailyStatsForUser(updatedUser.id, updatedUser.leetcodeUsername);
+            console.log('LeetCode stats synced after onboarding for user:', updatedUser.id);
+        } catch (syncError) {
+            console.error('Failed to sync LeetCode stats after onboarding:', syncError);
+            // Don't fail onboarding if sync fails - stats will be updated by cron
+        }
+
+        // Trigger GFG sync if username provided
+        if (updatedUser.gfgUsername) {
+            try {
+                await updateDailyStatsForUserGFG(updatedUser.id, updatedUser.gfgUsername);
+                console.log('GFG stats synced after onboarding for user:', updatedUser.id);
+            } catch (syncError) {
+                console.error('Failed to sync GFG stats after onboarding:', syncError);
+            }
         }
 
         return NextResponse.json({ success: true, user: updatedUser });
