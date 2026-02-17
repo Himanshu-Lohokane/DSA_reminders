@@ -38,7 +38,7 @@ const ROAST_LEVELS = [
     }
 ];
 
-const totalSteps = 4;
+const totalSteps = 6;
 
 export default function PremiumOnboarding() {
     const { user, token, updateUser } = useAuth();
@@ -55,9 +55,8 @@ export default function PremiumOnboarding() {
         github: '',
         linkedin: '',
         roastIntensity: 'medium' as 'mild' | 'medium' | 'savage',
+        dailyGrindTime: '09:00', // Default to 9 AM
     });
-
-    const totalSteps = 5;
 
     if (!user) return null;
 
@@ -106,6 +105,7 @@ export default function PremiumOnboarding() {
                     github: formData.github || undefined,
                     linkedin: formData.linkedin || undefined,
                     roastIntensity: formData.roastIntensity,
+                    dailyGrindTime: formData.dailyGrindTime,
                     onboardingCompleted: true
                 })
             });
@@ -304,6 +304,38 @@ export default function PremiumOnboarding() {
                 return (
                     <div className="space-y-6">
                         <div className="text-center space-y-3">
+                            <div className="w-20 h-20 mx-auto bg-linear-to-br from-[#FBBC04] to-[#E37400] rounded-3xl flex items-center justify-center">
+                                <Clock className="w-10 h-10 text-white" />
+                            </div>
+                            <h2 className="text-3xl font-black text-[#202124] dark:text-white">Daily Grind Time</h2>
+                            <p className="text-[#5F6368] dark:text-gray-400 max-w-sm mx-auto">
+                                When should we send your daily reminder?
+                            </p>
+                        </div>
+
+                        <div className="flex justify-center">
+                            <input
+                                type="time"
+                                value={formData.dailyGrindTime}
+                                onChange={(e) => setFormData({ ...formData, dailyGrindTime: e.target.value })}
+                                className="px-8 py-6 bg-[#F1F3F4] dark:bg-gray-800 border-2 border-transparent focus:border-[#FBBC04] rounded-2xl text-2xl font-bold outline-none transition-all text-center min-w-[200px]"
+                            />
+                        </div>
+
+                        <button
+                            onClick={() => setStep(5)}
+                            className="w-full bg-[#FBBC04] hover:bg-[#E37400] text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-2"
+                        >
+                            <span>Continue</span>
+                            <ArrowRight className="w-5 h-5" />
+                        </button>
+                    </div>
+                );
+
+            case 5:
+                return (
+                    <div className="space-y-6">
+                        <div className="text-center space-y-3">
                             <div className="w-20 h-20 mx-auto bg-linear-to-br from-[#5F6368] to-[#202124] rounded-3xl flex items-center justify-center">
                                 <Target className="w-10 h-10 text-white" />
                             </div>
@@ -359,7 +391,7 @@ export default function PremiumOnboarding() {
                         </div>
 
                         <button
-                            onClick={() => setStep(5)}
+                            onClick={() => setStep(6)}
                             className="w-full bg-[#5F6368] hover:bg-[#202124] text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-2"
                         >
                             <span>{formData.gfgUsername || formData.github || formData.linkedin ? 'Continue' : 'Skip'}</span>
@@ -368,7 +400,7 @@ export default function PremiumOnboarding() {
                     </div>
                 );
 
-            case 5:
+            case 6:
                 return (
                     <div className="space-y-6 text-center">
                         <div className="w-24 h-24 mx-auto bg-linear-to-br from-[#4285F4] to-[#EA4335] rounded-full flex items-center justify-center animate-pulse">
@@ -391,6 +423,10 @@ export default function PremiumOnboarding() {
                             <div className="flex items-center justify-between">
                                 <span className="text-sm text-[#5F6368] dark:text-gray-400">Roast Level</span>
                                 <span className="font-bold text-[#202124] dark:text-white capitalize">{formData.roastIntensity}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-[#5F6368] dark:text-gray-400">Daily Time</span>
+                                <span className="font-bold text-[#202124] dark:text-white">{formData.dailyGrindTime}</span>
                             </div>
                         </div>
 
@@ -447,11 +483,11 @@ export default function PremiumOnboarding() {
                     {renderStep()}
                 </motion.div>
 
-                {/* Skip Option (only on step 4) */}
-                {step === 4 && (
+                {/* Skip Option (only on step 5) */}
+                {step === 5 && (
                     <div className="text-center mt-4">
                         <button
-                            onClick={() => setStep(5)}
+                            onClick={() => setStep(6)}
                             className="text-sm text-gray-400 hover:text-white transition-colors"
                         >
                             Skip this step →

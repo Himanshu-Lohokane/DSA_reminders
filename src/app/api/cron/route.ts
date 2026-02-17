@@ -51,14 +51,26 @@ async function resetDailyCountersIfNeeded(s: Setting): Promise<Setting> {
   return s;
 }
 
-// Helper function to process users in batches (simple concurrency control)
+// Helper function to process users in batches with concurrent email sending
 async function processInBatches<T, R>(items: T[], batchSize: number, processor: (item: T) => Promise<R>): Promise<R[]> {
   const results: R[] = [];
+  
   for (let i = 0; i < items.length; i += batchSize) {
     const batch = items.slice(i, i + batchSize);
+    
+    console.log(`Processing batch ${Math.floor(i/batchSize) + 1}/${Math.ceil(items.length/batchSize)} (${batch.length} users)`);
+    
+    // Process all users in batch concurrently
     const batchResults = await Promise.all(batch.map(processor));
     results.push(...batchResults);
+    
+    // Wait 1 second between batches to respect rate limits (Gmail: ~10 emails/second)
+    if (i + batchSize < items.length) {
+      console.log('Waiting 1 second before next batch...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+    }
   }
+  
   return results;
 }
 
@@ -203,41 +215,56 @@ export async function GET(req: Request) {
         whatsappSent: { success: false, skipped: false }
       };
 
-      // 1. Update Platform stats (both LeetCode and GFG via the new wrapper)
-      try {
-        await updateDailyStatsForUser(user.id, user.leetcodeUsername);
-        userResult.statsUpdate = { success: true };
-      } catch (error) {
-        userResult.statsUpdate = { success: false, error: error instanceof Error ? error.message : 'Stats update failed' };
-      }
+      // Create array of promises for parallel execution
+      const promises: Promise<void>[] = [];
+      
+      // 1. Update Platform stats (non-blocking)
+      promises.push(
+        updateDailyStatsForUser(user.id, user.leetcodeUsername)
+          .then(() => {
+            userResult.statsUpdate = { success: true };
+          })
+          .catch(error => {
+            userResult.statsUpdate = { success: false, error: error instanceof Error ? error.message : 'Stats update failed' };
+          })
+      );
 
       // 2. Personalize the AI content for this user
       let personalizedFullMessage = aiContent?.fullMessage;
-      let personalizedDashboardRoast = aiContent?.dashboardRoast;
-
       if (personalizedFullMessage) {
         personalizedFullMessage = personalizedFullMessage.replace(/\[NAME\]/g, user.name.split(' ')[0]);
       }
-      if (personalizedDashboardRoast) {
-        personalizedDashboardRoast = personalizedDashboardRoast.replace(/\[NAME\]/g, user.name.split(' ')[0]);
-      }
 
-      // 3. Send email (if within limits)
+      // 3. Send email (if within limits) - non-blocking
       const currentEmailTotal = (s.emailsSentToday ?? 0) + emailsSentCount;
       if (testEmail || (shouldSendEmails && currentEmailTotal < (s.maxDailyEmails ?? 1))) {
-        const emailResult = await sendConfigEmail(user, undefined, undefined, personalizedFullMessage);
-        userResult.emailSent = emailResult;
-        if (emailResult.success) emailsSentCount++;
+        promises.push(
+          sendConfigEmail(user, undefined, undefined, personalizedFullMessage)
+            .then(emailResult => {
+              userResult.emailSent = emailResult;
+              if (emailResult.success) emailsSentCount++;
+            })
+            .catch(error => {
+              userResult.emailSent = { success: false, error: error instanceof Error ? error.message : 'Email failed' };
+            })
+        );
       } else {
         userResult.emailSent = { success: false, skipped: true, reason: 'Limit reached or disabled' };
       }
 
-      // 4. Send WhatsApp (if within limits)
+      // 4. Send WhatsApp (if within limits) - non-blocking
       const currentWhatsappTotal = (s.whatsappSentToday ?? 0) + whatsappSentCount;
       if (testEmail || (shouldSendWhatsApp && currentWhatsappTotal < (s.maxDailyWhatsapp ?? 1) && user.phoneNumber)) {
-        const whatsappResult = await sendConfigWhatsApp(user, undefined, undefined, personalizedFullMessage);
-        userResult.whatsappSent = whatsappResult;
-        if (whatsappResult.success) whatsappSentCount++;
+        promises.push(
+          sendConfigWhatsApp(user, undefined, undefined, personalizedFullMessage)
+            .then(whatsappResult => {
+              userResult.whatsappSent = whatsappResult;
+              if (whatsappResult.success) whatsappSentCount++;
+            })
+            .catch(error => {
+              userResult.whatsappSent = { success: false, error: error instanceof Error ? error.message : 'WhatsApp failed' };
+            })
+        );
       } else {
         userResult.whatsappSent = {
           success: false,
@@ -246,11 +273,17 @@ export async function GET(req: Request) {
         };
       }
 
+      // Wait for all operations to complete
+      await Promise.allSettled(promises);
+      
       return userResult;
     };
 
-    // Process all users in batches of 5 to respect rate limits and prevent timeouts
-    const results = await processInBatches(allUsers, 5, processUser);
+    // Process all users in batches of 10 to optimize throughput while respecting rate limits
+    // Gmail allows ~10 emails/second, so batches of 10 with 1-second delays work well
+    const results = await processInBatches(allUsers, 10, processUser);
+    
+    console.log(`Batch processing complete. Processed ${allUsers.length} users in ${Math.ceil(allUsers.length/10)} batches.`);
 
     // Update settings with new counts
     await db.update(settings).set({

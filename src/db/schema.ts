@@ -42,6 +42,7 @@ export const users = pgTable('users', {
   todayPoints: integer('today_points').default(0),
   lastStatUpdate: timestamp('last_stat_update', { withTimezone: true }),
   roastIntensity: varchar('roast_intensity', { length: 16 }).default('medium'),
+  dailyGrindTime: varchar('daily_grind_time', { length: 5 }), // HH:MM format like "09:30"
 
   // Baselines for daily growth calculation (reset by cron job at midnight)
   lastResetEasy: integer('last_reset_easy').default(0),
@@ -78,7 +79,7 @@ export const settings = pgTable('settings', {
   skipWeekends: boolean('skip_weekends').default(false),
   skipHolidays: boolean('skip_holidays').default(false),
   customSkipDates: jsonb('custom_skip_dates').default([]),
-  aiRoast: jsonb('ai_roast'), // Stores { roast, insult, date }
+  aiRoast: jsonb('ai_roast'), // Stores { mild: {message, subject}, medium: {...}, savage: {...}, date }
   createdAt: timestamp('created_at', { withTimezone: true }).defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow(),
 });

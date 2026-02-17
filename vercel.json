@@ -1,0 +1,1 @@
+{\n  \"crons\": [\n    {\n      \"path\": \"/api/cron\",\n      \"schedule\": \"0 1 * * *\"\n    },\n    {\n      \"path\": \"/api/cron/pre-generate\",\n      \"schedule\": \"0 0 * * *\"\n    },\n    {\n      \"path\": \"/api/cron/time-slot-sender\",\n      \"schedule\": \"*/30 * * * *\"\n    }\n  ]\n}
