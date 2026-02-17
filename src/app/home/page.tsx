@@ -26,6 +26,13 @@ export default function HomePage() {
     const router = useRouter();
     const queryClient = useQueryClient();
 
+    // Redirect incomplete profiles to onboarding
+    useEffect(() => {
+        if (!authLoading && user?.isProfileIncomplete) {
+            router.push('/onboarding');
+        }
+    }, [user, authLoading, router]);
+
     // UI State
     const [leaderboardType, setLeaderboardType] = useState<'daily' | 'allTime'>('daily');
     const [activeGroup, setActiveGroup] = useState<GroupWithMembership | null>(null);

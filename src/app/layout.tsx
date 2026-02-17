@@ -6,7 +6,6 @@ import { AuthProvider } from "@/components/AuthContext";
 import { ThemeProvider } from "@/components/theme-provider";
 import Script from "next/script";
 import SplashScreen from "@/components/SplashScreen";
-import OnboardingModal from "@/components/OnboardingModal";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
@@ -95,7 +94,6 @@ export default function RootLayout({
           <AuthProvider>
             <Providers>
               {children}
-              <OnboardingModal />
             </Providers>
           </AuthProvider>
           <Toaster />

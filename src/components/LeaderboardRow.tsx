@@ -127,12 +127,12 @@ export default function LeaderboardRow({ entry, rank, isCurrentUser }: Leaderboa
                         )}
 
                         <div className="flex items-center gap-2 ml-1">
-                            {entry.github && (
+                            {entry.github && entry.github !== 'not-provided' && entry.github !== 'pending' && (
                                 <a href={entry.github} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-foreground transition-all hover:scale-110">
                                     <Github className="w-4 h-4" />
                                 </a>
                             )}
-                            {entry.linkedin && (
+                            {entry.linkedin && entry.linkedin !== 'not-provided' && entry.linkedin !== 'pending' && (
                                 <a href={entry.linkedin} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-[#0077b5] transition-all hover:scale-110">
                                     <Linkedin className="w-4 h-4" />
                                 </a>

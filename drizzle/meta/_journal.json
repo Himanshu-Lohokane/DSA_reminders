@@ -15,6 +15,13 @@
       "when": 1770039283763,
       "tag": "0001_familiar_dazzler",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1771317246478,
+      "tag": "0002_spooky_frightful_four",
+      "breakpoints": true
     }
   ]
 }

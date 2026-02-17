@@ -118,9 +118,15 @@ export default function PremiumOnboarding() {
                     spread: 70,
                     origin: { y: 0.6 }
                 });
-
-                updateUser({ ...user, onboardingCompleted: true });
+                
+                // Update local user state with completed onboarding
+                updateUser({ ...data.user, onboardingCompleted: true, isProfileIncomplete: false });
                 toast.success('Welcome to the Arena! 🔥');
+                
+                // Redirect to home after a brief delay to show confetti
+                setTimeout(() => {
+                    window.location.href = '/home';
+                }, 1500);
             } else {
                 toast.error(data.error || 'Something went wrong');
             }
@@ -150,8 +156,16 @@ export default function PremiumOnboarding() {
                             <input
                                 type="text"
                                 value={formData.leetcodeUsername}
-                                onChange={(e) => setFormData({ ...formData, leetcodeUsername: e.target.value })}
-                                placeholder="e.g. leetcode_user"
+                                onChange={(e) => {
+                                    let value = e.target.value.trim();
+                                    // Strip LeetCode URL if user pastes full link
+                                    const urlMatch = value.match(/leetcode\.com\/u\/([^\/]+)/i);
+                                    if (urlMatch) {
+                                        value = urlMatch[1];
+                                    }
+                                    setFormData({ ...formData, leetcodeUsername: value });
+                                }}
+                                placeholder="your_leetcode_username"
                                 className="w-full px-6 py-4 bg-[#F1F3F4] dark:bg-gray-800 border-2 border-transparent focus:border-[#4285F4] rounded-2xl text-lg font-medium outline-none transition-all"
                                 onKeyDown={(e) => e.key === 'Enter' && validateLeetCode()}
                             />
