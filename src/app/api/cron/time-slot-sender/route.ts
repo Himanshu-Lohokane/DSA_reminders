@@ -30,6 +30,34 @@ function isInCurrentTimeSlot(userTime: string | null): boolean {
   return userHour === currentHour && userMin >= slotStart && userMin < slotEnd;
 }
 
+// Helper function to check if a user's dailyGrindTime falls in a specific time slot
+function isInSpecificTimeSlot(userTime: string | null, targetSlot: string): boolean {
+  if (!userTime || !userTime.match(/^\d{2}:\d{2}$/)) return false;
+  
+  // Parse target slot (e.g., "18:00-18:30")
+  const [startTime, endTime] = targetSlot.split('-');
+  if (!startTime || !endTime) return false;
+  
+  const [startHour, startMin] = startTime.split(':').map(Number);
+  const [endHour, endMin] = endTime.split(':').map(Number);
+  const [userHour, userMin] = userTime.split(':').map(Number);
+  
+  // Check if user's time falls within the target slot
+  const userMinutes = userHour * 60 + userMin;
+  const startMinutes = startHour * 60 + startMin;
+  let endMinutes = endHour * 60 + endMin;
+  
+  // Handle midnight crossing (e.g., 23:30-00:00)
+  if (endMinutes <= startMinutes) {
+    endMinutes += 24 * 60;
+    if (userMinutes < 12 * 60) { // User time is in next day
+      return userMinutes + 24 * 60 >= startMinutes && userMinutes + 24 * 60 < endMinutes;
+    }
+  }
+  
+  return userMinutes >= startMinutes && userMinutes < endMinutes;
+}
+
 // Helper function to process users in batches with concurrent sending
 async function processUsersByIntensity(
   userList: any[],
@@ -127,11 +155,17 @@ export async function GET(req: Request) {
   }
 
   try {
+    const { searchParams } = new URL(req.url);
+    const forceTimeSlot = searchParams.get('forceTimeSlot');
+    
     const today = getTodayDate();
     const now = new Date();
     const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     console.log(`\nTime-slot sender started at ${currentTime}`);
+    if (forceTimeSlot) {
+      console.log(`🎯 Force override: targeting time slot ${forceTimeSlot}`);
+    }
 
     // Get automation settings and pre-generated messages
     const [s] = await db.select().from(settings).limit(1);
@@ -177,23 +211,31 @@ export async function GET(req: Request) {
         )
       );
 
-    // Filter users whose dailyGrindTime falls in current 30-minute slot
-    const usersInTimeSlot = allUsers.filter(user =>
-      user.dailyGrindTime && isInCurrentTimeSlot(user.dailyGrindTime)
-    );
+    // Filter users whose dailyGrindTime falls in the target time slot
+    const usersInTimeSlot = allUsers.filter(user => {
+      if (!user.dailyGrindTime) return false;
+      
+      if (forceTimeSlot) {
+        return isInSpecificTimeSlot(user.dailyGrindTime, forceTimeSlot);
+      } else {
+        return isInCurrentTimeSlot(user.dailyGrindTime);
+      }
+    });
+
+    const targetSlot = forceTimeSlot || `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes() < 30 ? '00' : '30'}-${now.getMinutes() < 30 ? now.getHours().toString().padStart(2, '0') + ':30' : (now.getHours() + 1).toString().padStart(2, '0') + ':00'}`;
 
     if (usersInTimeSlot.length === 0) {
-      const slotLabel = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes() < 30 ? '00' : '30'}-${now.getMinutes() < 30 ? now.getHours().toString().padStart(2, '0') + ':30' : (now.getHours() + 1).toString().padStart(2, '0') + ':00'}`;
       return NextResponse.json({
-        message: 'No users scheduled for current time slot',
+        message: forceTimeSlot ? `No users scheduled for time slot ${forceTimeSlot}` : 'No users scheduled for current time slot',
         currentTime,
-        timeSlot: slotLabel,
+        timeSlot: targetSlot,
         totalUsers: allUsers.length,
-        usersInSlot: 0
+        usersInSlot: 0,
+        ...(forceTimeSlot && { forceOverride: true })
       });
     }
 
-    console.log(`Found ${usersInTimeSlot.length} users in current time slot`);
+    console.log(`Found ${usersInTimeSlot.length} users in ${forceTimeSlot ? `forced time slot ${forceTimeSlot}` : 'current time slot'}`);
 
     // Group users by roast intensity
     const usersByIntensity: { [key: string]: any[] } = {
@@ -277,17 +319,16 @@ export async function GET(req: Request) {
       })
       .where(eq(settings.id, s.id));
 
-    const slotLabel = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes() < 30 ? '00' : '30'}-${now.getMinutes() < 30 ? now.getHours().toString().padStart(2, '0') + ':30' : (now.getHours() + 1).toString().padStart(2, '0') + ':00'}`;
-
     const summary = {
       currentTime,
-      timeSlot: slotLabel,
+      timeSlot: targetSlot,
       usersInSlot: usersInTimeSlot.length,
       processed: allResults.totalProcessed,
       emailsSent: allResults.totalEmailsSent,
       whatsappSent: allResults.totalWhatsappSent,
       intensitiesProcessed: Object.keys(allResults.byIntensity),
-      errorCount: allResults.errors.length
+      errorCount: allResults.errors.length,
+      ...(forceTimeSlot && { forceOverride: true, targetTimeSlot: forceTimeSlot })
     };
 
     console.log(`\nTime-slot sender completed:`, summary);

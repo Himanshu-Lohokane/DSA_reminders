@@ -63,32 +63,51 @@ export default function TimeSlotTester() {
     }
   };
 
-  const triggerTimeSender = async (timeSlot?: string) => {
+  const triggerTimeSender = async (sendReal = false) => {
     setLoading(prev => ({ ...prev, timeSender: true }));
     try {
-      const url = timeSlot 
-        ? `/api/proxy/time-slot-sender?timeSlot=${encodeURIComponent(timeSlot)}`
-        : '/api/proxy/time-slot-sender?timeSlot=' + encodeURIComponent(
-            Math.floor(currentTime.getMinutes() / 30) === 0 
-              ? `${currentTime.getHours().toString().padStart(2, '0')}:00-${currentTime.getHours().toString().padStart(2, '0')}:30`
-              : `${currentTime.getHours().toString().padStart(2, '0')}:30-${(currentTime.getHours() + 1).toString().padStart(2, '0')}:00`
-          );
+      let url, expectation;
+      
+      if (sendReal) {
+        if (selectedTimeSlot) {
+          // Send real messages to SELECTED time slot
+          url = `/api/proxy/time-slot-sender-real?timeSlot=${encodeURIComponent(selectedTimeSlot)}`;
+          expectation = `REAL messages sent to ${selectedTimeSlot}`;
+        } else {
+          // Send real messages to current time slot
+          url = '/api/proxy/time-slot-sender';
+          expectation = 'REAL messages sent to current slot';
+        }
+      } else if (selectedTimeSlot) {
+        // Test specific time slot (no real messages)
+        url = `/api/proxy/time-slot-sender-test?timeSlot=${encodeURIComponent(selectedTimeSlot)}`;
+        expectation = `Test for ${selectedTimeSlot}`;
+      } else {
+        // Test current time slot (no real messages)
+        const currentSlot = Math.floor(currentTime.getMinutes() / 30) === 0 
+          ? `${currentTime.getHours().toString().padStart(2, '0')}:00-${currentTime.getHours().toString().padStart(2, '0')}:30`
+          : `${currentTime.getHours().toString().padStart(2, '0')}:30-${(currentTime.getHours() + 1).toString().padStart(2, '0')}:00`;
+        url = `/api/proxy/time-slot-sender-test?timeSlot=${encodeURIComponent(currentSlot)}`;
+        expectation = `Test for ${currentSlot}`;
+      }
       
       const response = await fetch(url);
       const data = await response.json();
       
       addTestResult({
         success: response.ok,
-        message: timeSlot 
-          ? `Time slot sender tested for ${timeSlot}: Found ${data.summary?.usersInSlot || 0} users`
-          : `Time slot sender tested: Found ${data.summary?.usersInSlot || 0} users`,
+        message: response.ok 
+          ? (sendReal 
+              ? `${expectation}! Processed ${data.summary?.processed || 0} users, ${data.summary?.emailsSent || 0} emails sent`
+              : `${expectation}: Found ${data.summary?.usersInSlot || 0} users`)
+          : `Failed: ${data.error || 'Unknown error'}`,
         data: data,
         timestamp: new Date().toISOString()
       });
     } catch (error) {
       addTestResult({
         success: false,
-        message: `Time slot sender failed: ${error}`,
+        message: `Request failed: ${error}`,
         timestamp: new Date().toISOString()
       });
     } finally {
@@ -133,7 +152,7 @@ export default function TimeSlotTester() {
         {/* Time Slot Selection */}
         <div className="mb-4">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Select Time Slot (optional)
+            Select Time Slot (for testing specific slots)
           </label>
           <select 
             value={selectedTimeSlot}
@@ -147,7 +166,7 @@ export default function TimeSlotTester() {
           </select>
           {selectedTimeSlot && (
             <p className="text-sm text-blue-600 mt-1">
-              Will trigger: {selectedTimeSlot}
+              Will test: {selectedTimeSlot}
             </p>
           )}
         </div>
@@ -166,7 +185,7 @@ export default function TimeSlotTester() {
           </button>
           
           <button
-            onClick={() => triggerTimeSender(selectedTimeSlot || undefined)}
+            onClick={() => triggerTimeSender(false)}
             disabled={loading.timeSender}
             className={`px-6 py-3 rounded-md font-medium text-white transition-colors ${
               loading.timeSender
@@ -178,11 +197,32 @@ export default function TimeSlotTester() {
           </button>
           
           <button
+            onClick={() => triggerTimeSender(true)}
+            disabled={loading.timeSender}
+            className={`px-6 py-3 rounded-md font-medium text-white transition-colors ${
+              loading.timeSender
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-red-600 hover:bg-red-700'
+            }`}
+          >
+            {loading.timeSender ? 'Sending...' : selectedTimeSlot ? `🚨 SEND TO ${selectedTimeSlot} 🚨` : '🚨 SEND TO CURRENT SLOT 🚨'}
+          </button>
+          
+          <button
             onClick={clearResults}
-            className="px-6 py-3 rounded-md font-medium text-white bg-red-600 hover:bg-red-700 transition-colors"
+            className="px-6 py-3 rounded-md font-medium text-white bg-gray-600 hover:bg-gray-700 transition-colors"
           >
             Clear Results
           </button>
+        </div>
+        
+        <div className="mt-3 text-sm">
+          <p className="text-gray-600">
+            <strong>Test:</strong> Shows who would receive messages (no actual sending)
+          </p>
+          <p className="text-red-600 font-medium">
+            <strong>🚨 Send Real:</strong> Actually sends emails/WhatsApp to users in the {selectedTimeSlot ? 'SELECTED' : 'CURRENT'} time slot!
+          </p>
         </div>
       </div>
 
