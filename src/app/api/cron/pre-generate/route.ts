@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 
     // Check if we already generated messages for today
     const existingRoast = s.aiRoast as any;
-    if (existingRoast?.date === today) {
+    if (existingRoast?.date === today && (existingRoast.mild || existingRoast.medium || existingRoast.savage)) {
       return NextResponse.json({
         message: 'Messages already generated for today',
         date: today,

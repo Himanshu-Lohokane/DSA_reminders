@@ -4,15 +4,12 @@ const MAIN_APP_URL = process.env.MAIN_APP_URL || 'http://localhost:3000';
 const CRON_SECRET = process.env.CRON_SECRET || 'BcndjbeihGgdw9hed';
 
 /**
- * Proxy for /api/cron/test-time-slot-sender on the main app
- * Passes through the timeSlot query parameter
+ * Proxy for /api/cron/time-slot-sender on the main app (REAL SENDER)
+ * This will actually send messages to users in the current time slot
  */
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = new URL(request.url);
-    const timeSlot = searchParams.get('timeSlot') || '';
-
-    const url = `${MAIN_APP_URL}/api/cron/test-time-slot-sender?timeSlot=${encodeURIComponent(timeSlot)}`;
+    const url = `${MAIN_APP_URL}/api/cron/time-slot-sender`;
 
     const response = await fetch(url, {
       headers: {

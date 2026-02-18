@@ -65,6 +65,24 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
   type __Unused = __Check
 }
 
+// Validate ../../src/app/api/proxy/time-slot-sender-real/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/proxy/time-slot-sender-real">> = Specific
+  const handler = {} as typeof import("../../src/app/api/proxy/time-slot-sender-real/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../src/app/api/proxy/time-slot-sender-test/route.ts
+{
+  type __IsExpected<Specific extends RouteHandlerConfig<"/api/proxy/time-slot-sender-test">> = Specific
+  const handler = {} as typeof import("../../src/app/api/proxy/time-slot-sender-test/route.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../src/app/api/proxy/time-slot-sender/route.ts
 {
   type __IsExpected<Specific extends RouteHandlerConfig<"/api/proxy/time-slot-sender">> = Specific
