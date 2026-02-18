@@ -76,7 +76,16 @@ export async function sendWhatsAppMessage(phoneNumber: string, message: string):
 
     console.log(`Sending WhatsApp to: ${cleanPhoneNumber.substring(0, 4)}****`);
 
-    const response = await fetch(url.toString(), { method: 'GET' });
+    // Add timeout to prevent hanging
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
+    const response = await fetch(url.toString(), { 
+      method: 'GET',
+      signal: controller.signal 
+    });
+
+    clearTimeout(timeoutId);
 
     // Try to parse response
     let data: WhatsAppAPIResponse;
@@ -94,7 +103,18 @@ export async function sendWhatsAppMessage(phoneNumber: string, message: string):
 
     return { success: true, data };
   } catch (error) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to send WhatsApp message';
+    let errorMessage: string;
+    
+    if (error instanceof Error) {
+      if (error.name === 'AbortError') {
+        errorMessage = 'WhatsApp API timeout (10s) - service may be slow';
+      } else {
+        errorMessage = error.message;
+      }
+    } else {
+      errorMessage = 'Failed to send WhatsApp message';
+    }
+    
     console.error('WhatsApp send error:', errorMessage);
     return { success: false, error: errorMessage };
   }
