@@ -1,5 +1,5 @@
 {
-  "/api/proxy/time-slot-sender/route": "app/api/proxy/time-slot-sender/route.js",
   "/api/proxy/pre-generate/route": "app/api/proxy/pre-generate/route.js",
+  "/api/proxy/time-slot-sender/route": "app/api/proxy/time-slot-sender/route.js",
   "/page": "app/page.js"
 }
