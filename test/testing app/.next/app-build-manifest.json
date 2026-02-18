@@ -11,20 +11,10 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/api/proxy/time-slot-sender/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/proxy/time-slot-sender/route.js"
-    ],
     "/api/proxy/pre-generate/route": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/api/proxy/pre-generate/route.js"
-    ],
-    "/api/proxy/time-slot-sender-test/route": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/api/proxy/time-slot-sender-test/route.js"
     ],
     "/api/proxy/time-slot-sender-real/route": [
       "static/chunks/webpack.js",
