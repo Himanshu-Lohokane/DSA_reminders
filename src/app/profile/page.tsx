@@ -80,10 +80,10 @@ export default function ProfilePage() {
             if (data.user) {
                 updateUser({
                     name,
-                    phoneNumber: phoneNumber.trim() || null,
+                    phoneNumber: phoneNumber.trim() || undefined,
                     github: github.trim(),
-                    linkedin: linkedin.trim() || null,
-                    gfgUsername: gfgUsername.trim() || null,
+                    linkedin: linkedin.trim() || undefined,
+                    gfgUsername: gfgUsername.trim() || undefined,
                     dailyGrindTime,
                 });
             }
