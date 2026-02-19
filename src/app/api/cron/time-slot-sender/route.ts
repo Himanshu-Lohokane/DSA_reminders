@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { users, settings } from '@/db/schema';
 import { eq, ne, notLike, and } from 'drizzle-orm';
-import { getTodayDate } from '@/lib/utils';
+import { getDateTimePartsInTimeZone, getTodayDateInTimeZone } from '@/lib/utils';
+import { getCurrentTimeSlot, isTimeInSlot } from '@/lib/timeSlots';
 import { sendConfigEmail, sendConfigWhatsApp } from '@/lib/messaging';
 import { updateDailyStatsForUser } from '@/lib/leetcode';
 
@@ -11,24 +12,6 @@ import { updateDailyStatsForUser } from '@/lib/leetcode';
  * Runs every 30 minutes to send messages to users whose dailyGrindTime falls in current slot
  * Groups users by roast intensity for efficient batch sending
  */
-
-// Helper function to check if a user's dailyGrindTime falls in current 30-minute slot
-function isInCurrentTimeSlot(userTime: string | null): boolean {
-  if (!userTime || !userTime.match(/^\d{2}:\d{2}$/)) return false;
-
-  const now = new Date();
-  const currentHour = now.getHours();
-  const currentMinute = now.getMinutes();
-
-  // Create 30-minute time slots: 00:00-00:30, 00:30-01:00, etc.
-  const slotStart = currentMinute < 30 ? 0 : 30;
-  const slotEnd = slotStart + 30;
-
-  const [userHour, userMin] = userTime.split(':').map(Number);
-
-  // Check if user's time falls in current slot
-  return userHour === currentHour && userMin >= slotStart && userMin < slotEnd;
-}
 
 // Helper function to check if a user's dailyGrindTime falls in a specific time slot
 function isInSpecificTimeSlot(userTime: string | null, targetSlot: string): boolean {
@@ -157,20 +140,22 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const forceTimeSlot = searchParams.get('forceTimeSlot');
-    
-    const today = getTodayDate();
-    const now = new Date();
-    const currentTime = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-
-    console.log(`\nTime-slot sender started at ${currentTime}`);
-    if (forceTimeSlot) {
-      console.log(`🎯 Force override: targeting time slot ${forceTimeSlot}`);
-    }
 
     // Get automation settings and pre-generated messages
     const [s] = await db.select().from(settings).limit(1);
     if (!s) {
       return NextResponse.json({ error: 'Settings not found' }, { status: 404 });
+    }
+
+    const timeZone = s.timezone ?? 'Asia/Kolkata';
+    const today = getTodayDateInTimeZone(timeZone);
+    const nowParts = getDateTimePartsInTimeZone(timeZone);
+    const currentTime = `${nowParts.hour.toString().padStart(2, '0')}:${nowParts.minute.toString().padStart(2, '0')}`;
+    const currentSlot = getCurrentTimeSlot(timeZone);
+
+    console.log(`\nTime-slot sender started at ${currentTime} (${timeZone})`);
+    if (forceTimeSlot) {
+      console.log(`🎯 Force override: targeting time slot ${forceTimeSlot}`);
     }
 
     if (!s.automationEnabled) {
@@ -218,11 +203,11 @@ export async function GET(req: Request) {
       if (forceTimeSlot) {
         return isInSpecificTimeSlot(user.dailyGrindTime, forceTimeSlot);
       } else {
-        return isInCurrentTimeSlot(user.dailyGrindTime);
+        return isTimeInSlot(user.dailyGrindTime, currentSlot);
       }
     });
 
-    const targetSlot = forceTimeSlot || `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes() < 30 ? '00' : '30'}-${now.getMinutes() < 30 ? now.getHours().toString().padStart(2, '0') + ':30' : (now.getHours() + 1).toString().padStart(2, '0') + ':00'}`;
+    const targetSlot = forceTimeSlot || currentSlot.label;
 
     if (usersInTimeSlot.length === 0) {
       return NextResponse.json({

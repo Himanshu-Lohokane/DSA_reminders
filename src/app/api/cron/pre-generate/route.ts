@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { settings } from '@/db/schema';
 import { eq } from 'drizzle-orm';
-import { getTodayDate } from '@/lib/utils';
+import { getTodayDateInTimeZone } from '@/lib/utils';
 import { generateDynamicRoast, DynamicContent } from '@/lib/ai';
 
 /**
@@ -17,13 +17,14 @@ export async function GET(req: Request) {
   }
 
   try {
-    const today = getTodayDate();
-    
     // Get automation settings
     let [s] = await db.select().from(settings).limit(1);
     if (!s) {
       [s] = await db.insert(settings).values({}).returning();
     }
+
+    const timeZone = s.timezone ?? 'Asia/Kolkata';
+    const today = getTodayDateInTimeZone(timeZone);
 
     // Check if we already generated messages for today
     const existingRoast = s.aiRoast as any;

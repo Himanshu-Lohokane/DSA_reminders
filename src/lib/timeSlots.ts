@@ -1,3 +1,5 @@
+import { getDateTimePartsInTimeZone } from '@/lib/utils';
+
 /**
  * Time slot utilities for DSA Grinders cron jobs
  * Handles 30-minute time slot calculations and user scheduling
@@ -13,10 +15,8 @@ export interface TimeSlot {
 /**
  * Get the current 30-minute time slot
  */
-export function getCurrentTimeSlot(): TimeSlot {
-  const now = new Date();
-  const hour = now.getHours();
-  const minute = now.getMinutes();
+export function getCurrentTimeSlot(timeZone?: string): TimeSlot {
+  const { hour, minute } = getDateTimePartsInTimeZone(timeZone);
 
   const slotStart = minute < 30 ? 0 : 30;
   const slotEnd = slotStart + 30;
@@ -48,8 +48,8 @@ export function isTimeInSlot(userTime: string | null, slot: TimeSlot): boolean {
 /**
  * Check if a user's dailyGrindTime falls in the current 30-minute slot
  */
-export function isInCurrentTimeSlot(userTime: string | null): boolean {
-  const currentSlot = getCurrentTimeSlot();
+export function isInCurrentTimeSlot(userTime: string | null, timeZone?: string): boolean {
+  const currentSlot = getCurrentTimeSlot(timeZone);
   return isTimeInSlot(userTime, currentSlot);
 }
 
@@ -145,14 +145,14 @@ function getSlotDescription(slot: TimeSlot): string {
 /**
  * Debug helper: get info about current time and slot
  */
-export function getTimeSlotDebugInfo() {
-  const now = new Date();
-  const currentSlot = getCurrentTimeSlot();
+export function getTimeSlotDebugInfo(timeZone?: string) {
+  const nowParts = getDateTimePartsInTimeZone(timeZone);
+  const currentSlot = getCurrentTimeSlot(timeZone);
   const upcomingSlots = getUpcomingSlots(3);
 
   return {
-    currentTime: now.toISOString(),
-    localTime: `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`,
+    currentTime: `${nowParts.year}-${nowParts.month.toString().padStart(2, '0')}-${nowParts.day.toString().padStart(2, '0')}T${nowParts.hour.toString().padStart(2, '0')}:${nowParts.minute.toString().padStart(2, '0')}`,
+    localTime: `${nowParts.hour.toString().padStart(2, '0')}:${nowParts.minute.toString().padStart(2, '0')}`,
     currentSlot: formatTimeSlot(currentSlot),
     upcomingSlots: upcomingSlots.map(s => formatTimeSlot(s)),
     totalSlotsPerDay: 48

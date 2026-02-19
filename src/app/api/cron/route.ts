@@ -1,17 +1,25 @@
-import path from 'path';
 import { NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { users, settings, User, Setting } from '@/db/schema';
-import { eq, ne, and, notLike, like, lt } from 'drizzle-orm';
+import { eq, and, notLike, like, lt } from 'drizzle-orm';
 import { updateDailyStatsForUser } from '@/lib/leetcode';
 import { sendConfigEmail, sendConfigWhatsApp } from '@/lib/messaging';
-import { getTodayDate } from '@/lib/utils';
+import { getDateKeyInTimeZone, getTodayDateInTimeZone, getWeekdayIndexInTimeZone } from '@/lib/utils';
 import { generateDynamicRoast, DynamicContent } from '@/lib/ai';
 
 // Helper function to check if today should be skipped
-function shouldSkipToday(s: Setting): boolean {
-  const now = new Date();
-  const dayOfWeek = now.getDay(); // 0 = Sunday, 6 = Saturday
+function normalizeDateKey(value: string, timeZone: string): string | null {
+  if (!value) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return null;
+
+  return getDateKeyInTimeZone(parsed, timeZone);
+}
+
+function shouldSkipToday(s: Setting, timeZone: string): boolean {
+  const dayOfWeek = getWeekdayIndexInTimeZone(timeZone); // 0 = Sunday, 6 = Saturday
 
   // Skip weekends if enabled
   if (s.skipWeekends && (dayOfWeek === 0 || dayOfWeek === 6)) {
@@ -19,11 +27,9 @@ function shouldSkipToday(s: Setting): boolean {
   }
 
   // Check custom skip dates
-  const today = now.toDateString();
+  const today = getTodayDateInTimeZone(timeZone);
   const customSkipDates = (s.customSkipDates as string[]) || [];
-  if (customSkipDates.some((date: string) =>
-    new Date(date).toDateString() === today
-  )) {
+  if (customSkipDates.some((date: string) => normalizeDateKey(date, timeZone) === today)) {
     return true;
   }
 
@@ -31,12 +37,14 @@ function shouldSkipToday(s: Setting): boolean {
 }
 
 // Helper function to reset daily counters if needed
-async function resetDailyCountersIfNeeded(s: Setting): Promise<Setting> {
+async function resetDailyCountersIfNeeded(s: Setting, timeZone: string): Promise<Setting> {
   const now = new Date();
-  const lastReset = s.lastResetDate ? new Date(s.lastResetDate) : new Date(0);
+  const todayKey = getTodayDateInTimeZone(timeZone);
+  const lastResetKey = s.lastResetDate
+    ? getDateKeyInTimeZone(new Date(s.lastResetDate), timeZone)
+    : '';
 
-  // Check if it's a new day
-  if (now.toDateString() !== lastReset.toDateString()) {
+  if (todayKey !== lastResetKey) {
     const [updated] = await db.update(settings)
       .set({
         emailsSentToday: 0,
@@ -76,7 +84,10 @@ async function processInBatches<T, R>(items: T[], batchSize: number, processor: 
 
 
 export async function GET(req: Request) {
-  // ... (auth checks remain same)
+  const authHeader = req.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
   try {
     // 0. Cleanup Ghost Users (pending_ users older than 24h)
@@ -92,12 +103,14 @@ export async function GET(req: Request) {
       console.log(`Cleanup: Removed ${deletedGhosts.length} ghost users`);
     }
 
-    const today = getTodayDate();
     // Get automation settings
     let [s] = await db.select().from(settings).limit(1);
     if (!s) {
       [s] = await db.insert(settings).values({}).returning();
     }
+
+    const timeZone = s.timezone ?? 'Asia/Kolkata';
+    const today = getTodayDateInTimeZone(timeZone);
 
     // Handle migration from old format to new format
     let needsUpdate = false;
@@ -117,7 +130,7 @@ export async function GET(req: Request) {
     }
 
     // Reset daily counters if needed
-    s = await resetDailyCountersIfNeeded(s);
+    s = await resetDailyCountersIfNeeded(s, timeZone);
 
     const isDevelopment = process.env.NODE_ENV === 'development' ||
       req.headers.get('x-development-mode') === 'true';
@@ -129,7 +142,7 @@ export async function GET(req: Request) {
       });
     }
 
-    if (shouldSkipToday(s)) {
+    if (shouldSkipToday(s, timeZone)) {
       return NextResponse.json({
         message: 'Day skipped due to settings',
         skipped: true

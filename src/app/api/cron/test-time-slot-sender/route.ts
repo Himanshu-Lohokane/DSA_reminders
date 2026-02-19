@@ -5,7 +5,7 @@ import { eq, ne, notLike, and } from 'drizzle-orm';
 
 /**
  * TEST ENDPOINT for manual time slot testing
- * Allows testing specific time slots without auth
+ * Requires CRON_SECRET auth header
  */
 
 // Helper function to check if a user's dailyGrindTime falls in specified time slot
@@ -19,6 +19,11 @@ function isInSpecificTimeSlot(userTime: string | null, targetSlot: { hour: numbe
 }
 
 export async function GET(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   try {
     const { searchParams } = new URL(request.url);
     const testTimeSlot = searchParams.get('timeSlot');
