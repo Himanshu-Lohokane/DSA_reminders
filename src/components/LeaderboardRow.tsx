@@ -152,7 +152,7 @@ export default function LeaderboardRow({ entry, rank, isCurrentUser }: Leaderboa
                     )}
                 </div>
 
-                <div className="w-16 md:w-20 text-right">
+                <div className="w-16 md:w-24 text-right">
                     <span className="text-base font-medium text-[#202124] dark:text-foreground tabular-nums">
                         {entry.totalScore.toLocaleString()}
                     </span>

@@ -6,7 +6,8 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, LogOut, Plus, Hash, Copy, Settings, Share2, ExternalLink } from "lucide-react";
+import { Loader2, RefreshCw, LogOut, Plus, Hash, Copy, Settings, Share2, ExternalLink, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -701,8 +702,31 @@ export default function HomePage() {
                                         <div className="hidden lg:block w-14 text-center">
                                             <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">Streak</span>
                                         </div>
-                                        <div className="w-16 md:w-20 text-right">
-                                            <span className="text-xs font-medium text-[#E37400]">LeetCode</span>
+                                        <div className="w-16 md:w-24 flex items-center justify-end gap-1">
+                                            <TooltipProvider delayDuration={100}>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <span className="inline-flex items-center gap-1 cursor-default">
+                                                            <span className="text-xs font-medium text-[#E37400]">LeetCode</span>
+                                                            <Info className="w-3 h-3 text-[#9AA0A6] hover:text-[#5F6368] transition-colors shrink-0" />
+                                                        </span>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side="top" sideOffset={8} className="!bg-white dark:!bg-card !text-[#202124] dark:!text-foreground border border-[#E8EAED] dark:border-border shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1)] !rounded-xl !px-4 !py-3 min-w-[140px]">
+                                                        <div className="flex items-center justify-between gap-6 mb-1">
+                                                            <span className="text-[#34A853] font-medium text-xs">Easy</span>
+                                                            <span className="font-medium text-xs text-[#202124] dark:text-foreground">1 pt</span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between gap-6 mb-1">
+                                                            <span className="text-[#E37400] font-medium text-xs">Medium</span>
+                                                            <span className="font-medium text-xs text-[#202124] dark:text-foreground">3 pts</span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between gap-6">
+                                                            <span className="text-[#EA4335] font-medium text-xs">Hard</span>
+                                                            <span className="font-medium text-xs text-[#202124] dark:text-foreground">6 pts</span>
+                                                        </div>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
                                         </div>
                                         <div className="w-16 md:w-20 text-right">
                                             <span className="text-xs font-medium text-[#34A853]">GFG</span>
