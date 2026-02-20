@@ -457,25 +457,25 @@ export default function HomePage() {
                             </div>
                         ) : (
                             <>
-                                <div className="px-4 md:px-6 py-3 border-b border-[#E8EAED] dark:border-border flex items-center gap-4 md:gap-6">
-                                    <div className="w-8 shrink-0 text-center">
-                                        <span className="text-[11px] font-medium text-[#5F6368] dark:text-muted-foreground">#</span>
+                                <div className="px-5 md:px-8 py-3.5 border-b border-[#E8EAED] dark:border-border flex items-center gap-4 md:gap-6">
+                                    <div className="w-10 shrink-0 text-center">
+                                        <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">#</span>
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <span className="text-[11px] font-medium text-[#5F6368] dark:text-muted-foreground">User</span>
+                                        <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">User</span>
                                     </div>
-                                    <div className="flex gap-6 items-center shrink-0">
-                                        <div className="hidden lg:block w-12 text-center">
-                                            <span className="text-[11px] font-medium text-[#5F6368] dark:text-muted-foreground">Streak</span>
+                                    <div className="flex gap-6 md:gap-8 items-center shrink-0">
+                                        <div className="hidden lg:block w-14 text-center">
+                                            <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">Streak</span>
                                         </div>
-                                        <div className="w-14 md:w-16 text-right">
-                                            <span className="text-[11px] font-medium text-[#E37400]">LeetCode</span>
+                                        <div className="w-16 md:w-20 text-right">
+                                            <span className="text-xs font-medium text-[#E37400]">LeetCode</span>
                                         </div>
-                                        <div className="w-14 md:w-16 text-right">
-                                            <span className="text-[11px] font-medium text-[#34A853]">GFG</span>
+                                        <div className="w-16 md:w-20 text-right">
+                                            <span className="text-xs font-medium text-[#34A853]">GFG</span>
                                         </div>
-                                        <div className="w-14 md:w-16 text-right">
-                                            <span className="text-[11px] font-medium text-[#5F6368] dark:text-muted-foreground">Today</span>
+                                        <div className="w-16 md:w-20 text-right">
+                                            <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">Today</span>
                                         </div>
                                     </div>
                                 </div>
