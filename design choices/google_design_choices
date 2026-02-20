@@ -1,0 +1,141 @@
+Google News Color Palette
+==========================
+
+Fifteen core colors make up the color palette of Google News.
+Below are the exact values for these colors across three different color spaces.
+
+┌────────────────┬──────────┬─────────────────┐
+│ Color          │ Hex      │ RGB             │
+├────────────────┼──────────┼─────────────────┤
+│ Blue           │ #174EA6  │ 23, 78, 166     │
+│ Red            │ #A50E0E  │ 165, 14, 14     │
+│ Orange         │ #E37400  │ 227, 116, 0     │
+│ Green          │ #0D652D  │ 13, 101, 45     │
+│ Medium Blue    │ #4285F4  │ 66, 133, 244    │
+│ Medium Red     │ #EA4335  │ 234, 67, 53     │
+│ Yellow         │ #FBBC04  │ 251, 188, 4     │
+│ Medium Green   │ #34A853  │ 52, 168, 83     │
+│ Light Blue     │ #D2E3FC  │ 210, 227, 252   │
+│ Light Red      │ #FAD2CF  │ 250, 210, 207   │
+│ Light Yellow   │ #FEEFC3  │ 254, 239, 195   │
+│ Light Green    │ #CEEAD6  │ 206, 234, 214   │
+│ Light Grey     │ #F1F3F4  │ 241, 243, 244   │
+│ Grey           │ #9AA0A6  │ 154, 160, 166   │
+│ Black          │ #202124  │ 32, 33, 36      │
+└────────────────┴──────────┴─────────────────┘
+
+
+Google Design Guidelines (Material Design)
+===========================================
+
+TYPOGRAPHY
+----------
+- Primary font: Google Sans (or Roboto as fallback)
+- Font weights used: 400 (Regular), 500 (Medium), 700 (Bold)
+- Body text: 14–16px, line-height ~1.5
+- Headlines: large and bold, but not decorative — always readable
+- Avoid using more than 2 font weights on a single screen
+
+SPACING & LAYOUT
+----------------
+- Base spacing unit: 8px (all spacing should be multiples of 8: 8, 16, 24, 32...)
+- Content max-width: ~1200–1280px, centered on wide screens
+- Generous padding inside cards and sections
+- No clutter — Google prefers lots of white space
+
+ELEVATION & SHADOWS
+--------------------
+- Surfaces use subtle box-shadows to indicate elevation, not heavy drop shadows
+- Example card shadow: box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.08)
+- Higher elevation = slightly more blur and spread, but always soft
+
+BUTTONS
+-------
+- Primary action: filled button using Medium Blue (#4285F4), white text
+- Secondary action: outlined button with border, transparent background
+- Text buttons: no border, no fill — just colored text (used for low-emphasis actions)
+- Border radius on buttons: 4px (slightly rounded, not pill-shaped unless it's a chip)
+- No uppercase text on buttons (Google dropped ALL CAPS in newer Material 3)
+
+CARDS
+-----
+- Background: white (#FFFFFF) on a Light Grey (#F1F3F4) page background
+- Border: none (use shadow for separation instead)
+- Border radius: 8px on cards
+- Padding inside cards: 16–24px
+
+ICONS
+-----
+- Use Google's Material Symbols / Material Icons (rounded style preferred)
+- Icons should be 18px, 20px, or 24px — consistent sizing throughout
+- Icon color should match text color or use Grey (#9AA0A6) for secondary icons
+
+INTERACTIVE STATES
+------------------
+- Hover: light grey overlay (rgba(0,0,0,0.04)) on the element
+- Focus: visible ring, usually Blue (#4285F4) at low opacity
+- Active/Pressed: slightly darker overlay
+- Disabled: reduced opacity (~38%), not hidden
+
+BORDERS & DIVIDERS
+------------------
+- Use Light Grey (#F1F3F4) or a 1px #E0E0E0 line for dividers
+- Avoid heavy borders — prefer whitespace to separate sections
+- Input fields: 1px border, grey by default, blue on focus
+
+DARK MODE (if applicable)
+--------------------------
+- Background: #202124 (Google's dark surface)
+- Surface/card: #303134
+- Text: #E8EAED (primary), #9AA0A6 (secondary)
+- Accent colors remain the same (Medium Blue, etc.)
+
+OVERALL PRINCIPLES
+------------------
+- Clean and minimal — remove anything that doesn't serve a purpose
+- Color is used to draw attention, not decorate
+- Accessibility first: contrast ratio of at least 4.5:1 for body text
+- Consistent component behavior across the whole UI
+- Mobile-first responsive design
+
+
+User-Centric Design
+===================
+
+VISUAL HIERARCHY
+----------------
+- Make the most important element the biggest and boldest on the page
+- Each step down in importance = lower visual weight (smaller, lighter, less contrast)
+- Don't force reading patterns (F-pattern is outdated) — guide users naturally through hierarchy
+- CTAs/buttons must have high contrast from surrounding elements so they stand out
+
+BUTTONS & CALLS TO ACTION
+--------------------------
+- Never use ghost buttons (outline-only, no fill) — users don't notice or click them
+- The primary action should always be a solid filled button
+- Use the accent color (10% rule) for CTAs so they pop against the rest of the page
+
+COLOR: 60-30-10 RULE
+---------------------
+- 60% dominant/neutral colors (greys, whites, blacks)
+- 30% brand colors
+- 10% accent color — reserved for CTAs, highlights, and key interactions
+
+TYPOGRAPHY FOR READABILITY
+---------------------------
+- H1: biggest, most prominent — describes what the whole page is about
+- H2: subheadings to break up content and guide scanning
+- Body/P: never use decorative fonts — prioritize readability over style
+
+CONVERSION & REDUCING FRICTION
+--------------------------------
+- Design goal = make it stupid easy for users to find what they need and take action
+- Be crystal clear: who is this, what should I do, why should I care
+- People scan, they don't read — use layout and hierarchy to support scanning
+- Design must motivate the user, not just look good — speak to what drives their decision
+
+DESIGN FOR THE USER, NOT YOURSELF
+-----------------------------------
+- It doesn't matter if you or the client loves the design — the visitor is who matters
+- Choose fonts, colors, and layout based on the target audience's expectations
+- Do research on who is actually using the site before making design decisions
