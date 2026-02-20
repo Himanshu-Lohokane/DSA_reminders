@@ -53,7 +53,7 @@ export default function LeaderboardRow({ entry, rank, isCurrentUser }: Leaderboa
                     </HoverCardTrigger>
 
                     <HoverCardContent className="w-72 p-0 overflow-hidden rounded-xl border border-[#E8EAED] dark:border-border shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1)] z-100" align="start">
-                        <div className="px-5 pt-5 pb-4 bg-white dark:bg-card">
+                        <div className="px-5 pt-5 pb-2 bg-white dark:bg-card">
                             {/* Profile header */}
                             <div className="flex items-center gap-3 mb-5">
                                 <div className="w-12 h-12 rounded-full overflow-hidden bg-[#F1F3F4] dark:bg-muted shrink-0">
@@ -112,14 +112,14 @@ export default function LeaderboardRow({ entry, rank, isCurrentUser }: Leaderboa
 
                             {/* Social links */}
                             {((entry.github && entry.github !== 'not-provided' && entry.github !== 'pending') || (entry.linkedin && entry.linkedin !== 'not-provided' && entry.linkedin !== 'pending')) && (
-                                <div className="flex items-center gap-1 pt-3 border-t border-[#E8EAED] dark:border-border">
+                                <div className="flex items-center gap-1 pt-1 pb-0 mt-1 border-t border-[#E8EAED] dark:border-border">
                                     {entry.github && entry.github !== 'not-provided' && entry.github !== 'pending' && (
-                                        <a href={entry.github} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#202124] dark:text-muted-foreground dark:hover:text-foreground transition-colors p-1.5 rounded-lg hover:bg-[#F1F3F4] dark:hover:bg-muted">
+                                        <a href={entry.github} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#202124] dark:text-muted-foreground dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-[#F1F3F4] dark:hover:bg-muted">
                                             <Github className="w-4 h-4" />
                                         </a>
                                     )}
                                     {entry.linkedin && entry.linkedin !== 'not-provided' && entry.linkedin !== 'pending' && (
-                                        <a href={entry.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#0077b5] dark:text-muted-foreground transition-colors p-1.5 rounded-lg hover:bg-[#F1F3F4] dark:hover:bg-muted">
+                                        <a href={entry.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#0077b5] dark:text-muted-foreground transition-colors p-1 rounded-lg hover:bg-[#F1F3F4] dark:hover:bg-muted">
                                             <Linkedin className="w-4 h-4" />
                                         </a>
                                     )}
