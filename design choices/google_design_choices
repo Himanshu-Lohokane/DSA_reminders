@@ -1,0 +1,177 @@
+Google News Color Palette
+==========================
+
+Fifteen core colors make up the color palette of Google News.
+Below are the exact values for these colors across three different color spaces.
+
+┌────────────────┬──────────┬─────────────────┐
+│ Color          │ Hex      │ RGB             │
+├────────────────┼──────────┼─────────────────┤
+│ Blue           │ #174EA6  │ 23, 78, 166     │
+│ Red            │ #A50E0E  │ 165, 14, 14     │
+│ Orange         │ #E37400  │ 227, 116, 0     │
+│ Green          │ #0D652D  │ 13, 101, 45     │
+│ Medium Blue    │ #4285F4  │ 66, 133, 244    │
+│ Medium Red     │ #EA4335  │ 234, 67, 53     │
+│ Yellow         │ #FBBC04  │ 251, 188, 4     │
+│ Medium Green   │ #34A853  │ 52, 168, 83     │
+│ Light Blue     │ #D2E3FC  │ 210, 227, 252   │
+│ Light Red      │ #FAD2CF  │ 250, 210, 207   │
+│ Light Yellow   │ #FEEFC3  │ 254, 239, 195   │
+│ Light Green    │ #CEEAD6  │ 206, 234, 214   │
+│ Light Grey     │ #F1F3F4  │ 241, 243, 244   │
+│ Grey           │ #9AA0A6  │ 154, 160, 166   │
+│ Black          │ #202124  │ 32, 33, 36      │
+└────────────────┴──────────┴─────────────────┘
+
+
+Modern Google Design Guidelines (Material 3 / 2024-2026)
+==========================================================
+
+TYPOGRAPHY
+----------
+- Primary font: Google Sans (Product Sans), Roboto as fallback
+- Font weights: 400 (Regular), 500 (Medium), 700 (Bold)
+- Body text: 14px (desktop), 16px (mobile), line-height 1.5-1.6
+- Headlines: Bold and prominent — H1 can be 32-48px, very generous sizing
+- Keep it simple: use font-weight and size for hierarchy, not decoration
+- Modern Google uses less font-weight variation than before
+
+SPACING & LAYOUT
+----------------
+- Base spacing: 8px grid (8, 16, 24, 32, 40, 48...)
+- Content max-width: ~1280px, centered on wide screens
+- Modern Google uses MORE whitespace than before — very generous padding
+- Centered layouts are common (auth flows, landing pages)
+- Don't be afraid of large gaps between sections
+
+ELEVATION & SHADOWS (UPDATED 2024)
+-----------------------------------
+Modern Google uses more prominent (but still soft) shadows than Material Design 2:
+
+- Light elevation: 
+  box-shadow: 0 1px 2px rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15)
+
+- Medium elevation:
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1), 0 8px 16px rgba(0,0,0,0.1)
+
+- High elevation (modals, dialogs):
+  box-shadow: 0 8px 10px 1px rgba(60,64,67,0.14), 0 3px 14px 2px rgba(60,64,67,0.12)
+
+Note: Use rgba(60,64,67,...) instead of pure black rgba(0,0,0,...) for softer shadows
+
+BUTTONS (UPDATED)
+-----------------
+- Primary CTA: Filled button, Blue (#4285F4), white text, medium shadow
+- Secondary: Outlined button OR text button (context-dependent)
+- Border radius: 4-8px (not pill-shaped for standard buttons)
+- Pills/chips: Fully rounded (border-radius: 9999px) for tags, filters
+- Button height: 40-48px (comfortable tap targets)
+- No uppercase — use sentence case
+- CTAs should have visible shadow to lift them off the page
+
+CARDS (UPDATED)
+---------------
+- Background: white (#FFFFFF) on Light Grey (#F1F3F4) page
+- Border: Modern Google DOES use subtle borders now (border: 1px solid #DADCE0 or #E8EAED)
+- Can combine border + shadow for more definition
+- Border radius: 8-12px (slightly more rounded than before)
+- Padding: 24-48px (more generous than Material Design 2)
+
+ACCENT STRIPES & COLOR BLOCKING
+--------------------------------
+Modern Google loves bold color moments:
+- Auth cards: 4px gradient stripe at top with 4-color Google palette
+  Example: linear-gradient(to right, #4285F4, #EA4335, #FBBC04, #34A853)
+- Hero sections: Can use full-width color blocks
+- Status indicators: Colored left border (4px) on notification cards
+
+GLASSMORPHISM & TRANSPARENCY
+-----------------------------
+Modern Google nav bars and overlays use:
+- backdrop-blur-lg (CSS: backdrop-filter)
+- Semi-transparent backgrounds (bg-white/95 or bg-[#202124]/95)
+- Creates depth without heavy shadows
+
+ICONS
+-----
+- Material Symbols or Material Icons (rounded style preferred)
+- Sizes: 18px, 20px, 24px — keep consistent
+- Color: Match text color OR use #5F6368 (grey) for secondary icons
+- Icon-only buttons: 40x40px or 48x48px (proper tap target)
+
+INTERACTIVE STATES
+------------------
+- Hover: Subtle overlay or slightly darker shade
+- Focus: Blue ring (#4285F4) with ring-offset for accessibility
+- Active/Pressed: Slightly darker + scale-[0.98] for tactile feedback
+- Disabled: 50-60% opacity (more visible than old 38%)
+
+BORDERS & DIVIDERS
+------------------
+- Use #DADCE0 (light mode) or #5F6368 (dark mode) for borders
+- 1px borders are acceptable now — don't avoid them
+- Dividers: 1px solid, very subtle
+- Input fields: 1px border, grey default, blue on focus
+
+DARK MODE (UPDATED 2024)
+-------------------------
+Modern Google dark mode is softer and warmer:
+
+Colors:
+- Background: #202124 (main surface)
+- Cards/elevated: #303134 (NOT #0a0a0a — too harsh)
+- Borders: #5F6368
+- Text primary: #E8EAED (not pure white)
+- Text secondary: #9AA0A6
+- Blue accent: #8AB4F8 (lighter than light mode's #4285F4)
+- Primary button in dark: #8AB4F8 background, #202124 text
+
+Shadows in dark mode:
+- Keep them but reduce opacity — surfaces are defined by subtle borders too
+
+AUTHENTICATION FLOWS
+--------------------
+Real Google OAuth pattern:
+- Centered card, max-width: 448px
+- Accent stripe (4px gradient) at top of card
+- Logo centered above content
+- Generous padding: px-10 py-12 or more
+- Subtle border + shadow combination
+- Privacy/consent text below CTA (small, 11px)
+- Footer links: Help, Privacy, Terms (11px, muted)
+
+MODERN COMPONENTS
+-----------------
+- FABs (Floating Action Buttons): Still used, usually fixed bottom-right
+- Pills/chips: Fully rounded for tags, categories
+- Snackbars: Bottom-center notifications (not top)
+- Bottom sheets: Slide-up panels on mobile
+- Badges: Small colored circles with count (notifications)
+
+LANDING PAGES
+-------------
+- Hero: Full-screen or near-full-screen centered content
+- Headline: Very large (48-64px), bold, clear value prop
+- Subheadline: Smaller, muted color
+- Single primary CTA: Prominent, filled button
+- Particle effects or subtle animations: OK but minimal
+- NO scrolling if it's a simple landing page — keep it single-screen
+- NO feature grids if you can avoid them — simple is better
+
+NAVIGATION
+----------
+- Top nav: Transparent with backdrop-blur OR solid with subtle shadow
+- Logo left, actions right
+- No heavy shadows — use subtle border-bottom instead
+- Fixed positioning common for always-visible nav
+- Mobile: Hamburger menu or bottom nav bar
+
+OVERALL PRINCIPLES
+------------------
+- More whitespace than you think you need
+- Color is strategic — used to guide attention, not decorate
+- Authentic and trustworthy feel — don't over-design
+- Modern Google looks clean, spacious, confident
+- Accessibility: 4.5:1 contrast minimum, visible focus states
+- Consistent spacing and component behavior across UI

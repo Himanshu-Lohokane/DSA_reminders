@@ -1,21 +1,20 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/ui/button";
-import { Loader2, RefreshCw, Trophy, Target, Crown, LogOut, Github, Linkedin, Users, Plus, Hash, Copy, Settings, ChevronRight, Flame, Medal, Link as LinkIcon, Share2, X } from "lucide-react";
+import { Loader2, RefreshCw, LogOut, Plus, Hash, Copy, Settings, Share2, ExternalLink, Info } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger, TooltipProvider } from "@/components/ui/tooltip";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
 import PWAInstallPrompt from "@/components/PWAInstallPrompt";
-import { getRandomRoast } from "@/config/messages";
 import ActivityFeed from "@/components/ActivityFeed";
 import { LeaderboardEntry, LeetCodeSubmission, GroupWithMembership } from "@/types";
 import LeaderboardRow from "@/components/LeaderboardRow";
@@ -42,12 +41,205 @@ export default function HomePage() {
     const [newGroupDesc, setNewGroupDesc] = useState("");
     const [joinCode, setJoinCode] = useState("");
     const [modalError, setModalError] = useState("");
-    const [roast, setRoast] = useState("");
     const [groupToLeave, setGroupToLeave] = useState<GroupWithMembership | null>(null);
 
-    useEffect(() => {
-        setRoast(getRandomRoast());
-    }, []);
+    // Neetcode 150 - Curated problem list
+    const problemSuggestions = [
+        // Arrays & Hashing
+        { title: "Contains Duplicate", slug: "contains-duplicate", difficulty: "Easy" },
+        { title: "Valid Anagram", slug: "valid-anagram", difficulty: "Easy" },
+        { title: "Two Sum", slug: "two-sum", difficulty: "Easy" },
+        { title: "Group Anagrams", slug: "group-anagrams", difficulty: "Medium" },
+        { title: "Top K Frequent Elements", slug: "top-k-frequent-elements", difficulty: "Medium" },
+        { title: "Product of Array Except Self", slug: "product-of-array-except-self", difficulty: "Medium" },
+        { title: "Valid Sudoku", slug: "valid-sudoku", difficulty: "Medium" },
+        { title: "Encode and Decode Strings", slug: "encode-and-decode-strings", difficulty: "Medium" },
+        { title: "Longest Consecutive Sequence", slug: "longest-consecutive-sequence", difficulty: "Medium" },
+        
+        // Two Pointers
+        { title: "Valid Palindrome", slug: "valid-palindrome", difficulty: "Easy" },
+        { title: "Two Sum II", slug: "two-sum-ii-input-array-is-sorted", difficulty: "Medium" },
+        { title: "3Sum", slug: "3sum", difficulty: "Medium" },
+        { title: "Container With Most Water", slug: "container-with-most-water", difficulty: "Medium" },
+        { title: "Trapping Rain Water", slug: "trapping-rain-water", difficulty: "Hard" },
+        
+        // Sliding Window
+        { title: "Best Time to Buy and Sell Stock", slug: "best-time-to-buy-and-sell-stock", difficulty: "Easy" },
+        { title: "Longest Substring Without Repeating Characters", slug: "longest-substring-without-repeating-characters", difficulty: "Medium" },
+        { title: "Longest Repeating Character Replacement", slug: "longest-repeating-character-replacement", difficulty: "Medium" },
+        { title: "Permutation in String", slug: "permutation-in-string", difficulty: "Medium" },
+        { title: "Minimum Window Substring", slug: "minimum-window-substring", difficulty: "Hard" },
+        { title: "Sliding Window Maximum", slug: "sliding-window-maximum", difficulty: "Hard" },
+        
+        // Stack
+        { title: "Valid Parentheses", slug: "valid-parentheses", difficulty: "Easy" },
+        { title: "Min Stack", slug: "min-stack", difficulty: "Medium" },
+        { title: "Evaluate Reverse Polish Notation", slug: "evaluate-reverse-polish-notation", difficulty: "Medium" },
+        { title: "Generate Parentheses", slug: "generate-parentheses", difficulty: "Medium" },
+        { title: "Daily Temperatures", slug: "daily-temperatures", difficulty: "Medium" },
+        { title: "Car Fleet", slug: "car-fleet", difficulty: "Medium" },
+        { title: "Largest Rectangle in Histogram", slug: "largest-rectangle-in-histogram", difficulty: "Hard" },
+        
+        // Binary Search
+        { title: "Binary Search", slug: "binary-search", difficulty: "Easy" },
+        { title: "Search a 2D Matrix", slug: "search-a-2d-matrix", difficulty: "Medium" },
+        { title: "Koko Eating Bananas", slug: "koko-eating-bananas", difficulty: "Medium" },
+        { title: "Find Minimum in Rotated Sorted Array", slug: "find-minimum-in-rotated-sorted-array", difficulty: "Medium" },
+        { title: "Search in Rotated Sorted Array", slug: "search-in-rotated-sorted-array", difficulty: "Medium" },
+        { title: "Time Based Key-Value Store", slug: "time-based-key-value-store", difficulty: "Medium" },
+        { title: "Median of Two Sorted Arrays", slug: "median-of-two-sorted-arrays", difficulty: "Hard" },
+        
+        // Linked List
+        { title: "Reverse Linked List", slug: "reverse-linked-list", difficulty: "Easy" },
+        { title: "Merge Two Sorted Lists", slug: "merge-two-sorted-lists", difficulty: "Easy" },
+        { title: "Reorder List", slug: "reorder-list", difficulty: "Medium" },
+        { title: "Remove Nth Node From End of List", slug: "remove-nth-node-from-end-of-list", difficulty: "Medium" },
+        { title: "Copy List with Random Pointer", slug: "copy-list-with-random-pointer", difficulty: "Medium" },
+        { title: "Add Two Numbers", slug: "add-two-numbers", difficulty: "Medium" },
+        { title: "Linked List Cycle", slug: "linked-list-cycle", difficulty: "Easy" },
+        { title: "Find the Duplicate Number", slug: "find-the-duplicate-number", difficulty: "Medium" },
+        { title: "LRU Cache", slug: "lru-cache", difficulty: "Medium" },
+        { title: "Merge k Sorted Lists", slug: "merge-k-sorted-lists", difficulty: "Hard" },
+        { title: "Reverse Nodes in k-Group", slug: "reverse-nodes-in-k-group", difficulty: "Hard" },
+        
+        // Trees
+        { title: "Invert Binary Tree", slug: "invert-binary-tree", difficulty: "Easy" },
+        { title: "Maximum Depth of Binary Tree", slug: "maximum-depth-of-binary-tree", difficulty: "Easy" },
+        { title: "Diameter of Binary Tree", slug: "diameter-of-binary-tree", difficulty: "Easy" },
+        { title: "Balanced Binary Tree", slug: "balanced-binary-tree", difficulty: "Easy" },
+        { title: "Same Tree", slug: "same-tree", difficulty: "Easy" },
+        { title: "Subtree of Another Tree", slug: "subtree-of-another-tree", difficulty: "Easy" },
+        { title: "Lowest Common Ancestor of a Binary Search Tree", slug: "lowest-common-ancestor-of-a-binary-search-tree", difficulty: "Medium" },
+        { title: "Binary Tree Level Order Traversal", slug: "binary-tree-level-order-traversal", difficulty: "Medium" },
+        { title: "Binary Tree Right Side View", slug: "binary-tree-right-side-view", difficulty: "Medium" },
+        { title: "Count Good Nodes in Binary Tree", slug: "count-good-nodes-in-binary-tree", difficulty: "Medium" },
+        { title: "Validate Binary Search Tree", slug: "validate-binary-search-tree", difficulty: "Medium" },
+        { title: "Kth Smallest Element in a BST", slug: "kth-smallest-element-in-a-bst", difficulty: "Medium" },
+        { title: "Construct Binary Tree from Preorder and Inorder Traversal", slug: "construct-binary-tree-from-preorder-and-inorder-traversal", difficulty: "Medium" },
+        { title: "Binary Tree Maximum Path Sum", slug: "binary-tree-maximum-path-sum", difficulty: "Hard" },
+        { title: "Serialize and Deserialize Binary Tree", slug: "serialize-and-deserialize-binary-tree", difficulty: "Hard" },
+        
+        // Tries
+        { title: "Implement Trie", slug: "implement-trie-prefix-tree", difficulty: "Medium" },
+        { title: "Design Add and Search Words Data Structure", slug: "design-add-and-search-words-data-structure", difficulty: "Medium" },
+        { title: "Word Search II", slug: "word-search-ii", difficulty: "Hard" },
+        
+        // Heap / Priority Queue
+        { title: "Kth Largest Element in a Stream", slug: "kth-largest-element-in-a-stream", difficulty: "Easy" },
+        { title: "Last Stone Weight", slug: "last-stone-weight", difficulty: "Easy" },
+        { title: "K Closest Points to Origin", slug: "k-closest-points-to-origin", difficulty: "Medium" },
+        { title: "Kth Largest Element in an Array", slug: "kth-largest-element-in-an-array", difficulty: "Medium" },
+        { title: "Task Scheduler", slug: "task-scheduler", difficulty: "Medium" },
+        { title: "Design Twitter", slug: "design-twitter", difficulty: "Medium" },
+        { title: "Find Median from Data Stream", slug: "find-median-from-data-stream", difficulty: "Hard" },
+        
+        // Backtracking
+        { title: "Subsets", slug: "subsets", difficulty: "Medium" },
+        { title: "Combination Sum", slug: "combination-sum", difficulty: "Medium" },
+        { title: "Permutations", slug: "permutations", difficulty: "Medium" },
+        { title: "Subsets II", slug: "subsets-ii", difficulty: "Medium" },
+        { title: "Combination Sum II", slug: "combination-sum-ii", difficulty: "Medium" },
+        { title: "Word Search", slug: "word-search", difficulty: "Medium" },
+        { title: "Palindrome Partitioning", slug: "palindrome-partitioning", difficulty: "Medium" },
+        { title: "Letter Combinations of a Phone Number", slug: "letter-combinations-of-a-phone-number", difficulty: "Medium" },
+        { title: "N-Queens", slug: "n-queens", difficulty: "Hard" },
+        
+        // Graphs
+        { title: "Number of Islands", slug: "number-of-islands", difficulty: "Medium" },
+        { title: "Clone Graph", slug: "clone-graph", difficulty: "Medium" },
+        { title: "Max Area of Island", slug: "max-area-of-island", difficulty: "Medium" },
+        { title: "Pacific Atlantic Water Flow", slug: "pacific-atlantic-water-flow", difficulty: "Medium" },
+        { title: "Surrounded Regions", slug: "surrounded-regions", difficulty: "Medium" },
+        { title: "Rotting Oranges", slug: "rotting-oranges", difficulty: "Medium" },
+        { title: "Walls and Gates", slug: "walls-and-gates", difficulty: "Medium" },
+        { title: "Course Schedule", slug: "course-schedule", difficulty: "Medium" },
+        { title: "Course Schedule II", slug: "course-schedule-ii", difficulty: "Medium" },
+        { title: "Redundant Connection", slug: "redundant-connection", difficulty: "Medium" },
+        { title: "Number of Connected Components in an Undirected Graph", slug: "number-of-connected-components-in-an-undirected-graph", difficulty: "Medium" },
+        { title: "Graph Valid Tree", slug: "graph-valid-tree", difficulty: "Medium" },
+        { title: "Word Ladder", slug: "word-ladder", difficulty: "Hard" },
+        
+        // Advanced Graphs
+        { title: "Reconstruct Itinerary", slug: "reconstruct-itinerary", difficulty: "Hard" },
+        { title: "Min Cost to Connect All Points", slug: "min-cost-to-connect-all-points", difficulty: "Medium" },
+        { title: "Network Delay Time", slug: "network-delay-time", difficulty: "Medium" },
+        { title: "Swim in Rising Water", slug: "swim-in-rising-water", difficulty: "Hard" },
+        { title: "Alien Dictionary", slug: "alien-dictionary", difficulty: "Hard" },
+        { title: "Cheapest Flights Within K Stops", slug: "cheapest-flights-within-k-stops", difficulty: "Medium" },
+        
+        // 1-D Dynamic Programming
+        { title: "Climbing Stairs", slug: "climbing-stairs", difficulty: "Easy" },
+        { title: "Min Cost Climbing Stairs", slug: "min-cost-climbing-stairs", difficulty: "Easy" },
+        { title: "House Robber", slug: "house-robber", difficulty: "Medium" },
+        { title: "House Robber II", slug: "house-robber-ii", difficulty: "Medium" },
+        { title: "Longest Palindromic Substring", slug: "longest-palindromic-substring", difficulty: "Medium" },
+        { title: "Palindromic Substrings", slug: "palindromic-substrings", difficulty: "Medium" },
+        { title: "Decode Ways", slug: "decode-ways", difficulty: "Medium" },
+        { title: "Coin Change", slug: "coin-change", difficulty: "Medium" },
+        { title: "Maximum Product Subarray", slug: "maximum-product-subarray", difficulty: "Medium" },
+        { title: "Word Break", slug: "word-break", difficulty: "Medium" },
+        { title: "Longest Increasing Subsequence", slug: "longest-increasing-subsequence", difficulty: "Medium" },
+        { title: "Partition Equal Subset Sum", slug: "partition-equal-subset-sum", difficulty: "Medium" },
+        
+        // 2-D Dynamic Programming
+        { title: "Unique Paths", slug: "unique-paths", difficulty: "Medium" },
+        { title: "Longest Common Subsequence", slug: "longest-common-subsequence", difficulty: "Medium" },
+        { title: "Best Time to Buy and Sell Stock with Cooldown", slug: "best-time-to-buy-and-sell-stock-with-cooldown", difficulty: "Medium" },
+        { title: "Coin Change II", slug: "coin-change-ii", difficulty: "Medium" },
+        { title: "Target Sum", slug: "target-sum", difficulty: "Medium" },
+        { title: "Interleaving String", slug: "interleaving-string", difficulty: "Medium" },
+        { title: "Longest Increasing Path in a Matrix", slug: "longest-increasing-path-in-a-matrix", difficulty: "Hard" },
+        { title: "Distinct Subsequences", slug: "distinct-subsequences", difficulty: "Hard" },
+        { title: "Edit Distance", slug: "edit-distance", difficulty: "Medium" },
+        { title: "Burst Balloons", slug: "burst-balloons", difficulty: "Hard" },
+        { title: "Regular Expression Matching", slug: "regular-expression-matching", difficulty: "Hard" },
+        
+        // Greedy
+        { title: "Maximum Subarray", slug: "maximum-subarray", difficulty: "Medium" },
+        { title: "Jump Game", slug: "jump-game", difficulty: "Medium" },
+        { title: "Jump Game II", slug: "jump-game-ii", difficulty: "Medium" },
+        { title: "Gas Station", slug: "gas-station", difficulty: "Medium" },
+        { title: "Hand of Straights", slug: "hand-of-straights", difficulty: "Medium" },
+        { title: "Merge Triplets to Form Target Triplet", slug: "merge-triplets-to-form-target-triplet", difficulty: "Medium" },
+        { title: "Partition Labels", slug: "partition-labels", difficulty: "Medium" },
+        { title: "Valid Parenthesis String", slug: "valid-parenthesis-string", difficulty: "Medium" },
+        
+        // Intervals
+        { title: "Insert Interval", slug: "insert-interval", difficulty: "Medium" },
+        { title: "Merge Intervals", slug: "merge-intervals", difficulty: "Medium" },
+        { title: "Non-overlapping Intervals", slug: "non-overlapping-intervals", difficulty: "Medium" },
+        { title: "Meeting Rooms", slug: "meeting-rooms", difficulty: "Easy" },
+        { title: "Meeting Rooms II", slug: "meeting-rooms-ii", difficulty: "Medium" },
+        { title: "Minimum Interval to Include Each Query", slug: "minimum-interval-to-include-each-query", difficulty: "Hard" },
+        
+        // Math & Geometry
+        { title: "Rotate Image", slug: "rotate-image", difficulty: "Medium" },
+        { title: "Spiral Matrix", slug: "spiral-matrix", difficulty: "Medium" },
+        { title: "Set Matrix Zeroes", slug: "set-matrix-zeroes", difficulty: "Medium" },
+        { title: "Happy Number", slug: "happy-number", difficulty: "Easy" },
+        { title: "Plus One", slug: "plus-one", difficulty: "Easy" },
+        { title: "Pow(x, n)", slug: "powx-n", difficulty: "Medium" },
+        { title: "Multiply Strings", slug: "multiply-strings", difficulty: "Medium" },
+        { title: "Detect Squares", slug: "detect-squares", difficulty: "Medium" },
+        
+        // Bit Manipulation
+        { title: "Single Number", slug: "single-number", difficulty: "Easy" },
+        { title: "Number of 1 Bits", slug: "number-of-1-bits", difficulty: "Easy" },
+        { title: "Counting Bits", slug: "counting-bits", difficulty: "Easy" },
+        { title: "Reverse Bits", slug: "reverse-bits", difficulty: "Easy" },
+        { title: "Missing Number", slug: "missing-number", difficulty: "Easy" },
+        { title: "Sum of Two Integers", slug: "sum-of-two-integers", difficulty: "Medium" },
+        { title: "Reverse Integer", slug: "reverse-integer", difficulty: "Medium" }
+    ];
+
+    const [dailyProblem] = useState(() => {
+        // Use day of year (1-365) for clean rotation through all 150 problems
+        const now = new Date();
+        const start = new Date(now.getFullYear(), 0, 0);
+        const diff = now.getTime() - start.getTime();
+        const dayOfYear = Math.floor(diff / (1000 * 60 * 60 * 24));
+        return problemSuggestions[dayOfYear % problemSuggestions.length];
+    });
 
     // Fetch Groups
     const { data: groupsData } = useQuery({
@@ -83,14 +275,6 @@ export default function HomePage() {
 
     const leaderboard: LeaderboardEntry[] = leaderboardData?.leaderboard || (Array.isArray(leaderboardData) ? leaderboardData : (leaderboardData?.entries || []));
     const activities = leaderboardData?.activities || [];
-    const dailyRoastData = leaderboardData?.dailyRoast;
-
-    useEffect(() => {
-        if (dailyRoastData?.roast) {
-            const personalizedRoast = dailyRoastData.roast.replace(/\[NAME\]/g, user?.name?.split(' ')[0] || "Dhurandhar");
-            setRoast(personalizedRoast);
-        }
-    }, [dailyRoastData, user]);
 
     // Mutations
     const refreshMutation = useMutation({
@@ -265,45 +449,42 @@ export default function HomePage() {
     const myRank = currentUserEntry?.rank || '-';
 
     return (
-        <div className="min-h-screen bg-[#F1F3F4] dark:bg-black text-foreground font-sans">
-            <header className="fixed top-0 inset-x-0 bg-white/95 dark:bg-black/95 backdrop-blur-md z-50 border-b border-[#E8EAED] dark:border-[#3C4043] shadow-[0_1px_2px_0_rgba(60,64,67,0.3),0_1px_3px_1px_rgba(60,64,67,0.15)] dark:shadow-none">
-                <div className="max-w-[1200px] mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
-                    <div className="flex items-center gap-2 md:gap-3">
-                        <Image src="/logo.png" alt="Logo" width={32} height={32} className="object-contain md:w-10 md:h-10" priority />
-                        <span className="text-xl md:text-2xl font-medium tracking-tight text-[#5F6368] dark:text-gray-400">
-                            DSA <span className="text-[#202124] dark:text-white font-semibold">Grinders</span>
-                        </span>
+        <div className="min-h-screen bg-[#F8F9FA] dark:bg-background text-foreground font-sans">
+            <header className="fixed top-0 inset-x-0 bg-white/95 dark:bg-background/95 backdrop-blur-md z-50 border-b border-[#E8EAED]/60 dark:border-border">
+                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <div className="relative w-10 h-10">
+                            <Image src="/logo.png" alt="DSA Grinders" width={40} height={40} className="object-contain" priority />
+                        </div>
+                        <span className="text-xl font-semibold text-[#202124] dark:text-white">DSA Grinders</span>
                     </div>
-
-                    <div className="flex items-center gap-1 md:gap-3">
+                    <div className="flex items-center gap-1 md:gap-2">
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={refreshStats}
                             disabled={isRefreshing}
-                            className={`text-[#5F6368] dark:text-gray-300 hover:bg-[#F1F3F4] dark:hover:bg-gray-800 hover:text-[#4285F4] font-medium rounded-full px-2 md:px-4 ${isRefreshing ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            title={isRefreshing ? "Syncing..." : "Sync Leaderboard"}
+                            className="text-[#5F6368] dark:text-gray-300 hover:text-[#4285F4] dark:hover:text-[#8AB4F8] rounded-full px-2 md:px-3 h-9"
                         >
-                            <RefreshCw className={`h-4 w-4 md:mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                            <span className="hidden md:inline">Sync Stats</span>
+                            <RefreshCw className={`h-4 w-4 md:mr-1.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                            <span className="hidden md:inline text-sm">Sync Stats</span>
                         </Button>
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => router.push('/profile')}
-                            className="text-[#5F6368] dark:text-gray-300 hover:bg-[#F1F3F4] dark:hover:bg-gray-800 hover:text-[#4285F4] font-medium rounded-full px-2 md:px-4"
+                            className="text-[#5F6368] dark:text-gray-300 hover:text-[#4285F4] dark:hover:text-[#8AB4F8] rounded-full px-2 md:px-3 h-9"
                         >
-                            <span className="hidden md:inline">Profile</span>
+                            <span className="hidden md:inline text-sm">Profile</span>
                             <Settings className="h-4 w-4 md:hidden" />
                         </Button>
-                        <AnimatedThemeToggler className="h-8 w-8 md:h-9 md:w-9" />
-                        <div className="h-6 w-px bg-[#E8EAED] dark:bg-gray-700 mx-1"></div>
+                        <AnimatedThemeToggler className="h-8 w-8" />
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={logout}
-                            className="text-[#5F6368] hover:text-[#EA4335] hover:bg-[#FAD2CF] dark:hover:bg-red-950 rounded-full h-8 w-8 md:h-9 md:w-9 p-0"
-                            title="Logout"
+                            className="text-[#5F6368] hover:text-[#EA4335] rounded-full h-9 w-9 p-0"
+                            title="Sign out"
                         >
                             <LogOut className="h-4 w-4" />
                         </Button>
@@ -311,193 +492,152 @@ export default function HomePage() {
                 </div>
             </header>
 
-            <main className="max-w-[1200px] mx-auto pt-24 pb-12 px-6">
-                <div className="mb-12 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-                    <div className="bg-linear-to-br from-[#4285F4] to-[#174EA6] rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-[0_8px_30px_rgba(66,133,244,0.25)]">
-                        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32" />
-                        <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full -ml-24 -mb-24" />
-
-                        <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-                            <div className="flex items-center gap-6">
-                                <div className="w-20 h-20 md:w-24 md:h-24 rounded-3xl overflow-hidden bg-white/20 backdrop-blur-md border-2 border-white/30 p-1 shrink-0">
-                                    {currentUserEntry?.avatar ? (
-                                        <img src={currentUserEntry.avatar} alt="" className="w-full h-full object-cover rounded-2xl" />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-white text-3xl font-black">
-                                            {user?.name?.charAt(0)}
-                                        </div>
-                                    )}
+            <main className="max-w-7xl mx-auto pt-24 pb-12 px-6">
+                {/* Greeting & Daily Challenge */}
+                <div className="mb-4 animate-in fade-in slide-in-from-bottom-2 duration-700">
+                    <div className="flex items-start gap-4">
+                        {/* Avatar */}
+                        <div className="w-12 h-12 rounded-full overflow-hidden bg-[#F1F3F4] dark:bg-muted shrink-0 ring-2 ring-[#E8EAED] dark:ring-border">
+                            {currentUserEntry?.avatar ? (
+                                <img src={currentUserEntry.avatar} alt="" className="w-full h-full object-cover" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center text-[#5F6368] dark:text-muted-foreground text-lg font-medium">
+                                    {user?.name?.charAt(0)}
                                 </div>
-                                <div>
-                                    <h1 className="text-3xl md:text-5xl font-black tracking-tight mb-2">
-                                        Hi, {user?.name?.split(' ')[0]}! 👋
-                                    </h1>
-                                    <p className="text-blue-100 text-lg font-medium opacity-90 max-w-sm">
-                                        {myPoints === 0 ? "Start your day with a problem!" : "You're on fire! Keep that momentum going."}
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4 md:gap-8 w-full md:w-auto">
-                                <div className="flex-1 md:flex-none bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/10 text-center md:text-left min-w-[140px]">
-                                    <div className="text-blue-200 text-[10px] font-black uppercase tracking-widest mb-1">Rank</div>
-                                    <div className="text-3xl font-black">#{myRank}</div>
-                                </div>
-                                <div className="flex-1 md:flex-none bg-white/10 backdrop-blur-md rounded-3xl p-6 border border-white/10 text-center md:text-left min-w-[140px]">
-                                    <div className="text-blue-200 text-[10px] font-black uppercase tracking-widest mb-1">Score</div>
-                                    <div className="text-3xl font-black">+{myPoints}</div>
-                                </div>
-                                <div className="hidden sm:block flex-1 md:flex-none bg-emerald-500/20 backdrop-blur-md rounded-3xl p-6 border border-emerald-400/20 text-center md:text-left min-w-[140px]">
-                                    <div className="text-emerald-300 text-[10px] font-black uppercase tracking-widest mb-1">Streak</div>
-                                    <div className="text-3xl font-black flex items-center gap-2">
-                                        🔥 {currentUserEntry?.streak || 0}
-                                    </div>
-                                </div>
+                            )}
+                        </div>
+                        
+                        {/* Greeting & Problem */}
+                        <div className="flex-1 min-w-0">
+                            <h1 className="text-lg font-medium text-[#202124] dark:text-white leading-none">
+                                Hey, {user?.name?.split(' ')[0]}
+                            </h1>
+                            <div className="flex items-center gap-2 text-sm text-[#5F6368] dark:text-muted-foreground -mt-2">
+                                <span>Today's challenge:</span>
+                                <a 
+                                    href={`https://leetcode.com/problems/${dailyProblem.slug}/`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 text-[#4285F4] dark:text-[#8AB4F8] hover:underline font-medium"
+                                >
+                                    {dailyProblem.title}
+                                    <ExternalLink className="w-3.5 h-3.5" />
+                                </a>
+                                <span className={`text-xs px-1.5 py-0.5 rounded ${
+                                    dailyProblem.difficulty === 'Easy' ? 'bg-[#CEEAD6] text-[#0D652D]' :
+                                    dailyProblem.difficulty === 'Medium' ? 'bg-[#FEEFC3] text-[#E37400]' :
+                                    'bg-[#FAD2CF] text-[#A50E0E]'
+                                }`}>
+                                    {dailyProblem.difficulty}
+                                </span>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-                    <div className="lg:col-span-8 bg-white dark:bg-card rounded-3xl border border-[#E8EAED] dark:border-border relative overflow-hidden shadow-[0_1px_2px_0_rgba(60,64,67,0.3),0_1px_3px_1px_rgba(60,64,67,0.15)] dark:shadow-none">
-                        <div className="px-4 md:px-8 pb-0 pt-4 mb-2 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                            <div className="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 no-scrollbar">
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="outline" className="h-11 px-5 bg-white dark:bg-card border-[#E8EAED] dark:border-border hover:bg-[#F1F3F4] dark:hover:bg-muted transition-all rounded-2xl gap-3 group shadow-sm">
-                                            <div className="flex flex-col items-start leading-tight">
-                                                <span className="text-[10px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest group-hover:text-[#4285F4] transition-colors">Scope</span>
-                                                <span className="text-sm font-bold text-[#202124] dark:text-foreground truncate max-w-[120px]">
-                                                    {activeGroup ? activeGroup.name : 'Global'}
-                                                </span>
-                                            </div>
-                                            <ChevronRight className="w-4 h-4 text-[#5F6368] dark:text-muted-foreground group-hover:text-[#4285F4] group-hover:translate-x-0.5 transition-all" />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="start" className="w-56 p-2 bg-white dark:bg-card border-[#E8EAED] dark:border-border shadow-[0_8px_10px_1px_rgba(0,0,0,.14),0_3px_14px_2px_rgba(0,0,0,.12),0_5px_5px_-3px_rgba(0,0,0,.2)]">
-                                        <DropdownMenuLabel className="text-[10px] font-black text-[#5F6368] dark:text-gray-400 uppercase tracking-widest px-2.5 py-2">
-                                            Your Communities
-                                        </DropdownMenuLabel>
-                                        <DropdownMenuItem
-                                            onClick={() => setActiveGroup(null)}
-                                            className={`cursor-pointer flex items-center justify-between rounded-xl mb-1 ${!activeGroup ? 'bg-[#D2E3FC] text-[#174EA6] font-bold' : ''}`}
-                                        >
-                                            <span className="truncate">Global</span>
-                                            {!activeGroup && <div className="w-1.5 h-1.5 rounded-full bg-[#4285F4]" />}
-                                        </DropdownMenuItem>
-                                        {Array.isArray(userGroups) && userGroups.length > 0 && <DropdownMenuSeparator className="opacity-50" />}
-                                        <div className="max-h-[200px] overflow-y-auto pr-1">
-                                            {Array.isArray(userGroups) && userGroups.map(group => (
-                                                <div key={group.code} className="flex items-center gap-1 mb-1">
-                                                    <DropdownMenuItem
-                                                        onClick={() => setActiveGroup(group)}
-                                                        className={`cursor-pointer flex-1 flex items-center justify-between rounded-xl ${activeGroup?.code === group.code ? 'bg-[#D2E3FC] text-[#174EA6] font-bold' : ''}`}
-                                                    >
-                                                        <div className="flex items-center gap-2 min-w-0">
-                                                            <span className="truncate">{group?.name}</span>
-                                                            {group.memberCount && <span className="text-[10px] text-muted-foreground">({group.memberCount})</span>}
-                                                        </div>
-                                                        {activeGroup?.code === group.code && (
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-[#4285F4]" />
-                                                        )}
-                                                    </DropdownMenuItem>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            setGroupToLeave(group);
-                                                        }}
-                                                        className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                                        title={group.isOwner ? "Delete group" : "Leave group"}
-                                                    >
-                                                        <X className="w-3.5 h-3.5" />
-                                                    </button>
-                                                </div>
-                                            ))}
-                                        </div>
-                                        <DropdownMenuSeparator className="opacity-50" />
-                                        <div className="grid grid-cols-2 gap-1 p-1">
-                                            <DropdownMenuItem onClick={() => setIsCreateGroupOpen(true)} className="cursor-pointer gap-2 text-[#4285F4] focus:text-[#174EA6] rounded-lg justify-center border border-[#D2E3FC] bg-[#D2E3FC]/30 hover:bg-[#D2E3FC]">
-                                                <Plus className="w-3.5 h-3.5" />
-                                                <span className="text-xs font-bold">New</span>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onClick={() => setIsJoinGroupOpen(true)} className="cursor-pointer gap-2 text-[#4285F4] focus:text-[#174EA6] rounded-lg justify-center border border-[#D2E3FC] bg-[#D2E3FC]/30 hover:bg-[#D2E3FC]">
-                                                <Hash className="w-3.5 h-3.5" />
-                                                <span className="text-xs font-bold">Join</span>
-                                            </DropdownMenuItem>
-                                        </div>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </div>
-
-                            {activeGroup && (
-                                <div className="flex items-center gap-2 animate-in fade-in zoom-in-95 self-start sm:self-auto">
-                                    <div
-                                        className="flex items-center gap-2 text-sm bg-[#D2E3FC]/50 dark:bg-blue-50/10 px-3 py-1.5 rounded-full border border-[#4285F4]/30 cursor-pointer hover:border-[#4285F4] transition-colors group/code"
-                                        onClick={() => {
-                                            navigator.clipboard.writeText(activeGroup.code);
-                                            toast.success('Code copied!', { duration: 2000 });
-                                        }}
-                                        title="Click to copy invite code"
-                                    >
-                                        <span className="text-blue-600 text-xs uppercase font-medium tracking-wide mr-1">Code:</span>
-                                        <span className="font-mono font-bold text-blue-800 tracking-wider font-size-xs">{activeGroup.code}</span>
-                                        <Copy className="w-3.5 h-3.5 text-blue-400 group-hover/code:text-blue-600 ml-1" />
-                                    </div>
-                                    <Button
-                                        variant="default"
-                                        size="sm"
-                                        onClick={() => handleShareGroup(activeGroup)}
-                                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-1.5 h-auto text-xs font-medium flex items-center gap-2 shadow-sm"
-                                        title="Generate and copy share link"
-                                    >
-                                        <Share2 className="w-3.5 h-3.5" />
-                                        <span className="hidden sm:inline">Share Link</span>
-                                    </Button>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setGroupToLeave(activeGroup)}
-                                        className="text-red-500 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full px-3 py-1.5 h-auto text-xs font-medium"
-                                        title="Leave group"
-                                    >
-                                        <LogOut className="w-3.5 h-3.5" />
-                                    </Button>
-                                </div>
-                            )}
+                {/* Group Chips & Controls */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 animate-in fade-in slide-in-from-bottom-2 duration-700" style={{ animationDelay: '100ms' }}>
+                    <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+                        <button
+                            onClick={() => setActiveGroup(null)}
+                            className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all whitespace-nowrap ${
+                                !activeGroup
+                                    ? 'bg-[#D2E3FC] text-[#174EA6] border-[#4285F4]/30 dark:bg-[#4285F4]/15 dark:text-[#8AB4F8] dark:border-[#4285F4]/30'
+                                    : 'bg-white dark:bg-card text-[#5F6368] dark:text-muted-foreground border-[#E8EAED] dark:border-border hover:bg-[#F1F3F4] dark:hover:bg-muted'
+                            }`}
+                        >
+                            Global
+                        </button>
+                        {Array.isArray(userGroups) && userGroups.map(group => (
+                            <button
+                                key={group.code}
+                                onClick={() => setActiveGroup(group)}
+                                className={`px-4 py-1.5 text-sm font-medium rounded-full border transition-all whitespace-nowrap ${
+                                    activeGroup?.code === group.code
+                                        ? 'bg-[#D2E3FC] text-[#174EA6] border-[#4285F4]/30 dark:bg-[#4285F4]/15 dark:text-[#8AB4F8] dark:border-[#4285F4]/30'
+                                        : 'bg-white dark:bg-card text-[#5F6368] dark:text-muted-foreground border-[#E8EAED] dark:border-border hover:bg-[#F1F3F4] dark:hover:bg-muted'
+                                }`}
+                            >
+                                {group.name}
+                            </button>
+                        ))}
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <button className="h-8 w-8 flex items-center justify-center rounded-full border border-dashed border-[#E8EAED] dark:border-border text-[#5F6368] dark:text-muted-foreground hover:text-[#4285F4] hover:border-[#4285F4]/40 dark:hover:text-[#8AB4F8] transition-all shrink-0">
+                                    <Plus className="w-4 h-4" />
+                                </button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end" className="w-44 rounded-xl">
+                                <DropdownMenuItem onClick={() => setIsCreateGroupOpen(true)} className="cursor-pointer gap-2 rounded-lg">
+                                    <Plus className="w-3.5 h-3.5" /> Create Group
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => setIsJoinGroupOpen(true)} className="cursor-pointer gap-2 rounded-lg">
+                                    <Hash className="w-3.5 h-3.5" /> Join Group
+                                </DropdownMenuItem>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                        <div className="flex bg-[#F1F3F4] dark:bg-muted p-1 rounded-full border border-[#E8EAED] dark:border-border">
+                            <button
+                                onClick={() => setLeaderboardType('daily')}
+                                className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all ${
+                                    leaderboardType === 'daily'
+                                        ? 'bg-white dark:bg-card text-[#202124] dark:text-foreground shadow-sm'
+                                        : 'text-[#5F6368] dark:text-muted-foreground hover:text-[#202124] dark:hover:text-foreground'
+                                }`}
+                            >
+                                Daily
+                            </button>
+                            <button
+                                onClick={() => setLeaderboardType('allTime')}
+                                className={`px-4 py-1.5 text-xs font-medium rounded-full transition-all ${
+                                    leaderboardType === 'allTime'
+                                        ? 'bg-white dark:bg-card text-[#202124] dark:text-foreground shadow-sm'
+                                        : 'text-[#5F6368] dark:text-muted-foreground hover:text-[#202124] dark:hover:text-foreground'
+                                }`}
+                            >
+                                All Time
+                            </button>
                         </div>
+                        {leaderboardData && (
+                            <span className="text-[11px] text-[#5F6368] dark:text-muted-foreground hidden sm:inline">
+                                Updated {new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                        )}
+                    </div>
+                </div>
 
-                        <div className="px-4 md:px-8 py-4 flex flex-col sm:flex-row sm:items-center justify-between border-t border-border bg-muted/20 mt-2 gap-4">
-                            <div className="flex items-center gap-5">
-                                <h2 className="text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] whitespace-nowrap">
-                                    {activeGroup ? 'Group Arena' : 'Global Arena'}
-                                </h2>
-                                <div className="flex bg-muted p-1 rounded-xl border border-border">
-                                    <button
-                                        onClick={() => setLeaderboardType('daily')}
-                                        className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${leaderboardType === 'daily'
-                                            ? 'bg-card text-primary ring-1 ring-border'
-                                            : 'text-muted-foreground hover:text-foreground'
-                                            }`}
-                                    >
-                                        Daily
-                                    </button>
-                                    <button
-                                        onClick={() => setLeaderboardType('allTime')}
-                                        className={`px-4 py-1.5 text-xs font-bold rounded-lg transition-all ${leaderboardType === 'allTime'
-                                            ? 'bg-card text-primary ring-1 ring-border'
-                                            : 'text-muted-foreground hover:text-foreground'
-                                            }`}
-                                    >
-                                        All Time
-                                    </button>
-                                </div>
-                            </div>
-                            {leaderboardData && (
-                                <span className="text-xs font-medium text-muted-foreground bg-card px-3 py-1 rounded-full border border-border self-start sm:self-auto">
-                                    Last updated {new Date(dataUpdatedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                            )}
+                {activeGroup && (
+                    <div className="flex items-center gap-2 mb-4 animate-in fade-in duration-300">
+                        <div
+                            className="flex items-center gap-1.5 text-xs bg-[#D2E3FC]/40 dark:bg-[#4285F4]/10 px-3 py-1.5 rounded-full border border-[#4285F4]/20 cursor-pointer hover:border-[#4285F4]/40 transition-colors"
+                            onClick={() => {
+                                navigator.clipboard.writeText(activeGroup.code);
+                                toast.success('Code copied!');
+                            }}
+                        >
+                            <span className="font-mono font-semibold text-[#174EA6] dark:text-[#8AB4F8] tracking-wider">{activeGroup.code}</span>
+                            <Copy className="w-3 h-3 text-[#4285F4]/60" />
                         </div>
+                        <button
+                            onClick={() => handleShareGroup(activeGroup)}
+                            className="flex items-center gap-1.5 text-xs text-[#4285F4] hover:text-[#174EA6] dark:hover:text-[#8AB4F8] transition-colors px-2 py-1.5 rounded-full hover:bg-[#D2E3FC]/30"
+                        >
+                            <Share2 className="w-3 h-3" />
+                            <span className="hidden sm:inline">Share</span>
+                        </button>
+                        <button
+                            onClick={() => setGroupToLeave(activeGroup)}
+                            className="flex items-center text-xs text-[#5F6368] hover:text-[#EA4335] transition-colors px-2 py-1.5 rounded-full hover:bg-[#FAD2CF]/30 dark:hover:bg-red-900/20"
+                        >
+                            <LogOut className="w-3 h-3" />
+                        </button>
+                    </div>
+                )}
+
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                    <div className="lg:col-span-8 bg-white dark:bg-card rounded-2xl border border-[#E8EAED] dark:border-border overflow-hidden">
 
                         {isLoading ? (
                             <div className="animate-pulse">
@@ -551,32 +691,48 @@ export default function HomePage() {
                             </div>
                         ) : (
                             <>
-                                <div className="px-4 md:px-8 py-4 bg-[#F1F3F4]/50 dark:bg-muted/20 border-b border-[#E8EAED] dark:border-border flex items-center gap-4 md:gap-8">
-                                    <div className="w-8 md:w-12 flex justify-center shrink-0">
-                                        <span className="text-[10px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Rank</span>
+                                <div className="px-5 md:px-8 py-3.5 border-b border-[#E8EAED] dark:border-border flex items-center gap-4 md:gap-6">
+                                    <div className="w-10 shrink-0 text-center">
+                                        <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">#</span>
                                     </div>
-                                    <div className="flex-1 flex items-center gap-4 min-w-0">
-                                        <div className="w-12 md:w-14 shrink-0 opacity-0" />
-                                        <span className="text-[10px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">User</span>
+                                    <div className="flex-1 min-w-0">
+                                        <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">User</span>
                                     </div>
-                                    <div className="flex gap-2 md:gap-6 items-center shrink-0">
-                                        <div className="hidden lg:flex justify-center w-16">
-                                            <span className="text-[10px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Streak</span>
+                                    <div className="flex gap-6 md:gap-8 items-center shrink-0">
+                                        <div className="hidden lg:block w-14 text-center">
+                                            <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">Streak</span>
                                         </div>
-                                        <div className="text-right w-16 md:w-20">
-                                            <div className="flex items-center justify-end gap-1 mb-1">
-                                                <span className="w-3 h-3 bg-orange-500 rounded text-white text-[6px] font-bold flex items-center justify-center">LC</span>
-                                                <span className="text-[8px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Score</span>
-                                            </div>
+                                        <div className="w-16 md:w-24 flex items-center justify-end gap-1">
+                                            <TooltipProvider delayDuration={100}>
+                                                <Tooltip>
+                                                    <TooltipTrigger asChild>
+                                                        <span className="inline-flex items-center gap-1 cursor-default">
+                                                            <span className="text-xs font-medium text-[#E37400]">LeetCode</span>
+                                                            <Info className="w-3 h-3 text-[#9AA0A6] hover:text-[#5F6368] transition-colors shrink-0" />
+                                                        </span>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent side="top" sideOffset={8} className="!bg-white dark:!bg-card !text-[#202124] dark:!text-foreground border border-[#E8EAED] dark:border-border shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1)] !rounded-xl !px-4 !py-3 min-w-[140px]">
+                                                        <div className="flex items-center justify-between gap-6 mb-1">
+                                                            <span className="text-[#34A853] font-medium text-xs">Easy</span>
+                                                            <span className="font-medium text-xs text-[#202124] dark:text-foreground">1 pt</span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between gap-6 mb-1">
+                                                            <span className="text-[#E37400] font-medium text-xs">Medium</span>
+                                                            <span className="font-medium text-xs text-[#202124] dark:text-foreground">3 pts</span>
+                                                        </div>
+                                                        <div className="flex items-center justify-between gap-6">
+                                                            <span className="text-[#EA4335] font-medium text-xs">Hard</span>
+                                                            <span className="font-medium text-xs text-[#202124] dark:text-foreground">6 pts</span>
+                                                        </div>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            </TooltipProvider>
                                         </div>
-                                        <div className="text-right w-16 md:w-20">
-                                            <div className="flex items-center justify-end gap-1 mb-1">
-                                                <span className="w-3 h-3 bg-green-600 rounded text-white text-[6px] font-bold flex items-center justify-center">GFG</span>
-                                                <span className="text-[8px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Score</span>
-                                            </div>
+                                        <div className="w-16 md:w-20 text-right">
+                                            <span className="text-xs font-medium text-[#34A853]">GFG</span>
                                         </div>
-                                        <div className="text-right w-16 md:w-20">
-                                            <span className="text-[8px] font-black text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest">Today</span>
+                                        <div className="w-16 md:w-20 text-right">
+                                            <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">Today</span>
                                         </div>
                                     </div>
                                 </div>

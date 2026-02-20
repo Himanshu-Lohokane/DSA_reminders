@@ -67,8 +67,8 @@ export default function Home() {
       </a>
 
       {/* Navigation */}
-      <nav className="shrink-0 z-50 bg-white/95 dark:bg-black/95 backdrop-blur-lg">
-        <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
+      <nav className="shrink-0 z-50">
+        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative w-10 h-10">
               <Image src="/logo.png" alt="DSA Grinders" width={40} height={40} className="object-contain" priority />
@@ -88,37 +88,39 @@ export default function Home() {
           </div>
 
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-muted border border-border rounded-full mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-muted border border-border rounded-full mb-6">
             <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
             <span className="text-xs text-muted-foreground">Synced with LeetCode</span>
           </div>
 
           {/* Static Headline */}
-          <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-0">
+          <h1 className="text-4xl md:text-6xl font-bold text-foreground mb-0 leading-tight">
             Track progress,
           </h1>
 
           {/* Morphing Text - has built-in h-16 md:h-24 */}
           <MorphingText
             texts={["together", "daily", "smarter", "faster"]}
-            className="text-muted-foreground font-normal! text-2xl! md:text-4xl! h-12! md:h-16!"
+            className="text-muted-foreground font-normal! text-3xl! md:text-5xl! h-14! md:h-20!"
           />
 
           {/* Subheadline */}
-          <p className="text-sm md:text-base text-muted-foreground max-w-md mx-auto mt-2 mb-5">
+          <p className="text-base md:text-lg text-muted-foreground max-w-xl mx-auto mt-4 mb-8 leading-relaxed">
             A simple way to stay consistent with your DSA practice.
             Connect your LeetCode, compete with friends.
           </p>
 
           {/* CTA Button */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <div className="flex flex-col items-center justify-center gap-3">
             <Link
               href="/login"
-              className="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-semibold rounded-full transition-colors"
+              className="px-10 py-3.5 bg-[#4285F4] hover:bg-[#3367D6] text-white text-base font-medium rounded-lg transition-all shadow-[0_1px_2px_rgba(60,64,67,0.3),0_1px_3px_1px_rgba(60,64,67,0.15)] hover:shadow-[0_1px_3px_rgba(60,64,67,0.3),0_4px_8px_3px_rgba(60,64,67,0.15)]"
             >
               Get started
             </Link>
-            <span className="text-xs text-muted-foreground">Free forever</span>
+            <span className="text-xs font-medium text-muted-foreground tracking-wide">
+              Free forever
+            </span>
           </div>
         </div>
       </main>
