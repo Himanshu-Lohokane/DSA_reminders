@@ -119,7 +119,7 @@ export default function Home() {
               Get started
             </Link>
             <span className="text-xs font-medium text-muted-foreground tracking-wide">
-              No credit card required · Free forever
+              Free forever
             </span>
           </div>
         </div>
