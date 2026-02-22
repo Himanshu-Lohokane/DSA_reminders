@@ -48,7 +48,7 @@ export default function Home() {
         href="https://github.com/piyushdhoka/DSA_Grinders"
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-6 right-6 z-50 group flex items-center bg-white dark:bg-[#202124] border border-[#E8EAED] dark:border-[#5F6368] rounded-full shadow-[0_1px_2px_0_rgba(60,64,67,0.3),0_1px_3px_1px_rgba(60,64,67,0.15)] hover:shadow-[0_4px_6px_-1px_rgba(60,64,67,0.3),0_2px_4px_-1px_rgba(60,64,67,0.15)] transition-all duration-300 hover:pr-4"
+        className="fixed bottom-6 right-6 z-50 group flex items-center bg-white dark:bg-card border border-[#E8EAED] dark:border-border rounded-full shadow-[0_1px_2px_0_rgba(60,64,67,0.3),0_1px_3px_1px_rgba(60,64,67,0.15)] hover:shadow-[0_4px_6px_-1px_rgba(60,64,67,0.3),0_2px_4px_-1px_rgba(60,64,67,0.15)] transition-all duration-300 hover:pr-4"
       >
         <div className="flex items-center justify-center w-12 h-12 shrink-0">
           <Github className="w-5 h-5 text-[#202124] dark:text-white" />

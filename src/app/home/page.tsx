@@ -277,7 +277,7 @@ export default function HomePage() {
                             size="sm"
                             onClick={refreshStats}
                             disabled={isRefreshing}
-                            className="text-[#5F6368] dark:text-gray-300 hover:text-[#4285F4] dark:hover:text-[#8AB4F8] rounded-full px-2 md:px-3 h-9"
+                            className="text-[#5F6368] dark:text-muted-foreground hover:text-[#4285F4] dark:hover:text-[#8AB4F8] rounded-full px-2 md:px-3 h-9"
                         >
                             <RefreshCw className={`h-4 w-4 md:mr-1.5 ${isRefreshing ? 'animate-spin' : ''}`} />
                             <span className="hidden md:inline text-sm">Sync Stats</span>
@@ -286,7 +286,7 @@ export default function HomePage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => router.push('/profile')}
-                            className="text-[#5F6368] dark:text-gray-300 hover:text-[#4285F4] dark:hover:text-[#8AB4F8] rounded-full px-2 md:px-3 h-9"
+                            className="text-[#5F6368] dark:text-muted-foreground hover:text-[#4285F4] dark:hover:text-[#8AB4F8] rounded-full px-2 md:px-3 h-9"
                         >
                             <span className="hidden md:inline text-sm">Profile</span>
                             <Settings className="h-4 w-4 md:hidden" />
@@ -336,9 +336,10 @@ export default function HomePage() {
                                     {dailyProblem.title}
                                     <ExternalLink className="w-3.5 h-3.5" />
                                 </a>
-                                <span className={`text-xs px-1.5 py-0.5 rounded ${dailyProblem.difficulty === 'Easy' ? 'bg-[#CEEAD6] text-[#0D652D]' :
-                                    dailyProblem.difficulty === 'Medium' ? 'bg-[#FEEFC3] text-[#E37400]' :
-                                        'bg-[#FAD2CF] text-[#A50E0E]'
+                                <span className={`text-xs px-1.5 py-0.5 rounded font-medium ${
+                                    dailyProblem.difficulty === 'Easy' ? 'bg-[#CEEAD6] text-[#0D652D] dark:bg-[#81C995]/15 dark:text-[#81C995]' :
+                                    dailyProblem.difficulty === 'Medium' ? 'bg-[#FEEFC3] text-[#E37400] dark:bg-[#FDD663]/15 dark:text-[#FDD663]' :
+                                        'bg-[#FAD2CF] text-[#A50E0E] dark:bg-[#F28B82]/15 dark:text-[#F28B82]'
                                     }`}>
                                     {dailyProblem.difficulty}
                                 </span>
@@ -449,45 +450,45 @@ export default function HomePage() {
 
                         {isLoading ? (
                             <div className="animate-pulse">
-                                <div className="px-4 md:px-8 py-4 bg-gray-50/20 border-b border-gray-100 flex items-center gap-4 md:gap-8">
+                                <div className="px-4 md:px-8 py-4 bg-muted/30 border-b border-border flex items-center gap-4 md:gap-8">
                                     <div className="w-8 md:w-12 flex justify-center shrink-0">
-                                        <div className="h-3 w-8 bg-gray-200 rounded" />
+                                        <div className="h-3 w-8 bg-muted rounded" />
                                     </div>
                                     <div className="flex-1 flex items-center gap-4 min-w-0">
-                                        <div className="w-12 md:w-14 h-12 md:h-14 rounded-2xl bg-gray-200 shrink-0" />
-                                        <div className="h-3 w-16 bg-gray-200 rounded" />
+                                        <div className="w-12 md:w-14 h-12 md:h-14 rounded-2xl bg-muted shrink-0" />
+                                        <div className="h-3 w-16 bg-muted rounded" />
                                     </div>
                                     <div className="flex gap-4 md:gap-10 items-center shrink-0">
-                                        <div className="hidden lg:block h-3 w-12 bg-gray-200 rounded" />
-                                        <div className="h-3 w-12 bg-gray-200 rounded" />
-                                        <div className="h-3 w-12 bg-gray-200 rounded" />
+                                        <div className="hidden lg:block h-3 w-12 bg-muted rounded" />
+                                        <div className="h-3 w-12 bg-muted rounded" />
+                                        <div className="h-3 w-12 bg-muted rounded" />
                                     </div>
                                 </div>
                                 {[...Array(6)].map((_, i) => (
-                                    <div key={i} className="px-4 md:px-8 py-5 flex items-center gap-4 md:gap-8 border-b border-gray-50">
+                                    <div key={i} className="px-4 md:px-8 py-5 flex items-center gap-4 md:gap-8 border-b border-border last:border-0">
                                         <div className="w-8 md:w-12 flex justify-center shrink-0">
-                                            {i < 3 ? <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-gray-200" /> : <div className="h-4 w-6 bg-gray-200 rounded" />}
+                                            {i < 3 ? <div className="w-6 h-6 md:w-7 md:h-7 rounded-full bg-muted" /> : <div className="h-4 w-6 bg-muted rounded" />}
                                         </div>
                                         <div className="flex-1 flex items-center gap-4 min-w-0">
-                                            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gray-200 shrink-0" />
+                                            <div className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-muted shrink-0" />
                                             <div className="space-y-2 flex-1">
-                                                <div className="h-4 w-24 md:w-32 bg-gray-200 rounded" />
-                                                <div className="h-3 w-16 md:w-20 bg-gray-150 rounded" style={{ backgroundColor: '#f0f0f0' }} />
+                                                <div className="h-4 w-24 md:w-32 bg-muted rounded" />
+                                                <div className="h-3 w-16 md:w-20 bg-muted/60 rounded" />
                                             </div>
                                         </div>
                                         <div className="flex gap-2 md:gap-6 items-center shrink-0">
-                                            <div className="hidden lg:block w-16"><div className="h-10 w-full bg-gray-200 rounded-2xl" /></div>
+                                            <div className="hidden lg:block w-16"><div className="h-10 w-full bg-muted rounded-2xl" /></div>
                                             <div className="w-16 md:w-20 space-y-1">
-                                                <div className="h-2 w-10 bg-gray-200 rounded ml-auto" />
-                                                <div className="h-5 w-12 bg-gray-200 rounded ml-auto" />
+                                                <div className="h-2 w-10 bg-muted rounded ml-auto" />
+                                                <div className="h-5 w-12 bg-muted rounded ml-auto" />
                                             </div>
                                             <div className="w-16 md:w-20 space-y-1">
-                                                <div className="h-2 w-10 bg-gray-200 rounded ml-auto" />
-                                                <div className="h-5 w-12 bg-gray-200 rounded ml-auto" />
+                                                <div className="h-2 w-10 bg-muted rounded ml-auto" />
+                                                <div className="h-5 w-12 bg-muted rounded ml-auto" />
                                             </div>
                                             <div className="w-16 md:w-20 space-y-1">
-                                                <div className="h-2 w-10 bg-gray-200 rounded ml-auto" />
-                                                <div className="h-5 w-8 bg-gray-200 rounded ml-auto" />
+                                                <div className="h-2 w-10 bg-muted rounded ml-auto" />
+                                                <div className="h-5 w-8 bg-muted rounded ml-auto" />
                                             </div>
                                         </div>
                                     </div>
@@ -548,7 +549,7 @@ export default function HomePage() {
                                 </div>
                                 <motion.div
                                     key={`leaderboard-${activeGroup?.code ?? 'global'}-${leaderboardType}`}
-                                    className="divide-y divide-gray-100"
+                                    className="divide-y divide-border"
                                     initial="hidden"
                                     animate="visible"
                                     variants={{

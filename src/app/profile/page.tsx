@@ -173,7 +173,7 @@ export default function ProfilePage() {
                             variant="ghost"
                             size="sm"
                             onClick={() => router.push('/home')}
-                            className="text-[#5F6368] dark:text-gray-400 hover:text-[#4285F4] dark:hover:text-[#8AB4F8] hover:bg-[#F1F3F4] dark:hover:bg-muted rounded-full h-9 px-3 gap-2"
+                            className="text-[#5F6368] dark:text-muted-foreground hover:text-[#4285F4] dark:hover:text-[#8AB4F8] hover:bg-[#F1F3F4] dark:hover:bg-muted rounded-full h-9 px-3 gap-2"
                         >
                             <ArrowLeft className="h-4 w-4" />
                             <span className="hidden sm:inline text-sm font-medium">Back</span>
