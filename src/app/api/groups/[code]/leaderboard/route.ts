@@ -67,24 +67,24 @@ export const GET = requireAuth(async (req: NextRequest, user, context) => {
             }
         }
 
-        // GFG stats
-        const gfgStatsAll = memberIds.length > 0 ? await db.select().from(dailyStats)
-            .where(and(
-                eq(dailyStats.date, today), 
-                eq(dailyStats.platform, 'gfg'),
-                inArray(dailyStats.userId, memberIds)
-            )) : [];
-        const gfgMap = new Map<number, typeof gfgStatsAll[number]>();
-        for (const stat of gfgStatsAll) {
-            if (memberIds.includes(stat.userId)) {
-                gfgMap.set(stat.userId, stat);
-            }
-        }
+        // GFG stats disabled — re-enable when GFG integration is fixed
+        // const gfgStatsAll = memberIds.length > 0 ? await db.select().from(dailyStats)
+        //     .where(and(
+        //         eq(dailyStats.date, today), 
+        //         eq(dailyStats.platform, 'gfg'),
+        //         inArray(dailyStats.userId, memberIds)
+        //     )) : [];
+        // const gfgMap = new Map<number, typeof gfgStatsAll[number]>();
+        // for (const stat of gfgStatsAll) {
+        //     if (memberIds.includes(stat.userId)) {
+        //         gfgMap.set(stat.userId, stat);
+        //     }
+        // }
 
         // Transform and sort
         const leaderboardData = members.map(m => {
             const stat = statsMap.get(m.id);
-            const gfg = gfgMap.get(m.id);
+            // const gfg = gfgMap.get(m.id); // GFG disabled
             const easy = stat?.easy || 0;
             const medium = stat?.medium || 0;
             const hard = stat?.hard || 0;
@@ -98,13 +98,13 @@ export const GET = requireAuth(async (req: NextRequest, user, context) => {
                 gfgUsername: m.gfgUsername,
                 github: m.github,
                 linkedin: m.linkedin,
-                todayPoints: (stat?.todayPoints || 0) + (gfg?.todayPoints || 0),
+                todayPoints: stat?.todayPoints || 0,
                 easy,
                 medium,
                 hard,
                 totalProblems: stat?.total || 0,
-                gfgSolved: gfg?.total || 0,
-                gfgScore: gfg?.todayPoints || 0,
+                gfgSolved: 0, // GFG disabled
+                gfgScore: 0, // GFG disabled
                 ranking: stat?.ranking || 0,
                 avatar: stat?.avatar || '',
                 country: stat?.country || '',

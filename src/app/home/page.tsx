@@ -536,9 +536,11 @@ export default function HomePage() {
                                                 </Tooltip>
                                             </TooltipProvider>
                                         </div>
+                                        {/* GFG column hidden — re-enable when GFG integration is fixed
                                         <div className="w-16 md:w-20 text-right">
                                             <span className="text-xs font-medium text-[#34A853]">GFG</span>
                                         </div>
+                                        */}
                                         <div className="w-16 md:w-20 text-right">
                                             <span className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">Today</span>
                                         </div>

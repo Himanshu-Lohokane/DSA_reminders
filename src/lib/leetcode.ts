@@ -294,22 +294,24 @@ export async function updateDailyStatsForUser(userId: number, leetcodeUsername: 
 
   const today = getTodayDate();
 
-  // Also sync GFG stats if username exists
-  let gfgPoints = 0;
-  let gfgTotal = 0;
-  let gfgScore = 0;
-  if (user.gfgUsername) {
-    try {
-      const gfgRes = await updateDailyStatsForUserGFG(userId, user.gfgUsername);
-      if (gfgRes) {
-        gfgPoints = gfgRes.todayPoints;
-        gfgTotal = gfgRes.total;
-        gfgScore = gfgRes.score;
-      }
-    } catch (error) {
-      console.error(`Failed to sync GFG stats for ${user.gfgUsername}:`, error);
-    }
-  }
+  // GFG sync disabled — re-enable when GFG integration is fixed
+  // let gfgPoints = 0;
+  // let gfgTotal = 0;
+  // let gfgScore = 0;
+  // if (user.gfgUsername) {
+  //   try {
+  //     const gfgRes = await updateDailyStatsForUserGFG(userId, user.gfgUsername);
+  //     if (gfgRes) {
+  //       gfgPoints = gfgRes.todayPoints;
+  //       gfgTotal = gfgRes.total;
+  //       gfgScore = gfgRes.score;
+  //     }
+  //   } catch (error) {
+  //     console.error(`Failed to sync GFG stats for ${user.gfgUsername}:`, error);
+  //   }
+  // }
+  const gfgPoints = 0;
+  const gfgTotal = 0;
 
   // Check if we already have a daily_stats row for today
   const [existingStat] = await db.select().from(dailyStats)

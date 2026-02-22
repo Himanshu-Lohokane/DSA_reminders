@@ -87,16 +87,16 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Fetch GFG stats for today
-    const gfgStats = await db.select().from(dailyStats)
-      .where(and(
-        eq(dailyStats.date, today),
-        eq(dailyStats.platform, 'gfg')
-      ));
-    const gfgMap = new Map<number, typeof gfgStats[number]>();
-    for (const stat of gfgStats) {
-      gfgMap.set(stat.userId, stat);
-    }
+    // GFG stats query disabled — re-enable when GFG integration is fixed
+    // const gfgStats = await db.select().from(dailyStats)
+    //   .where(and(
+    //     eq(dailyStats.date, today),
+    //     eq(dailyStats.platform, 'gfg')
+    //   ));
+    // const gfgMap = new Map<number, typeof gfgStats[number]>();
+    // for (const stat of gfgStats) {
+    //   gfgMap.set(stat.userId, stat);
+    // }
 
     // SWR Pattern: Identify stale users to refresh in background
     const staleUsers = allUsers
@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
       .filter(u => !u.leetcodeUsername.startsWith('pending_'))
       .map(u => {
         const stat = statsMap.get(u.id);
-        const gfg = gfgMap.get(u.id);
+        // const gfg = gfgMap.get(u.id); // GFG disabled
         const easy = stat?.easy || 0;
         const medium = stat?.medium || 0;
         const hard = stat?.hard || 0;
@@ -129,13 +129,13 @@ export async function GET(request: NextRequest) {
           gfgUsername: u.gfgUsername,
           github: u.github,
           linkedin: u.linkedin,
-          todayPoints: (stat?.todayPoints || 0) + (gfg?.todayPoints || 0),
+          todayPoints: stat?.todayPoints || 0,
           easy,
           medium,
           hard,
           totalProblems: stat?.total || 0,
-          gfgSolved: gfg?.total || 0,
-          gfgScore: gfg?.todayPoints || 0,
+          gfgSolved: 0, // GFG disabled
+          gfgScore: 0, // GFG disabled
           ranking: stat?.ranking || 0,
           avatar: stat?.avatar || '',
           country: stat?.country || '',

@@ -22,7 +22,7 @@
 <br />
 
 ## 📖 About The Project
-
+   
 **DSA Grinders** is built for developers who want to stay consistent with their coding journey. By integrating directly with platforms like LeetCode and GeeksforGeeks, it automatically tracks your solved problems, calculates your score, and ranks you on a global or group-specific leaderboard. 
 
 Whether you're preparing for placements or just sharpening your skills, DSA Grinders adds a layer of gamification and social accountability to keep you grinding.
