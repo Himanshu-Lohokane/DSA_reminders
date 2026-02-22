@@ -113,10 +113,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signInWithGoogle = async (forceAccountSelection = false) => {
-        // Use the current origin for development, fallback to env variable for production
-        const redirectUrl = typeof window !== 'undefined'
-            ? `${window.location.origin}/auth/callback`
-            : `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`;
+        // Always use the environment variable for the redirect URL to ensure consistency
+        // and prevent localhost redirects in production
+        const redirectUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`;
 
         const { error } = await supabase.auth.signInWithOAuth({
             provider: 'google',

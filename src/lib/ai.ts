@@ -4,7 +4,7 @@ export interface DynamicContent {
 }
 
 // Base URL for the app (used in AI-generated messages)
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://dsagrinder.in';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL as string;
 
 export async function generateDynamicRoast(userName: string): Promise<DynamicContent | null> {
     const apiKey = process.env.OPENROUTER_API_KEY;

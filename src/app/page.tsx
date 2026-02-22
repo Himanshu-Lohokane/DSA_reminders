@@ -4,12 +4,14 @@ import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/components/AuthContext'
 import Image from 'next/image'
-import { MorphingText } from '@/components/ui/morphing-text'
-import { Particles } from '@/components/ui/particles'
 import { Loader2, Github, Star } from 'lucide-react'
 import { AnimatedThemeToggler } from '@/components/ui/animated-theme-toggler'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
+import dynamic from 'next/dynamic'
+
+const Particles = dynamic(() => import('@/components/ui/particles').then(mod => mod.Particles), { ssr: false })
+const MorphingText = dynamic(() => import('@/components/ui/morphing-text').then(mod => mod.MorphingText), { ssr: false })
 
 export default function Home() {
   const { user, signInWithGoogle, isLoading } = useAuth()
@@ -26,14 +28,6 @@ export default function Home() {
       }
     }
   }, [user, isLoading, router])
-
-  if (isLoading || user) {
-    return (
-      <div className="h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-      </div>
-    )
-  }
 
   const particleColor = '#4285F4'
 

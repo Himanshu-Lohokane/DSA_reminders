@@ -18,7 +18,7 @@ interface WhatsAppAPIResponse {
 }
 
 export async function sendDSAWhatsAppReminder(phoneNumber: string, userName: string): Promise<SendMessageResult> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://dsagrinder.in';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL as string;
   // URLs must be on their own line to be clickable in WhatsApp
   const message = `🔥 *Oye ${userName}!* 🔥
 

@@ -342,7 +342,7 @@ export function getEmailHTML(userName: string, roast?: string, insult?: string, 
         <!-- Buttons -->
         <div class="button-group">
           <a href="https://leetcode.com/problemset/" class="btn btn-primary">Start Solving</a>
-          <a href="https://dsagrinder.in/" class="btn btn-secondary">View Dashboard</a>
+          <a href="${process.env.NEXT_PUBLIC_SITE_URL}/" class="btn btn-secondary">View Dashboard</a>
         </div>
       </div>
       
@@ -352,7 +352,7 @@ export function getEmailHTML(userName: string, roast?: string, insult?: string, 
           Keep grinding. Your future self will thank you.
         </p>
         <p class="footer-links">
-          <a href="https://dsagrinder.in/" class="footer-link">Leaderboard</a>
+          <a href="${process.env.NEXT_PUBLIC_SITE_URL}/" class="footer-link">Leaderboard</a>
           •
           <a href="https://leetcode.com" class="footer-link">LeetCode</a>
         </p>
@@ -379,7 +379,7 @@ export function getCustomEmailHTML(userName: string, subject: string, message: s
       <div class="content">
         <h1 class="greeting">${subject}</h1>
         <p class="instruction" style="white-space: pre-wrap; font-size: 16px; color: #1e293b;">${message}</p>
-        <a href="https://dsagrinder.in/" class="btn">Check leaderboard</a>
+        <a href="${process.env.NEXT_PUBLIC_SITE_URL}/" class="btn">Check leaderboard</a>
       </div>
       
       <div class="footer">

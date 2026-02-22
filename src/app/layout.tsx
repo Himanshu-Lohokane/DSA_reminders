@@ -9,11 +9,23 @@ import SplashScreen from "@/components/SplashScreen";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://dsagrinder.in'),
-  title: "DSA Grinders | Track LeetCode & Compete with Friends",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://dsagrinder.in'),
+  title: {
+    default: "DSA Grinders | Track LeetCode & Compete with Friends",
+    template: "%s | DSA Grinders",
+  },
   description: "The ultimate DSA tracking tool. Compete with friends, track your LeetCode progress, and stay motivated with automated roasts!",
-  keywords: ["DSA", "LeetCode", "Data Structures", "Algorithms", "Coding Competition", "Placement Preparation"],
-  authors: [{ name: "DSA Grinders Team" }],
+  keywords: [
+    "DSA", "LeetCode", "Data Structures", "Algorithms", "Coding Competition", 
+    "Placement Preparation", "Coding Tracker", "DSA Tracker", "Competitive Programming",
+    "GeeksforGeeks", "Codeforces", "Coding Leaderboard"
+  ],
+  authors: [{ name: "DSA Grinders Team", url: process.env.NEXT_PUBLIC_SITE_URL || 'https://dsagrinder.in' }],
+  creator: "DSA Grinders Team",
+  publisher: "DSA Grinders",
+  applicationName: "DSA Grinders",
+  generator: "Next.js",
+  referrer: "origin-when-cross-origin",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -22,18 +34,25 @@ export const metadata: Metadata = {
   },
   formatDetection: {
     telephone: false,
+    email: false,
+    address: false,
   },
-  icons: "/logo.png",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
   openGraph: {
     title: "DSA Grinders | Track LeetCode & Compete with Friends",
-    description: "Compete with friends, track your DSA progress, and stay motivated!",
-    url: "https://dsagrinder.in",
+    description: "Compete with friends, track your DSA progress, and stay motivated with automated roasts!",
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://dsagrinder.in',
     siteName: "DSA Grinders",
     images: [
       {
-        url: "/logo.png",
-        width: 800,
-        height: 800,
+        url: "/opengraph-image",
+        width: 1200,
+        height: 630,
+        alt: "DSA Grinders Preview",
       },
     ],
     locale: "en_US",
@@ -42,8 +61,23 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "DSA Grinders | Track LeetCode & Compete with Friends",
-    description: "Compete with friends, track your DSA progress, and stay motivated!",
-    images: ["/logo.png"],
+    description: "Compete with friends, track your DSA progress, and stay motivated with automated roasts!",
+    images: ["/opengraph-image"],
+    creator: "@dsagrinders",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  alternates: {
+    canonical: process.env.NEXT_PUBLIC_SITE_URL || 'https://dsagrinder.in',
   },
 };
 
@@ -76,6 +110,15 @@ export default function RootLayout({
         {/* Additional PWA Meta Tags */}
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="application-name" content="DSA Grinders" />
+        
+        {/* Umami Analytics */}
+        {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
+          <script
+            defer
+            src={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL || "https://cloud.umami.is/script.js"}
+            data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
+          ></script>
+        )}
       </head>
       <body className="antialiased bg-background text-foreground min-h-screen font-sans touch-manipulation">
         <ThemeProvider
