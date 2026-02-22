@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-    const baseUrl = 'https://dsa-grinders.vercel.app';
+    const baseUrl = 'https://dsagrinder.in';
 
     const routes = [
         '',

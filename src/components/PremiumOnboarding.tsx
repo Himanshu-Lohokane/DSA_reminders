@@ -318,7 +318,7 @@ export default function PremiumOnboarding() {
                                 type="time"
                                 value={formData.dailyGrindTime}
                                 onChange={(e) => setFormData({ ...formData, dailyGrindTime: e.target.value })}
-                                className="px-8 py-6 bg-[#F1F3F4] dark:bg-gray-800 border-2 border-transparent focus:border-[#FBBC04] rounded-2xl text-2xl font-bold outline-none transition-all text-center min-w-50"
+                                className="px-8 py-6 bg-[#F1F3F4] dark:bg-gray-800 border-2 border-transparent focus:border-[#FBBC04] rounded-2xl text-2xl font-bold outline-none transition-all text-center min-w-5"
                             />
                         </div>
 

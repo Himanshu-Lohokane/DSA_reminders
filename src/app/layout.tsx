@@ -9,7 +9,7 @@ import SplashScreen from "@/components/SplashScreen";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://dsa-grinders.vercel.app'),
+  metadataBase: new URL('https://dsagrinder.in'),
   title: "DSA Grinders | Track LeetCode & Compete with Friends",
   description: "The ultimate DSA tracking tool. Compete with friends, track your LeetCode progress, and stay motivated with automated roasts!",
   keywords: ["DSA", "LeetCode", "Data Structures", "Algorithms", "Coding Competition", "Placement Preparation"],
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "DSA Grinders | Track LeetCode & Compete with Friends",
     description: "Compete with friends, track your DSA progress, and stay motivated!",
-    url: "https://dsa-grinders.vercel.app",
+    url: "https://dsagrinder.in",
     siteName: "DSA Grinders",
     images: [
       {

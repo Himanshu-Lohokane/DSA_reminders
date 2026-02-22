@@ -402,7 +402,7 @@ export default function HomePage() {
         if (typeof window !== 'undefined') {
             return window.location.origin;
         }
-        return process.env.NEXT_PUBLIC_APP_URL || 'https://dsa-grinders.vercel.app';
+        return process.env.NEXT_PUBLIC_APP_URL || 'https://dsagrinder.in';
     };
 
     const handleShareGroup = async (group: GroupWithMembership) => {
