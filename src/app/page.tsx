@@ -32,7 +32,7 @@ export default function Home() {
   const particleColor = '#4285F4'
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-background flex flex-col">
+    <div className="h-screen w-screen overflow-hidden bg-background dark:bg-[#17181A] flex flex-col">
       {/* Particle Background */}
       <Particles
         className="fixed inset-0 pointer-events-none"
@@ -42,6 +42,10 @@ export default function Home() {
         staticity={50}
         ease={60}
       />
+
+      {/* Google color glow blobs — same as login page */}
+      <div className="fixed top-0 left-1/4 w-[500px] h-[500px] bg-[#4285F4]/10 dark:bg-[#4285F4]/8 rounded-full blur-3xl pointer-events-none" />
+      <div className="fixed bottom-0 right-1/4 w-[500px] h-[500px] bg-[#EA4335]/8 dark:bg-[#EA4335]/6 rounded-full blur-3xl pointer-events-none" />
 
       {/* Floating GitHub Star Button */}
       <a

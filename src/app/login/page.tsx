@@ -8,6 +8,9 @@ import { useAuth } from "@/components/AuthContext";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+
+const Particles = dynamic(() => import('@/components/ui/particles').then(mod => mod.Particles), { ssr: false });
 
 export default function AuthPage() {
     const { user, signInWithGoogle, isLoading: authLoading } = useAuth();
@@ -41,11 +44,24 @@ export default function AuthPage() {
     }
 
     return (
-        <div className="min-h-screen bg-muted flex flex-col items-center justify-center p-4 font-sans">
+        <div className="min-h-screen bg-background dark:bg-[#17181A] flex flex-col items-center justify-center p-4 font-sans">
+            {/* Particle Background */}
+            <Particles
+                className="fixed inset-0 pointer-events-none"
+                quantity={150}
+                color="#4285F4"
+                size={1.1}
+                staticity={50}
+                ease={60}
+            />
+
+            {/* Google color glow blobs */}
+            <div className="fixed top-0 left-1/4 w-96 h-96 bg-[#4285F4]/10 dark:bg-[#4285F4]/8 rounded-full blur-3xl pointer-events-none" />
+            <div className="fixed bottom-0 right-1/4 w-96 h-96 bg-[#EA4335]/8 dark:bg-[#EA4335]/6 rounded-full blur-3xl pointer-events-none" />
             {/* Back to home - Fixed top-left */}
             <Link
                 href="/"
-                className="fixed top-8 left-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
+                className="fixed top-8 left-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors z-10"
             >
                 <ArrowLeft className="w-4 h-4" />
                 Back to home
@@ -55,7 +71,7 @@ export default function AuthPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.4, ease: "easeOut" }}
-                className="w-full max-w-[448px]"
+                className="w-full max-w-[448px] relative z-10"
             >
                 <div className="bg-card border border-border rounded-xl overflow-hidden shadow-[0_1px_2px_rgba(60,64,67,0.3),0_1px_3px_1px_rgba(60,64,67,0.15)]">
                     {/* Accent line at top */}
@@ -117,6 +133,11 @@ export default function AuthPage() {
                     <a href="https://github.com/piyushdhoka/DSA_Grinders" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Privacy</a>
                     <a href="https://github.com/piyushdhoka/DSA_Grinders" target="_blank" rel="noopener noreferrer" className="hover:text-foreground transition-colors">Terms</a>
                 </div>
+
+                {/* Tagline */}
+                <p className="mt-8 text-center text-xs text-muted-foreground/60">
+                    Track progress. Build streaks. Compete with friends.
+                </p>
             </motion.div>
         </div>
     );
