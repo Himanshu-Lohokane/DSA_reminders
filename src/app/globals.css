@@ -41,15 +41,43 @@
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* ─── Google Brand Color Tokens ─────────────────────────────────
+     Use these in JSX: text-g-blue, bg-g-red, border-g-green, etc.
+     They automatically switch between light and dark values.
+  ──────────────────────────────────────────────────────────────── */
+  --color-g-blue:           var(--g-blue);
+  --color-g-red:            var(--g-red);
+  --color-g-yellow:         var(--g-yellow);
+  --color-g-green:          var(--g-green);
+  --color-g-blue-deep:      var(--g-blue-deep);
+  --color-g-surface:        var(--g-surface);
+  --color-g-surface-2:      var(--g-surface-2);
+  --color-g-divider:        var(--g-divider);
+  --color-g-text-primary:   var(--g-text-primary);
+  --color-g-text-secondary: var(--g-text-secondary);
 }
 
 :root {
   --radius: 0.5rem;
 
-  /* Google News Official Color Palette */
+  /* ─── Google Brand Colors (light) ──────────────────────────────
+     Single source of truth. Override in .dark below.
+  ──────────────────────────────────────────────────────────────── */
+  --g-blue:           #4285F4;  /* Google Blue */
+  --g-red:            #EA4335;  /* Google Red */
+  --g-yellow:         #FBBC04;  /* Google Yellow */
+  --g-green:          #34A853;  /* Google Green */
+  --g-blue-deep:      #174EA6;  /* Deep Blue (links, headings) */
+  --g-surface:        #F1F3F4;  /* Input / chip bg */
+  --g-surface-2:      #E8EAED;  /* Slightly darker surface */
+  --g-divider:        #E8EAED;  /* Border / divider */
+  --g-text-primary:   #202124;  /* Primary text */
+  --g-text-secondary: #5F6368;  /* Secondary / muted text */
+
+  /* shadcn semantic tokens */
   --background: #ffffff;
   --foreground: #202124;
-  /* Black */
 
   --card: #ffffff;
   --card-foreground: #202124;
@@ -57,87 +85,30 @@
   --popover: #ffffff;
   --popover-foreground: #202124;
 
-  /* Primary: Google News Blue */
   --primary: #174EA6;
-  /* Dark Blue */
-  --primary-hover: #4285F4;
-  /* Medium Blue for hover */
-  --primary-light: #D2E3FC;
-  /* Light Blue */
   --primary-foreground: #ffffff;
 
-  /* Secondary: Google News Colors */
   --secondary: #F1F3F4;
-  /* Light Grey */
   --secondary-foreground: #174EA6;
 
-  /* Status Colors (Google News Palette) */
-  --success: #0D652D;
-  /* Green */
-  --success-medium: #34A853;
-  /* Medium Green */
-  --success-light: #CEEAD6;
-  /* Light Green */
-
-  --warning: #E37400;
-  /* Orange */
-  --warning-light: #FBBC04;
-  /* Yellow */
-  --warning-lightest: #FEEFC3;
-  /* Light Yellow */
-
-  --danger: #A50E0E;
-  /* Red */
-  --danger-medium: #EA4335;
-  /* Medium Red */
-  --danger-light: #FAD2CF;
-  /* Light Red */
-
-  /* Muted / Greys */
   --muted: #F1F3F4;
-  /* Light Grey */
-  --muted-foreground: #9AA0A6;
-  /* Grey */
+  --muted-foreground: #5F6368;  /* fixed: was #9AA0A6 (too pale) */
 
   --accent: #D2E3FC;
-  /* Light Blue */
   --accent-foreground: #174EA6;
 
   --destructive: #A50E0E;
-  /* Red from palette */
   --destructive-foreground: #ffffff;
 
-  --border: #9AA0A6;
-  /* Grey */
+  --border: #E8EAED;            /* fixed: was #9AA0A6 (way too dark) */
   --input: #F1F3F4;
   --ring: #4285F4;
-  /* Medium Blue */
 
-  /* Chart colors from Google News */
   --chart-1: #4285F4;
-  /* Medium Blue */
   --chart-2: #EA4335;
-  /* Medium Red */
   --chart-3: #FBBC04;
-  /* Yellow */
   --chart-4: #34A853;
-  /* Medium Green */
-  --chart-5: #9AA0A6;
-  /* Grey */
-
-  /* Difficulty Colors (LeetCode style with Google palette) */
-  --easy: #0D652D;
-  /* Dark Green */
-  --easy-bg: #CEEAD6;
-  /* Light Green */
-  --medium: #E37400;
-  /* Orange */
-  --medium-bg: #FEEFC3;
-  /* Light Yellow */
-  --hard: #A50E0E;
-  /* Dark Red */
-  --hard-bg: #FAD2CF;
-  /* Light Red */
+  --chart-5: #5F6368;
 
   --sidebar: #ffffff;
   --sidebar-foreground: #202124;
@@ -145,29 +116,51 @@
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #F1F3F4;
   --sidebar-accent-foreground: #202124;
-  --sidebar-border: #9AA0A6;
+  --sidebar-border: #E8EAED;
   --sidebar-ring: #4285F4;
 }
 
 .dark {
-  /* Google-style dark mode */
-  --background: #202124;
+  /* ─── Google Brand Colors (dark) ───────────────────────────────
+     Google's official dark-mode color system (Material You / Google One)
+  ──────────────────────────────────────────────────────────────── */
+  --g-blue:           #8AB4F8;  /* Google Blue dark */
+  --g-red:            #F28B82;  /* Google Red dark */
+  --g-yellow:         #FDD663;  /* Google Yellow dark */
+  --g-green:          #81C995;  /* Google Green dark */
+  --g-blue-deep:      #8AB4F8;  /* same as g-blue in dark */
+  --g-surface:        #3C4043;  /* Input / chip bg */
+  --g-surface-2:      #3C4043;  /* Slightly elevated surface */
+  --g-divider:        #3C4043;  /* Border / divider */
+  --g-text-primary:   #E8EAED;  /* Primary text */
+  --g-text-secondary: #BDC1C6;  /* Secondary text */
+
+  /* shadcn semantic tokens */
+  --background: #202124;        /* Google's exact dark bg */
   --foreground: #E8EAED;
-  --card: #303134;
+
+  --card: #303134;              /* Surface — clear contrast above bg */
   --card-foreground: #E8EAED;
+
   --popover: #303134;
   --popover-foreground: #E8EAED;
+
   --primary: #8AB4F8;
   --primary-foreground: #202124;
-  --secondary: #303134;
+
+  --secondary: #3C4043;
   --secondary-foreground: #E8EAED;
-  --muted: #2d2e30;
-  --muted-foreground: #9AA0A6;
-  --accent: #303134;
+
+  --muted: #3C4043;
+  --muted-foreground: #BDC1C6;  /* NOT washed-out #9AA0A6 */
+
+  --accent: #3C4043;
   --accent-foreground: #E8EAED;
+
   --destructive: #F28B82;
   --destructive-foreground: #202124;
-  --border: #5F6368;
+
+  --border: #3C4043;
   --input: #3C4043;
   --ring: #8AB4F8;
 
@@ -175,15 +168,15 @@
   --chart-2: #F28B82;
   --chart-3: #FDD663;
   --chart-4: #81C995;
-  --chart-5: #9AA0A6;
+  --chart-5: #BDC1C6;
 
   --sidebar: #202124;
   --sidebar-foreground: #E8EAED;
   --sidebar-primary: #8AB4F8;
   --sidebar-primary-foreground: #202124;
-  --sidebar-accent: #303134;
+  --sidebar-accent: #3C4043;
   --sidebar-accent-foreground: #E8EAED;
-  --sidebar-border: #5F6368;
+  --sidebar-border: #3C4043;
   --sidebar-ring: #8AB4F8;
 }
 

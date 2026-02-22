@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Script from "next/script";
 import SplashScreen from "@/components/SplashScreen";
 import Providers from "@/components/Providers";
+import PageTransition from "@/components/PageTransition";
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://dsagrinder.in'),
@@ -131,7 +132,7 @@ export default function RootLayout({
           <ErrorReporter />
           <AuthProvider>
             <Providers>
-              {children}
+              <PageTransition>{children}</PageTransition>
             </Providers>
           </AuthProvider>
           <Toaster />

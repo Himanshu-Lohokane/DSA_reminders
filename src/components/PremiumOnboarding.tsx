@@ -147,7 +147,7 @@ export default function PremiumOnboarding() {
                                 <Code2 className="w-10 h-10 text-white" />
                             </div>
                             <h2 className="text-3xl font-black text-[#202124] dark:text-white">Connect LeetCode</h2>
-                            <p className="text-[#5F6368] dark:text-gray-400 max-w-sm mx-auto">
+                            <p className="text-[#5F6368] dark:text-muted-foreground max-w-sm mx-auto">
                                 We need your LeetCode username to track your progress and show you on the leaderboard.
                             </p>
                         </div>
@@ -166,7 +166,7 @@ export default function PremiumOnboarding() {
                                     setFormData({ ...formData, leetcodeUsername: value });
                                 }}
                                 placeholder="your_leetcode_username"
-                                className="w-full px-6 py-4 bg-[#F1F3F4] dark:bg-gray-800 border-2 border-transparent focus:border-[#4285F4] rounded-2xl text-lg font-medium outline-none transition-all"
+                                className="w-full px-6 py-4 bg-[#F1F3F4] dark:bg-muted border-2 border-transparent focus:border-[#4285F4] rounded-2xl text-lg font-medium outline-none transition-all dark:text-foreground dark:placeholder:text-muted-foreground"
                                 onKeyDown={(e) => e.key === 'Enter' && validateLeetCode()}
                             />
                             <button
@@ -189,7 +189,7 @@ export default function PremiumOnboarding() {
                             <motion.div
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
-                                className="grid grid-cols-3 gap-3 p-4 bg-[#CEEAD6] dark:bg-emerald-900/20 rounded-2xl"
+                                className="grid grid-cols-3 gap-3 p-4 bg-[#CEEAD6] dark:bg-[#81C995]/10 rounded-2xl"
                             >
                                 <div className="text-center">
                                     <div className="text-2xl font-black text-[#34A853]">{leetcodeStats.totalSolved || 0}</div>
@@ -216,7 +216,7 @@ export default function PremiumOnboarding() {
                                 <Bell className="w-10 h-10 text-white" />
                             </div>
                             <h2 className="text-3xl font-black text-[#202124] dark:text-white">WhatsApp Accountability</h2>
-                            <p className="text-[#5F6368] dark:text-gray-400 max-w-sm mx-auto">
+                            <p className="text-[#5F6368] dark:text-muted-foreground max-w-sm mx-auto">
                                 Get daily reminders and roasts directly on WhatsApp. No escape! 😈
                             </p>
                         </div>
@@ -225,7 +225,7 @@ export default function PremiumOnboarding() {
                             <select
                                 value={formData.countryCode}
                                 onChange={(e) => setFormData({ ...formData, countryCode: e.target.value })}
-                                className="w-28 px-4 py-4 bg-[#F1F3F4] dark:bg-gray-800 border-2 border-transparent focus:border-[#34A853] rounded-2xl font-medium outline-none"
+                                className="w-28 px-4 py-4 bg-[#F1F3F4] dark:bg-muted border-2 border-transparent focus:border-[#34A853] rounded-2xl font-medium outline-none dark:text-foreground"
                             >
                                 <option value="+91">🇮🇳 +91</option>
                                 <option value="+1">🇺🇸 +1</option>
@@ -237,7 +237,7 @@ export default function PremiumOnboarding() {
                                 value={formData.phoneNumber}
                                 onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value.replace(/\D/g, '') })}
                                 placeholder="9876543210"
-                                className="flex-1 px-6 py-4 bg-[#F1F3F4] dark:bg-gray-800 border-2 border-transparent focus:border-[#34A853] rounded-2xl text-lg font-medium outline-none"
+                                className="flex-1 px-6 py-4 bg-[#F1F3F4] dark:bg-muted border-2 border-transparent focus:border-[#34A853] rounded-2xl text-lg font-medium outline-none dark:text-foreground dark:placeholder:text-muted-foreground"
                             />
                         </div>
 
@@ -260,7 +260,7 @@ export default function PremiumOnboarding() {
                                 <Flame className="w-10 h-10 text-white" />
                             </div>
                             <h2 className="text-3xl font-black text-[#202124] dark:text-white">Choose Your Pain</h2>
-                            <p className="text-[#5F6368] dark:text-gray-400 max-w-sm mx-auto">
+                            <p className="text-[#5F6368] dark:text-muted-foreground max-w-sm mx-auto">
                                 How hard should we roast you when you slack?
                             </p>
                         </div>
@@ -272,15 +272,15 @@ export default function PremiumOnboarding() {
                                     onClick={() => setFormData({ ...formData, roastIntensity: level.id as any })}
                                     className={`w-full p-4 rounded-2xl border-2 transition-all text-left ${formData.roastIntensity === level.id
                                         ? 'border-[#EA4335] bg-[#FAD2CF] dark:bg-red-900/20'
-                                        : 'border-[#E8EAED] dark:border-gray-700 hover:border-[#EA4335]/50'
+                                        : 'border-[#E8EAED] dark:border-border hover:border-[#EA4335]/50'
                                         }`}
                                 >
                                     <div className="flex items-center gap-4">
                                         <span className="text-3xl">{level.emoji}</span>
                                         <div className="flex-1">
                                             <div className="font-bold text-[#202124] dark:text-white">{level.label}</div>
-                                            <div className="text-sm text-[#5F6368] dark:text-gray-400">{level.description}</div>
-                                            <div className="text-xs text-[#5F6368] dark:text-gray-500 italic mt-1">{level.example}</div>
+                                            <div className="text-sm text-[#5F6368] dark:text-muted-foreground">{level.description}</div>
+                                            <div className="text-xs text-[#5F6368] dark:text-muted-foreground/70 italic mt-1">{level.example}</div>
                                         </div>
                                         {formData.roastIntensity === level.id && (
                                             <CheckCircle2 className="w-6 h-6 text-[#EA4335]" />
@@ -308,7 +308,7 @@ export default function PremiumOnboarding() {
                                 <Clock className="w-10 h-10 text-white" />
                             </div>
                             <h2 className="text-3xl font-black text-[#202124] dark:text-white">Daily Grind Time</h2>
-                            <p className="text-[#5F6368] dark:text-gray-400 max-w-sm mx-auto">
+                            <p className="text-[#5F6368] dark:text-muted-foreground max-w-sm mx-auto">
                                 When should we send your daily reminder?
                             </p>
                         </div>
@@ -318,7 +318,7 @@ export default function PremiumOnboarding() {
                                 type="time"
                                 value={formData.dailyGrindTime}
                                 onChange={(e) => setFormData({ ...formData, dailyGrindTime: e.target.value })}
-                                className="px-8 py-6 bg-[#F1F3F4] dark:bg-gray-800 border-2 border-transparent focus:border-[#FBBC04] rounded-2xl text-2xl font-bold outline-none transition-all text-center min-w-5"
+                                className="px-8 py-6 bg-[#F1F3F4] dark:bg-muted border-2 border-transparent focus:border-[#FBBC04] rounded-2xl text-2xl font-bold outline-none transition-all text-center min-w-5 dark:text-foreground"
                             />
                         </div>
 
@@ -340,7 +340,7 @@ export default function PremiumOnboarding() {
                                 <Target className="w-10 h-10 text-white" />
                             </div>
                             <h2 className="text-3xl font-black text-[#202124] dark:text-white">Social Profiles</h2>
-                            <p className="text-[#5F6368] dark:text-gray-400 max-w-sm mx-auto">
+                            <p className="text-[#5F6368] dark:text-muted-foreground max-w-sm mx-auto">
                                 Optional: Add your GitHub and LinkedIn profiles
                             </p>
                         </div>
@@ -362,7 +362,7 @@ export default function PremiumOnboarding() {
                             */}
 
                             <div>
-                                <label className="block text-sm font-semibold text-[#5F6368] dark:text-gray-400 mb-2">
+                                <label className="block text-sm font-semibold text-[#5F6368] dark:text-muted-foreground mb-2">
                                     GitHub Username
                                 </label>
                                 <input
@@ -370,12 +370,12 @@ export default function PremiumOnboarding() {
                                     value={formData.github}
                                     onChange={(e) => setFormData({ ...formData, github: e.target.value })}
                                     placeholder="e.g. github_handle"
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-[#E8EAED] dark:border-gray-700 focus:border-[#4285F4] outline-none transition-all bg-white dark:bg-gray-800 text-[#202124] dark:text-white"
+                                    className="w-full px-4 py-3 rounded-xl border border-[#E8EAED] dark:border-border focus:border-[#4285F4] outline-none transition-all bg-white dark:bg-muted text-[#202124] dark:text-foreground dark:placeholder:text-muted-foreground/60"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-sm font-semibold text-[#5F6368] dark:text-gray-400 mb-2">
+                                <label className="block text-sm font-semibold text-[#5F6368] dark:text-muted-foreground mb-2">
                                     LinkedIn Username
                                 </label>
                                 <input
@@ -383,11 +383,11 @@ export default function PremiumOnboarding() {
                                     value={formData.linkedin}
                                     onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
                                     placeholder="e.g. linkedin_id"
-                                    className="w-full px-4 py-3 rounded-xl border-2 border-[#E8EAED] dark:border-gray-700 focus:border-[#4285F4] outline-none transition-all bg-white dark:bg-gray-800 text-[#202124] dark:text-white"
+                                    className="w-full px-4 py-3 rounded-xl border border-[#E8EAED] dark:border-border focus:border-[#4285F4] outline-none transition-all bg-white dark:bg-muted text-[#202124] dark:text-foreground dark:placeholder:text-muted-foreground/60"
                                 />
                             </div>
 
-                            <p className="text-xs text-[#5F6368] dark:text-gray-500 text-center">
+                            <p className="text-xs text-[#5F6368] dark:text-muted-foreground/70 text-center">
                                 You can skip this step or add these later in your profile
                             </p>
                         </div>
@@ -409,26 +409,26 @@ export default function PremiumOnboarding() {
                             <Trophy className="w-12 h-12 text-white" />
                         </div>
                         <h2 className="text-4xl font-black text-[#202124] dark:text-white">Enter the Arena</h2>
-                        <p className="text-[#5F6368] dark:text-gray-400 text-lg max-w-md mx-auto">
+                        <p className="text-[#5F6368] dark:text-muted-foreground text-lg max-w-md mx-auto">
                             You're all set. Time to prove yourself on the leaderboard. No excuses, no mercy.
                         </p>
 
-                        <div className="bg-linear-to-br from-[#D2E3FC] to-[#CEEAD6] dark:from-blue-900/20 dark:to-emerald-900/20 rounded-2xl p-6 space-y-4 text-left">
+                        <div className="bg-[#F1F3F4] dark:bg-muted rounded-2xl p-6 space-y-4 text-left border border-[#E8EAED] dark:border-border">
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-[#5F6368] dark:text-gray-400">LeetCode</span>
-                                <span className="font-bold text-[#202124] dark:text-white">{formData.leetcodeUsername}</span>
+                                <span className="text-sm text-[#5F6368] dark:text-muted-foreground">LeetCode</span>
+                                <span className="font-bold text-[#202124] dark:text-foreground">{formData.leetcodeUsername}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-[#5F6368] dark:text-gray-400">WhatsApp</span>
-                                <span className="font-bold text-[#202124] dark:text-white">{formData.countryCode} {formData.phoneNumber}</span>
+                                <span className="text-sm text-[#5F6368] dark:text-muted-foreground">WhatsApp</span>
+                                <span className="font-bold text-[#202124] dark:text-foreground">{formData.countryCode} {formData.phoneNumber}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-[#5F6368] dark:text-gray-400">Roast Level</span>
-                                <span className="font-bold text-[#202124] dark:text-white capitalize">{formData.roastIntensity}</span>
+                                <span className="text-sm text-[#5F6368] dark:text-muted-foreground">Roast Level</span>
+                                <span className="font-bold text-[#202124] dark:text-foreground capitalize">{formData.roastIntensity}</span>
                             </div>
                             <div className="flex items-center justify-between">
-                                <span className="text-sm text-[#5F6368] dark:text-gray-400">Daily Time</span>
-                                <span className="font-bold text-[#202124] dark:text-white">{formData.dailyGrindTime}</span>
+                                <span className="text-sm text-[#5F6368] dark:text-muted-foreground">Daily Time</span>
+                                <span className="font-bold text-[#202124] dark:text-foreground">{formData.dailyGrindTime}</span>
                             </div>
                         </div>
 
@@ -480,7 +480,7 @@ export default function PremiumOnboarding() {
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
-                    className="bg-white dark:bg-[#202124] rounded-3xl p-8 shadow-2xl"
+                    className="bg-white dark:bg-card rounded-3xl p-8 shadow-2xl"
                 >
                     {renderStep()}
                 </motion.div>
@@ -490,7 +490,7 @@ export default function PremiumOnboarding() {
                     <div className="text-center mt-4">
                         <button
                             onClick={() => setStep(6)}
-                            className="text-sm text-gray-400 hover:text-white transition-colors"
+                            className="text-sm text-muted-foreground hover:text-foreground transition-colors"
                         >
                             Skip this step →
                         </button>
