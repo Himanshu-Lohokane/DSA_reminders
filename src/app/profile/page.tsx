@@ -199,20 +199,16 @@ export default function ProfilePage() {
                     transition={{ duration: 0.5 }}
                     className="mb-8"
                 >
-                    <div className="relative bg-white dark:bg-card rounded-3xl border border-[#E8EAED] dark:border-border p-6 md:p-8 overflow-hidden">
-                        {/* Decorative blobs */}
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-[#4285F4]/5 dark:bg-[#4285F4]/10 rounded-full -mr-16 -mt-16 blur-3xl pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 w-32 h-32 bg-[#34A853]/5 dark:bg-[#34A853]/10 rounded-full -ml-8 -mb-8 blur-2xl pointer-events-none" />
-
-                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 relative">
+                    <div className="bg-white dark:bg-card rounded-2xl border border-[#E8EAED] dark:border-border p-6 md:p-8">
+                        <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
                             {/* Avatar */}
-                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-linear-to-br from-[#4285F4] to-[#174EA6] flex items-center justify-center text-white text-2xl sm:text-3xl font-black shrink-0 shadow-lg shadow-[#4285F4]/20">
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-[#E8F0FE] dark:bg-[#4285F4]/15 flex items-center justify-center text-[#4285F4] text-2xl sm:text-3xl font-bold shrink-0">
                                 {initials}
                             </div>
 
                             <div className="text-center sm:text-left flex-1">
                                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1">
-                                    <h1 className="text-2xl md:text-3xl font-black text-[#202124] dark:text-white">{user.name}</h1>
+                                    <h1 className="text-2xl md:text-3xl font-bold text-[#202124] dark:text-white">{user.name}</h1>
                                     {user.onboardingCompleted && (
                                         <span className="inline-flex items-center gap-1 text-xs bg-[#CEEAD6] dark:bg-[#34A853]/15 text-[#0D652D] dark:text-[#34A853] font-bold px-2.5 py-1 rounded-full">
                                             <CheckCircle2 className="w-3 h-3" /> Verified
@@ -244,14 +240,14 @@ export default function ProfilePage() {
                 </motion.div>
 
                 {/* Section Tabs */}
-                <div className="flex gap-1 bg-white dark:bg-card rounded-2xl border border-[#E8EAED] dark:border-border p-1.5 mb-6">
+                <div className="flex gap-1 bg-white dark:bg-card rounded-xl border border-[#E8EAED] dark:border-border p-1 mb-6">
                     {SECTIONS.map(({ id, label, icon: Icon }) => (
                         <button
                             key={id}
                             onClick={() => setActiveSection(id)}
-                            className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-sm font-semibold transition-all ${activeSection === id
-                                ? 'bg-[#F1F3F4] dark:bg-muted text-[#202124] dark:text-foreground shadow-sm'
-                                : 'text-[#5F6368] dark:text-muted-foreground hover:text-[#202124] dark:hover:text-foreground'
+                            className={`flex-1 flex items-center justify-center gap-2 py-2 px-3 rounded-lg text-sm font-medium transition-all ${activeSection === id
+                                ? 'bg-[#E8F0FE] dark:bg-[#4285F4]/15 text-[#4285F4] dark:text-[#8AB4F8]'
+                                : 'text-[#5F6368] dark:text-muted-foreground hover:text-[#202124] dark:hover:text-foreground hover:bg-[#F1F3F4] dark:hover:bg-muted'
                                 }`}
                         >
                             <Icon className="w-4 h-4 shrink-0" />
@@ -274,10 +270,10 @@ export default function ProfilePage() {
                                 transition={{ duration: 0.25 }}
                                 className="space-y-4"
                             >
-                                <div className="bg-white dark:bg-card rounded-3xl border border-[#E8EAED] dark:border-border p-6 md:p-8 space-y-6">
+                                <div className="bg-white dark:bg-card rounded-2xl border border-[#E8EAED] dark:border-border p-6 md:p-8 space-y-6">
                                     <div className="flex items-center gap-2">
                                         <div className="w-1 h-5 bg-[#4285F4] rounded-full" />
-                                        <h2 className="font-bold text-[#202124] dark:text-white">Personal Information</h2>
+                                        <h2 className="font-semibold text-[#202124] dark:text-white">Personal Information</h2>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -317,32 +313,34 @@ export default function ProfilePage() {
                                 className="space-y-4"
                             >
                                 {/* LeetCode — locked */}
-                                <div className="bg-linear-to-br from-[#E37400] to-[#A50E0E] rounded-3xl p-6 md:p-8 text-white relative overflow-hidden">
-                                    <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-                                    <div className="flex items-start gap-3 relative">
-                                        <div className="bg-white/15 p-2.5 rounded-2xl">
-                                            <span className="text-xl">⚡</span>
+                                <div className="bg-white dark:bg-card rounded-2xl border border-[#E8EAED] dark:border-border p-5 md:p-6">
+                                    <div className="flex items-center gap-4">
+                                        <div className="w-10 h-10 rounded-xl bg-[#FEE9CC] dark:bg-[#FBBC04]/10 flex items-center justify-center shrink-0">
+                                            <span className="text-lg">⚡</span>
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-orange-100/60 text-[10px] font-bold uppercase tracking-widest mb-0.5">LeetCode (Locked)</p>
-                                            <p className="text-xl font-black truncate">@{user.leetcodeUsername}</p>
-                                            <p className="text-orange-100/70 text-xs mt-2 font-medium">Username cannot be changed — it ensures tracking consistency across the leaderboard.</p>
+                                            <div className="flex items-center gap-2 mb-0.5">
+                                                <p className="text-xs font-medium text-[#5F6368] dark:text-muted-foreground">LeetCode</p>
+                                                <span className="text-[10px] font-medium text-[#5F6368] dark:text-muted-foreground bg-[#F1F3F4] dark:bg-muted px-2 py-0.5 rounded-full">Read-only</span>
+                                            </div>
+                                            <p className="text-base font-semibold text-[#202124] dark:text-white truncate">@{user.leetcodeUsername}</p>
+                                            <p className="text-xs text-[#5F6368] dark:text-muted-foreground mt-0.5">Username cannot be changed — it ensures tracking consistency.</p>
                                         </div>
                                         <a
                                             href={`https://leetcode.com/u/${user.leetcodeUsername}/`}
                                             target="_blank"
                                             rel="noopener noreferrer"
-                                            className="shrink-0 p-2 rounded-xl bg-white/15 hover:bg-white/25 transition-colors"
+                                            className="shrink-0 p-2 rounded-lg text-[#5F6368] hover:text-[#4285F4] hover:bg-[#E8F0FE] dark:hover:bg-[#4285F4]/10 transition-colors"
                                         >
                                             <ExternalLink className="w-4 h-4" />
                                         </a>
                                     </div>
                                 </div>
 
-                                <div className="bg-white dark:bg-card rounded-3xl border border-[#E8EAED] dark:border-border p-6 md:p-8 space-y-6">
+                                <div className="bg-white dark:bg-card rounded-2xl border border-[#E8EAED] dark:border-border p-6 md:p-8 space-y-6">
                                     <div className="flex items-center gap-2">
                                         <div className="w-1 h-5 bg-[#34A853] rounded-full" />
-                                        <h2 className="font-bold text-[#202124] dark:text-white">Coding & Social Profiles</h2>
+                                        <h2 className="font-semibold text-[#202124] dark:text-white">Coding & Social Profiles</h2>
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -407,15 +405,15 @@ export default function ProfilePage() {
                                 className="space-y-4"
                             >
                                 {/* Daily Grind Time */}
-                                <div className="bg-white dark:bg-card rounded-3xl border border-[#E8EAED] dark:border-border p-6 md:p-8 space-y-6">
+                                <div className="bg-white dark:bg-card rounded-2xl border border-[#E8EAED] dark:border-border p-6 md:p-8 space-y-6">
                                     <div className="flex items-center gap-2">
                                         <div className="w-1 h-5 bg-[#FBBC04] rounded-full" />
-                                        <h2 className="font-bold text-[#202124] dark:text-white">Daily Reminder</h2>
+                                        <h2 className="font-semibold text-[#202124] dark:text-white">Daily Reminder</h2>
                                     </div>
 
                                     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-                                        <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-[#FBBC04] to-[#E37400] flex items-center justify-center shadow-lg shadow-[#FBBC04]/20 shrink-0">
-                                            <Clock className="w-9 h-9 text-white" />
+                                        <div className="w-12 h-12 rounded-xl bg-[#FEF9E7] dark:bg-[#FBBC04]/10 flex items-center justify-center shrink-0">
+                                            <Clock className="w-6 h-6 text-[#E37400] dark:text-[#FBBC04]" />
                                         </div>
                                         <div className="flex-1">
                                             <p className="font-semibold text-[#202124] dark:text-white mb-1">Daily Grind Time</p>
@@ -426,17 +424,17 @@ export default function ProfilePage() {
                                                 value={dailyGrindTime}
                                                 onChange={(e) => setDailyGrindTime(e.target.value)}
                                                 disabled={isSaving}
-                                                className="px-5 py-3 bg-[#F1F3F4] dark:bg-muted border-2 border-transparent focus:border-[#FBBC04] rounded-2xl text-lg font-bold outline-none transition-all text-center text-[#202124] dark:text-foreground disabled:opacity-60"
+                                                className="px-5 py-3 bg-[#F1F3F4] dark:bg-muted border border-transparent focus:border-[#FBBC04] rounded-xl text-base font-medium outline-none transition-all text-center text-[#202124] dark:text-foreground disabled:opacity-60 focus-visible:ring-0"
                                             />
                                         </div>
                                     </div>
                                 </div>
 
                                 {/* Roast Level */}
-                                <div className="bg-white dark:bg-card rounded-3xl border border-[#E8EAED] dark:border-border p-6 md:p-8 space-y-6">
+                                <div className="bg-white dark:bg-card rounded-2xl border border-[#E8EAED] dark:border-border p-6 md:p-8 space-y-6">
                                     <div className="flex items-center gap-2">
                                         <div className="w-1 h-5 bg-[#EA4335] rounded-full" />
-                                        <h2 className="font-bold text-[#202124] dark:text-white">Roast Intensity</h2>
+                                        <h2 className="font-semibold text-[#202124] dark:text-white">Roast Intensity</h2>
                                         <Flame className="w-4 h-4 text-[#EA4335]" />
                                     </div>
 
@@ -447,9 +445,9 @@ export default function ProfilePage() {
                                                 type="button"
                                                 onClick={() => setRoastIntensity(level.id)}
                                                 disabled={isSaving}
-                                                className={`p-4 rounded-2xl border-2 text-left transition-all ${roastIntensity === level.id
-                                                    ? 'border-[#EA4335] bg-[#FAD2CF]/50 dark:bg-[#EA4335]/10'
-                                                    : 'border-[#E8EAED] dark:border-border hover:border-[#EA4335]/40 bg-transparent'
+                                                className={`p-4 rounded-2xl border text-left transition-all ${roastIntensity === level.id
+                                                    ? 'border-[#EA4335] bg-[#FEF2F2] dark:bg-[#EA4335]/10'
+                                                    : 'border-[#E8EAED] dark:border-border hover:border-[#EA4335]/50 bg-transparent'
                                                     }`}
                                             >
                                                 <div className="flex items-center justify-between mb-1">
@@ -476,7 +474,7 @@ export default function ProfilePage() {
                         <button
                             type="submit"
                             disabled={isSaving}
-                            className="w-full h-14 bg-[#202124] dark:bg-white hover:bg-black dark:hover:bg-gray-100 text-white dark:text-[#202124] font-bold rounded-2xl text-base shadow-lg shadow-black/10 transition-all flex items-center justify-center gap-3 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="w-full h-12 bg-[#4285F4] hover:bg-[#3367D6] text-white font-medium rounded-full text-sm shadow-[0_2px_4px_rgba(66,133,244,0.3)] transition-all flex items-center justify-center gap-2 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                             {isSaving ? (
                                 <>
@@ -516,7 +514,7 @@ function FieldGroup({
 }) {
     return (
         <div className="space-y-2">
-            <Label htmlFor={htmlFor} className="flex items-center gap-1.5 text-xs font-bold text-[#5F6368] dark:text-muted-foreground uppercase tracking-widest ml-0.5">
+            <Label htmlFor={htmlFor} className="flex items-center gap-1.5 text-xs font-medium text-[#5F6368] dark:text-muted-foreground ml-0.5">
                 {icon}
                 {label}
                 {locked && <span className="text-[#9AA0A6] normal-case tracking-normal font-normal">(read-only)</span>}
@@ -527,6 +525,7 @@ function FieldGroup({
 }
 
 function StyledInput({
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     accentColor,
     className = "",
     ...props
@@ -534,12 +533,7 @@ function StyledInput({
     return (
         <Input
             {...props}
-            style={
-                {
-                    '--accent': accentColor || '#4285F4',
-                } as React.CSSProperties
-            }
-            className={`h-13 px-5 bg-[#F1F3F4] dark:bg-muted border-2 border-transparent focus:border-accent focus:bg-white dark:focus:bg-card transition-all rounded-2xl text-base font-medium text-[#202124] dark:text-foreground placeholder:text-[#9AA0A6] dark:placeholder:text-muted-foreground/60 outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${className}`}
+            className={`h-11 px-4 bg-[#F1F3F4] dark:bg-muted border border-transparent focus:border-[#4285F4] focus:bg-white dark:focus:bg-card transition-all rounded-lg text-sm text-[#202124] dark:text-foreground placeholder:text-[#9AA0A6] dark:placeholder:text-muted-foreground/60 outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${className}`}
         />
     );
 }
