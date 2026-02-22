@@ -706,7 +706,7 @@ export default function HomePage() {
                                                             <Info className="w-3 h-3 text-[#9AA0A6] hover:text-[#5F6368] transition-colors shrink-0" />
                                                         </span>
                                                     </TooltipTrigger>
-                                                    <TooltipContent side="top" sideOffset={8} className="bg-white! dark:bg-card! text-[#202124]! dark:text-foreground! border border-[#E8EAED] dark:border-border shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1)] rounded-xl! px-4! py-3! min-w-[140px]">
+                                                    <TooltipContent side="top" sideOffset={8} className="bg-white! dark:bg-card! text-[#202124]! dark:text-foreground! border border-[#E8EAED] dark:border-border shadow-[0_2px_4px_rgba(0,0,0,0.1),0_8px_16px_rgba(0,0,0,0.1)] rounded-xl! px-4! py-3! min-w-35">
                                                         <div className="flex items-center justify-between gap-6 mb-1">
                                                             <span className="text-[#34A853] font-medium text-xs">Easy</span>
                                                             <span className="font-medium text-xs text-[#202124] dark:text-foreground">1 pt</span>
@@ -760,7 +760,7 @@ export default function HomePage() {
             </main>
 
             <Dialog open={isCreateGroupOpen} onOpenChange={setIsCreateGroupOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-106.25">
                     <DialogHeader>
                         <DialogTitle>Create a New Group</DialogTitle>
                         <DialogDescription>Create a private leaderboard for your friends or community.</DialogDescription>
@@ -788,7 +788,7 @@ export default function HomePage() {
             </Dialog>
 
             <Dialog open={isJoinGroupOpen} onOpenChange={setIsJoinGroupOpen}>
-                <DialogContent className="sm:max-w-[425px]">
+                <DialogContent className="sm:max-w-106.25">
                     <DialogHeader>
                         <DialogTitle>Join a Group</DialogTitle>
                         <DialogDescription>Enter the 6-character code shared by the group admin.</DialogDescription>
@@ -813,7 +813,7 @@ export default function HomePage() {
 
             {/* Leave Group Confirmation Dialog */}
             <Dialog open={!!groupToLeave} onOpenChange={(open) => !open && setGroupToLeave(null)}>
-                <DialogContent className="sm:max-w-[400px]">
+                <DialogContent className="sm:max-w-100">
                     <DialogHeader>
                         <DialogTitle className="text-red-600">
                             {groupToLeave?.isOwner ? 'Delete Group?' : 'Leave Group?'}

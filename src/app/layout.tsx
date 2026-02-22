@@ -113,11 +113,11 @@ export default function RootLayout({
         
         {/* Umami Analytics */}
         {process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID && (
-          <script
-            defer
+          <Script
+            strategy="afterInteractive"
             src={process.env.NEXT_PUBLIC_UMAMI_SCRIPT_URL || "https://cloud.umami.is/script.js"}
             data-website-id={process.env.NEXT_PUBLIC_UMAMI_WEBSITE_ID}
-          ></script>
+          />
         )}
       </head>
       <body className="antialiased bg-background text-foreground min-h-screen font-sans touch-manipulation">
