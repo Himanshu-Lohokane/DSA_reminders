@@ -104,8 +104,6 @@ Whether you're preparing for placements or just sharpening your skills, DSA Grin
 
    # Security
    CRON_SECRET=
-   ADMIN_PASSWORD=
-   JWT_SECRET=
    ```
 
 5. **Sync Database Schema:**
