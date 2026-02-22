@@ -48,7 +48,7 @@ export default function ActivityFeed({ entries, activities: providedActivities }
                 Recent Activity
             </h3>
 
-            <div className="space-y-3 overflow-y-auto max-h-[600px] pr-1 no-scrollbar">
+            <div className="space-y-3 overflow-y-auto max-h-50 pr-1 no-scrollbar">
                 {activities.map((activity, index) => (
                     <motion.div
                         key={`${activity.id}-${index}`}

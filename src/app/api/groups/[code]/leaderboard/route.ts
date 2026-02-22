@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { requireAuth } from '@/lib/auth';
 import { db } from '@/db/drizzle';
 import { groups, groupMembers, users, dailyStats } from '@/db/schema';
-import { eq, and, desc } from 'drizzle-orm';
+import { eq, and, desc, inArray } from 'drizzle-orm';
 import { getTodayDate } from '@/lib/utils';
 
 export const GET = requireAuth(async (req: NextRequest, user, context) => {
@@ -52,9 +52,12 @@ export const GET = requireAuth(async (req: NextRequest, user, context) => {
         const memberIds = members.map(m => m.id);
 
         // Fetch today's stats for all group members
-        const allStats = await db.select().from(dailyStats)
-            .where(eq(dailyStats.platform, 'leetcode'))
-            .orderBy(desc(dailyStats.date));
+        const allStats = memberIds.length > 0 ? await db.select().from(dailyStats)
+            .where(and(
+                eq(dailyStats.platform, 'leetcode'),
+                inArray(dailyStats.userId, memberIds)
+            ))
+            .orderBy(desc(dailyStats.date)) : [];
 
         // Build maps: most recent stats per user
         const statsMap = new Map<number, typeof allStats[number]>();
@@ -65,8 +68,12 @@ export const GET = requireAuth(async (req: NextRequest, user, context) => {
         }
 
         // GFG stats
-        const gfgStatsAll = await db.select().from(dailyStats)
-            .where(and(eq(dailyStats.date, today), eq(dailyStats.platform, 'gfg')));
+        const gfgStatsAll = memberIds.length > 0 ? await db.select().from(dailyStats)
+            .where(and(
+                eq(dailyStats.date, today), 
+                eq(dailyStats.platform, 'gfg'),
+                inArray(dailyStats.userId, memberIds)
+            )) : [];
         const gfgMap = new Map<number, typeof gfgStatsAll[number]>();
         for (const stat of gfgStatsAll) {
             if (memberIds.includes(stat.userId)) {
