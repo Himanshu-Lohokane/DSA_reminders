@@ -56,21 +56,6 @@ Whether you're preparing for placements or just sharpening your skills, DSA Grin
 
 ---
 
-## 📱 Mobile App (PWA)
-
-Install DSA Grinders on your phone for a native experience:
-
-- ✅ **Installable** - Add to home screen on iOS/Android
-- ✅ **Offline Support** - Essential stats available offline
-- ✅ **Premium UI** - Smooth transitions and glassmorphism
-- ✅ **Fast Loading** - Service worker caching
-
-**How to Install:**
-- **Android:** Visit in Chrome → Menu → "Install app"
-- **iOS:** Visit in Safari → Share (⬆️) → "Add to Home Screen"
-
----
-
 ## 🚀 Getting Started
 
 ### Prerequisites
