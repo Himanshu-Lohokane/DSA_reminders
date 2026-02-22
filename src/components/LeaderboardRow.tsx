@@ -158,11 +158,13 @@ export default function LeaderboardRow({ entry, rank, isCurrentUser }: Leaderboa
                     </span>
                 </div>
 
+                {/* GFG score column hidden — re-enable when GFG integration is fixed
                 <div className="w-16 md:w-20 text-right">
                     <span className="text-base font-medium text-[#202124] dark:text-foreground tabular-nums">
                         {entry.gfgScore?.toLocaleString() || '—'}
                     </span>
                 </div>
+                */}
 
                 <div className="w-16 md:w-20 text-right">
                     <span className={`text-base font-medium tabular-nums ${entry.todayPoints > 0 ? 'text-[#34A853]' : 'text-[#9AA0A6]'

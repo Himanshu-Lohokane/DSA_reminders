@@ -339,13 +339,14 @@ export default function PremiumOnboarding() {
                             <div className="w-20 h-20 mx-auto bg-linear-to-br from-[#5F6368] to-[#202124] rounded-3xl flex items-center justify-center">
                                 <Target className="w-10 h-10 text-white" />
                             </div>
-                            <h2 className="text-3xl font-black text-[#202124] dark:text-white">Coding Profiles</h2>
+                            <h2 className="text-3xl font-black text-[#202124] dark:text-white">Social Profiles</h2>
                             <p className="text-[#5F6368] dark:text-gray-400 max-w-sm mx-auto">
-                                Optional: Add your GFG, GitHub and LinkedIn profiles
+                                Optional: Add your GitHub and LinkedIn profiles
                             </p>
                         </div>
 
                         <div className="space-y-4">
+                            {/* GFG field hidden — re-enable when GFG integration is fixed
                             <div>
                                 <label className="block text-sm font-semibold text-[#5F6368] dark:text-gray-400 mb-2">
                                     GeeksforGeeks Username
@@ -358,6 +359,7 @@ export default function PremiumOnboarding() {
                                     className="w-full px-4 py-3 rounded-xl border-2 border-[#E8EAED] dark:border-gray-700 focus:border-[#34A853] outline-none transition-all bg-white dark:bg-gray-800 text-[#202124] dark:text-white"
                                 />
                             </div>
+                            */}
 
                             <div>
                                 <label className="block text-sm font-semibold text-[#5F6368] dark:text-gray-400 mb-2">
@@ -394,7 +396,7 @@ export default function PremiumOnboarding() {
                             onClick={() => setStep(6)}
                             className="w-full bg-[#5F6368] hover:bg-[#202124] text-white font-bold py-4 rounded-2xl transition-all flex items-center justify-center gap-2"
                         >
-                            <span>{formData.gfgUsername || formData.github || formData.linkedin ? 'Continue' : 'Skip'}</span>
+                            <span>{formData.github || formData.linkedin ? 'Continue' : 'Skip'}</span>
                             <ArrowRight className="w-5 h-5" />
                         </button>
                     </div>

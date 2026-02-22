@@ -230,11 +230,13 @@ export default function ProfilePage() {
                                         ⚡ @{user.leetcodeUsername}
                                         <ExternalLink className="w-3 h-3" />
                                     </a>
+                                    {/* GFG badge hidden — re-enable when GFG integration is fixed
                                     {user.gfgUsername && (
                                         <span className="inline-flex items-center gap-1.5 text-xs bg-[#CEEAD6] dark:bg-[#34A853]/10 text-[#0D652D] dark:text-[#34A853] font-semibold px-3 py-1.5 rounded-full">
                                             GFG @{user.gfgUsername}
                                         </span>
                                     )}
+                                    */}
                                 </div>
                             </div>
                         </div>
@@ -344,6 +346,7 @@ export default function ProfilePage() {
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        {/* GFG field hidden — re-enable when GFG integration is fixed
                                         <FieldGroup label="GeeksforGeeks" htmlFor="gfgUsername" icon={<span className="text-[#34A853] font-black text-xs">GFG</span>}>
                                             <StyledInput
                                                 id="gfgUsername"
@@ -354,6 +357,7 @@ export default function ProfilePage() {
                                                 accentColor="#34A853"
                                             />
                                         </FieldGroup>
+                                        */}
 
                                         <FieldGroup label="GitHub" htmlFor="github" icon={<Github className="w-3.5 h-3.5 text-[#202124] dark:text-white" />}>
                                             <StyledInput
