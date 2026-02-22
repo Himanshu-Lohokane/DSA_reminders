@@ -140,7 +140,6 @@ Install DSA Grinders on your phone for a native experience:
 - **Auth**: Managed via `AuthContext.tsx`, blocking incomplete profiles with a mandatory onboarding flow.
 - **Data Sync**: Immediate LeetCode/GFG sync upon profile update and daily cron jobs for leaderboard updates.
 - **Caching**: In-memory caching and SWR (Stale-While-Revalidate) patterns using React Query for lightning-fast leaderboards.
-- **Admin**: Role-based access control for managing groups and verifying user stats.
 
 ---
 

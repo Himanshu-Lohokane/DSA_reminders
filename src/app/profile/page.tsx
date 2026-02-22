@@ -235,11 +235,6 @@ export default function ProfilePage() {
                                             GFG @{user.gfgUsername}
                                         </span>
                                     )}
-                                    {user.role === 'admin' && (
-                                        <span className="inline-flex items-center gap-1.5 text-xs bg-[#FAD2CF] dark:bg-[#EA4335]/10 text-[#A50E0E] dark:text-[#EA4335] font-semibold px-3 py-1.5 rounded-full">
-                                            🛡 Admin
-                                        </span>
-                                    )}
                                 </div>
                             </div>
                         </div>
@@ -540,7 +535,7 @@ function StyledInput({
                     '--accent': accentColor || '#4285F4',
                 } as React.CSSProperties
             }
-            className={`h-13 px-5 bg-[#F1F3F4] dark:bg-muted border-2 border-transparent focus:border-[var(--accent)] focus:bg-white dark:focus:bg-card transition-all rounded-2xl text-base font-medium text-[#202124] dark:text-foreground placeholder:text-[#9AA0A6] dark:placeholder:text-muted-foreground/60 outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${className}`}
+            className={`h-13 px-5 bg-[#F1F3F4] dark:bg-muted border-2 border-transparent focus:border-accent focus:bg-white dark:focus:bg-card transition-all rounded-2xl text-base font-medium text-[#202124] dark:text-foreground placeholder:text-[#9AA0A6] dark:placeholder:text-muted-foreground/60 outline-none focus-visible:ring-0 focus-visible:ring-offset-0 ${className}`}
         />
     );
 }

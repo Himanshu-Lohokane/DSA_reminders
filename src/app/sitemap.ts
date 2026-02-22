@@ -8,7 +8,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
         '/login',
         '/home',
         '/profile',
-        '/admin',
     ];
 
     return routes.map((route) => ({

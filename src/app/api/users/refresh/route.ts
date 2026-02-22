@@ -10,13 +10,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
 
-        if (user.id === 'manual_admin') {
-            return NextResponse.json({ message: 'Admin stats not available' });
-        }
-
-        // Update stats for the current regular user
-        const regularUser = user as { id: number; leetcodeUsername: string };
-        const stat = await updateDailyStatsForUser(regularUser.id, regularUser.leetcodeUsername);
+        // Update stats for the current user
+        const stat = await updateDailyStatsForUser(user.id, user.leetcodeUsername);
 
         return NextResponse.json({
             message: 'Stats refreshed',

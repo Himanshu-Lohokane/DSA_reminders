@@ -19,13 +19,6 @@ interface UserUpdatePayload {
 
 export const PUT = requireAuth(async (req: NextRequest, user) => {
   try {
-    if (user.id === 'manual_admin') {
-      return NextResponse.json(
-        createErrorResponse('Manual admin cannot update profile', 'FORBIDDEN'),
-        { status: 403 }
-      );
-    }
-
     const body = await req.json();
 
     const validation = validateRequest(profileUpdateSchema, body);
