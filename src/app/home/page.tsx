@@ -16,6 +16,7 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 import ActivityFeed from "@/components/ActivityFeed";
+import AIRecommendations from "@/components/AIRecommendations";
 import { LeaderboardEntry, LeetCodeSubmission, GroupWithMembership } from "@/types";
 import LeaderboardRow from "@/components/LeaderboardRow";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -569,8 +570,9 @@ export default function HomePage() {
                             </>
                         )}
                     </div>
-                    <div className="lg:col-span-4">
+                    <div className="lg:col-span-4 space-y-6">
                         <ActivityFeed entries={leaderboard} activities={activities} />
+                        <AIRecommendations />
                     </div>
                 </div>
             </main>
