@@ -17,6 +17,7 @@ import { toast } from "sonner";
 
 import ActivityFeed from "@/components/ActivityFeed";
 import AIRecommendations from "@/components/AIRecommendations";
+import PeerComparison from "@/components/PeerComparison";
 import { LeaderboardEntry, LeetCodeSubmission, GroupWithMembership } from "@/types";
 import LeaderboardRow from "@/components/LeaderboardRow";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -573,6 +574,7 @@ export default function HomePage() {
                     <div className="lg:col-span-4 space-y-6">
                         <ActivityFeed entries={leaderboard} activities={activities} />
                         <AIRecommendations />
+                        <PeerComparison leaderboard={leaderboard} />
                     </div>
                 </div>
             </main>
