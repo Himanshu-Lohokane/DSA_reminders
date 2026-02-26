@@ -13,10 +13,19 @@ export async function POST(req: NextRequest) {
         // Update stats for the current user
         const stat = await updateDailyStatsForUser(user.id, user.leetcodeUsername);
 
+        // Return with cache-busting headers since we just updated data
         return NextResponse.json({
             message: 'Stats refreshed',
             todayPoints: stat.todayPoints,
             total: stat.total,
+            timestamp: Date.now() // Add timestamp here instead
+        }, {
+            headers: {
+                'Cache-Control': 'no-cache, no-store, must-revalidate',
+                'CDN-Cache-Control': 'no-cache',
+                'Vercel-CDN-Cache-Control': 'no-cache',
+                'X-Cache-Status': 'REFRESHED'
+            }
         });
     } catch (error: any) {
         console.error('Refresh error:', error);

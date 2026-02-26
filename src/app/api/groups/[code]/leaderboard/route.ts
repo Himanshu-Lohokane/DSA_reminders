@@ -151,11 +151,25 @@ export const GET = requireAuth(async (req: NextRequest, user, context) => {
         activities.sort((a, b) => Number(b.timestamp) - Number(a.timestamp));
         activities = activities.slice(0, 50);
 
+        // Check for recent activity to determine cache duration
+        const hasRecentActivity = activities.length > 0 && 
+            activities.some(a => (Date.now() / 1000) - Number(a.timestamp) < 300);
+        
+        const cacheMaxAge = hasRecentActivity ? 30 : 120; // 30s or 2min
+        
         return NextResponse.json({
             groupName: group.name,
             groupCode: group.code,
             leaderboard: leaderboardData,
             activities
+        }, {
+            headers: {
+                'Cache-Control': `public, s-maxage=${cacheMaxAge}, stale-while-revalidate=60`,
+                'CDN-Cache-Control': `public, s-maxage=${cacheMaxAge}`,
+                'Vercel-CDN-Cache-Control': `public, s-maxage=${cacheMaxAge}`,
+                'X-Group-Code': code,
+                'X-Recent-Activity': hasRecentActivity.toString()
+            }
         });
 
     } catch (error: any) {

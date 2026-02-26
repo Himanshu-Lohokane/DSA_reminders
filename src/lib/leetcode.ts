@@ -375,6 +375,7 @@ export async function updateDailyStatsForUser(userId: number, leetcodeUsername: 
     });
   }
 
+  // Return consistent type - don't break existing callers
   return {
     todayPoints: Math.max(0, todayPoints),
     total: stats.total + gfgTotal

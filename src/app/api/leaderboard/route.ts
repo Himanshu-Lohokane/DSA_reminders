@@ -6,15 +6,20 @@ import { getRateLimitHeaders, checkRateLimit, getClientIdentifier, RATE_LIMITS }
 import { updateDailyStatsForUser } from '@/lib/leetcode';
 import { getTodayDate } from '@/lib/utils';
 
-// Simple in-memory cache
+// Vercel-optimized caching for serverless
 interface CacheEntry {
   data: any;
   timestamp: number;
 }
 
-// Separate caches for 'daily' and 'all_time'
-const cache: Record<string, CacheEntry> = {};
-const CACHE_TTL = 5 * 60 * 1000; // 5 minutes
+// For serverless: Return cache headers instead of in-memory caching
+function getCacheHeaders(maxAge: number = 120) {
+  return {
+    'Cache-Control': `public, s-maxage=${maxAge}, stale-while-revalidate=60`,
+    'CDN-Cache-Control': `public, s-maxage=${maxAge}`,
+    'Vercel-CDN-Cache-Control': `public, s-maxage=${maxAge}`,
+  };
+}
 
 export async function GET(request: NextRequest) {
   const clientId = getClientIdentifier(request);
@@ -36,20 +41,6 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = new URL(request.url).searchParams;
     const type = searchParams.get('type') || 'daily';
-    const cacheKey = `leaderboard_${type}`;
-
-    // Check cache
-    const cached = cache[cacheKey];
-    if (cached && (Date.now() - cached.timestamp < CACHE_TTL)) {
-      return new NextResponse(JSON.stringify(cached.data), {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Cache': 'HIT',
-          ...getRateLimitHeaders(rateLimitResult),
-        },
-      });
-    }
 
     // Fetch all non-admin users
     const allUsers = await db.select({
@@ -188,17 +179,21 @@ export async function GET(request: NextRequest) {
       activities
     };
 
-    // Update cache
-    cache[cacheKey] = {
-      data: responseData,
-      timestamp: Date.now()
-    };
+    // For Vercel: Use CDN-level caching with proper headers
+    const isRecentActivity = activities.length > 0 && 
+      activities.some(a => (Date.now() / 1000) - Number(a.timestamp) < 300); // 5 min
+    
+    const cacheHeaders = isRecentActivity 
+      ? getCacheHeaders(30) // Short cache if recent activity
+      : getCacheHeaders(120); // Longer cache if no recent updates
 
     return new NextResponse(JSON.stringify(responseData), {
       status: 200,
       headers: {
         'Content-Type': 'application/json',
-        'X-Cache': 'MISS',
+        'X-Cache-Status': 'FRESH',
+        'X-Recent-Activity': isRecentActivity.toString(),
+        ...cacheHeaders,
         ...getRateLimitHeaders(rateLimitResult),
       },
     });
