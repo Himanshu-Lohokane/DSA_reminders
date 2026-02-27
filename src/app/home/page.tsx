@@ -84,13 +84,20 @@ export default function HomePage() {
                 ? `/api/groups/${activeGroup.code}/leaderboard?type=${leaderboardType}`
                 : `/api/leaderboard?type=${leaderboardType}`;
 
-            const res = await authenticatedFetch(
-                endpoint,
-                {
+            // For global leaderboard, use regular fetch since auth is optional
+            // For group leaderboard, use authenticatedFetch since auth is required
+            const res = activeGroup 
+                ? await authenticatedFetch(
+                    endpoint,
+                    {
+                        headers: { "Authorization": `Bearer ${token}` }
+                    },
+                    refreshToken
+                )
+                : await fetch(endpoint, {
                     headers: token ? { "Authorization": `Bearer ${token}` } : {}
-                },
-                refreshToken
-            );
+                });
+                
             if (!res.ok) throw new Error("Failed to fetch leaderboard");
             return res.json();
         },
