@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { motion, AnimatePresence } from "framer-motion";
+import { authenticatedFetch } from "@/lib/api";
 import {
     Loader2, ArrowLeft, Save, Phone, Github, Linkedin,
     Settings, Clock, Code2, CheckCircle2, AlertCircle,
@@ -22,7 +23,7 @@ const ROAST_LEVELS = [
 ] as const;
 
 export default function ProfilePage() {
-    const { user, token, isLoading: authLoading, updateUser } = useAuth();
+    const { user, token, isLoading: authLoading, updateUser, refreshToken } = useAuth();
     const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -68,22 +69,26 @@ export default function ProfilePage() {
         setIsSaving(true);
 
         try {
-            const res = await fetch("/api/users/profile", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+            const res = await authenticatedFetch(
+                "/api/users/profile",
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        name: name.trim(),
+                        phoneNumber: phoneNumber.trim() || null,
+                        github: github.trim(),
+                        linkedin: linkedin.trim() || null,
+                        gfgUsername: gfgUsername.trim() || null,
+                        dailyGrindTime,
+                        roastIntensity,
+                    }),
                 },
-                body: JSON.stringify({
-                    name: name.trim(),
-                    phoneNumber: phoneNumber.trim() || null,
-                    github: github.trim(),
-                    linkedin: linkedin.trim() || null,
-                    gfgUsername: gfgUsername.trim() || null,
-                    dailyGrindTime,
-                    roastIntensity,
-                }),
-            });
+                refreshToken
+            );
 
             const data = await res.json();
 

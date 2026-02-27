@@ -4,6 +4,7 @@ import { useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/ui/button";
+import { authenticatedFetch } from "@/lib/api";
 import { 
     RefreshCw, 
     ExternalLink, 
@@ -27,7 +28,7 @@ interface AIRecommendationsData {
 }
 
 export default function AIRecommendations() {
-    const { user, token } = useAuth();
+    const { user, token, refreshToken } = useAuth();
     const [recommendations, setRecommendations] = useState<Recommendation[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [hasLoaded, setHasLoaded] = useState(false);
@@ -37,11 +38,15 @@ export default function AIRecommendations() {
         
         setIsLoading(true);
         try {
-            const response = await fetch("/api/ai/recommendations", {
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                }
-            });
+            const response = await authenticatedFetch(
+                "/api/ai/recommendations",
+                {
+                    headers: {
+                        "Authorization": `Bearer ${token}`
+                    }
+                },
+                refreshToken
+            );
             
             if (response.ok) {
                 const data: AIRecommendationsData = await response.json();

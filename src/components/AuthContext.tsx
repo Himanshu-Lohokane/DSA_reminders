@@ -27,6 +27,7 @@ interface AuthContextType {
     signInWithGoogle: () => Promise<void>;
     updateUser: (userData: Partial<User>) => void;
     logout: () => void;
+    refreshToken: () => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -70,11 +71,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 setToken(null);
                 setIsLoading(false);
                 router.push('/');
+            } else if (event === 'TOKEN_REFRESHED' && session) {
+                // Automatically update token when Supabase refreshes it
+                lastSyncedToken.current = session.access_token;
+                setToken(session.access_token);
             }
         });
 
-        return () => subscription.unsubscribe();
-    }, []);
+        // Periodic session check every 5 minutes to ensure token freshness
+        const intervalId = setInterval(async () => {
+            const { data: { session } } = await supabase.auth.getSession();
+            if (session && session.access_token !== lastSyncedToken.current) {
+                lastSyncedToken.current = session.access_token;
+                setToken(session.access_token);
+            } else if (!session && user) {
+                // Session expired, logout
+                setUser(null);
+                setToken(null);
+                router.push('/');
+            }
+        }, 5 * 60 * 1000); // Check every 5 minutes
+
+        return () => {
+            subscription.unsubscribe();
+            clearInterval(intervalId);
+        };
+    }, [user, router]);
 
     const syncUserWithDB = async (authToken: string) => {
         try {
@@ -140,6 +162,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         }
     };
 
+    const refreshToken = async (): Promise<string | null> => {
+        try {
+            const { data: { session }, error } = await supabase.auth.refreshSession();
+            if (error) throw error;
+            
+            if (session?.access_token) {
+                lastSyncedToken.current = session.access_token;
+                setToken(session.access_token);
+                return session.access_token;
+            }
+            return null;
+        } catch (error) {
+            console.error('Failed to refresh token:', error);
+            // If refresh fails, logout
+            await logout();
+            return null;
+        }
+    };
+
     const logout = async () => {
         await supabase.auth.signOut();
         setUser(null);
@@ -148,7 +189,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     return (
-        <AuthContext.Provider value={{ user, token, isLoading, signInWithGoogle, updateUser, logout }}>
+        <AuthContext.Provider value={{ user, token, isLoading, signInWithGoogle, updateUser, logout, refreshToken }}>
             {children}
             {/* The OnboardingModal will be placed in a higher-level component or here directly if we want it global */}
         </AuthContext.Provider>

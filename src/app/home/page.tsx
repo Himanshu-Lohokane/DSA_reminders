@@ -14,6 +14,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
+import { authenticatedFetch } from "@/lib/api";
 
 import ActivityFeed from "@/components/ActivityFeed";
 import AIRecommendations from "@/components/AIRecommendations";
@@ -25,7 +26,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { problemSuggestions } from '@/lib/problems';
 
 export default function HomePage() {
-    const { user, logout, isLoading: authLoading, token } = useAuth();
+    const { user, logout, isLoading: authLoading, token, refreshToken } = useAuth();
     const router = useRouter();
     const queryClient = useQueryClient();
 
@@ -60,9 +61,13 @@ export default function HomePage() {
     const { data: groupsData } = useQuery({
         queryKey: ["groups", token],
         queryFn: async () => {
-            const res = await fetch("/api/groups", {
-                headers: { "Authorization": `Bearer ${token}` }
-            });
+            const res = await authenticatedFetch(
+                "/api/groups",
+                {
+                    headers: { "Authorization": `Bearer ${token}` }
+                },
+                refreshToken
+            );
             if (!res.ok) throw new Error("Failed to fetch groups");
             return res.json();
         },
@@ -79,9 +84,13 @@ export default function HomePage() {
                 ? `/api/groups/${activeGroup.code}/leaderboard?type=${leaderboardType}`
                 : `/api/leaderboard?type=${leaderboardType}`;
 
-            const res = await fetch(endpoint, {
-                headers: token ? { "Authorization": `Bearer ${token}` } : {}
-            });
+            const res = await authenticatedFetch(
+                endpoint,
+                {
+                    headers: token ? { "Authorization": `Bearer ${token}` } : {}
+                },
+                refreshToken
+            );
             if (!res.ok) throw new Error("Failed to fetch leaderboard");
             return res.json();
         },
@@ -94,13 +103,17 @@ export default function HomePage() {
     // Mutations
     const refreshMutation = useMutation({
         mutationFn: async () => {
-            const res = await fetch("/api/users/refresh", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+            const res = await authenticatedFetch(
+                "/api/users/refresh",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
                 },
-            });
+                refreshToken
+            );
             if (!res.ok) throw new Error("Failed to refresh stats");
             return res.json();
         },
@@ -116,14 +129,18 @@ export default function HomePage() {
 
     const createGroupMutation = useMutation({
         mutationFn: async (payload: { name: string, description: string }) => {
-            const res = await fetch("/api/groups", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+            const res = await authenticatedFetch(
+                "/api/groups",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify(payload)
                 },
-                body: JSON.stringify(payload)
-            });
+                refreshToken
+            );
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Failed to create group");
             return data;
@@ -140,14 +157,18 @@ export default function HomePage() {
 
     const joinGroupMutation = useMutation({
         mutationFn: async (code: string) => {
-            const res = await fetch("/api/groups/join", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+            const res = await authenticatedFetch(
+                "/api/groups/join",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ code })
                 },
-                body: JSON.stringify({ code })
-            });
+                refreshToken
+            );
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Failed to join group");
             return data;
@@ -163,14 +184,18 @@ export default function HomePage() {
 
     const leaveGroupMutation = useMutation({
         mutationFn: async (groupId: number) => {
-            const res = await fetch("/api/groups/leave", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
+            const res = await authenticatedFetch(
+                "/api/groups/leave",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ groupId })
                 },
-                body: JSON.stringify({ groupId })
-            });
+                refreshToken
+            );
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || "Failed to leave group");
             return data;

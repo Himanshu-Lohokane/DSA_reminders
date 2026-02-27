@@ -5,6 +5,7 @@ import { useAuth } from './AuthContext';
 import { Loader2, Github, Linkedin, User, Phone, Send, Globe } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
+import { authenticatedFetch } from '@/lib/api';
 
 const COUNTRY_CODES = [
     { code: '+91', country: 'India' },
@@ -19,7 +20,7 @@ const COUNTRY_CODES = [
 ];
 
 export default function OnboardingModal() {
-    const { user, token, updateUser } = useAuth();
+    const { user, token, updateUser, refreshToken } = useAuth();
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isValidatingLeetCode, setIsValidatingLeetCode] = useState(false);
     const [countryCode, setCountryCode] = useState('+91');
@@ -72,17 +73,21 @@ export default function OnboardingModal() {
 
         setIsSubmitting(true);
         try {
-            const res = await fetch('/api/users/profile', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
+            const res = await authenticatedFetch(
+                '/api/users/profile',
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        ...formData,
+                        phoneNumber: fullPhoneNumber
+                    }),
                 },
-                body: JSON.stringify({
-                    ...formData,
-                    phoneNumber: fullPhoneNumber
-                }),
-            });
+                refreshToken
+            );
 
             const data = await res.json();
             if (res.ok) {

@@ -6,6 +6,7 @@ import { useAuth } from './AuthContext';
 import { Loader2, Trophy, Flame, Clock, Zap, CheckCircle2, ArrowRight, Code2, Bell, Target } from 'lucide-react';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
+import { authenticatedFetch } from '@/lib/api';
 
 interface OnboardingStep {
     id: number;
@@ -41,7 +42,7 @@ const ROAST_LEVELS = [
 const totalSteps = 6;
 
 export default function PremiumOnboarding() {
-    const { user, token, updateUser } = useAuth();
+    const { user, token, updateUser, refreshToken } = useAuth();
     const [step, setStep] = useState(1);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isValidating, setIsValidating] = useState(false);
@@ -92,23 +93,27 @@ export default function PremiumOnboarding() {
         try {
             const fullPhone = `${formData.countryCode}${formData.phoneNumber}`;
 
-            const res = await fetch('/api/users/onboarding', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
+            const res = await authenticatedFetch(
+                '/api/users/onboarding',
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        leetcodeUsername: formData.leetcodeUsername,
+                        gfgUsername: formData.gfgUsername || undefined,
+                        phoneNumber: fullPhone,
+                        github: formData.github || undefined,
+                        linkedin: formData.linkedin || undefined,
+                        roastIntensity: formData.roastIntensity,
+                        dailyGrindTime: formData.dailyGrindTime,
+                        onboardingCompleted: true
+                    })
                 },
-                body: JSON.stringify({
-                    leetcodeUsername: formData.leetcodeUsername,
-                    gfgUsername: formData.gfgUsername || undefined,
-                    phoneNumber: fullPhone,
-                    github: formData.github || undefined,
-                    linkedin: formData.linkedin || undefined,
-                    roastIntensity: formData.roastIntensity,
-                    dailyGrindTime: formData.dailyGrindTime,
-                    onboardingCompleted: true
-                })
-            });
+                refreshToken
+            );
 
             const data = await res.json();
             if (res.ok) {
