@@ -112,15 +112,17 @@ export default function LeaderboardRow({ entry, rank, isCurrentUser }: Leaderboa
 
                             {/* Social links */}
                             {((entry.github && entry.github !== 'not-provided' && entry.github !== 'pending') || (entry.linkedin && entry.linkedin !== 'not-provided' && entry.linkedin !== 'pending')) && (
-                                <div className="flex items-center gap-1 pt-1 pb-0 mt-1 border-t border-[#E8EAED] dark:border-border">
+                                <div className="flex items-center gap-6 pt-2 pb-0 mt-2 border-t border-[#E8EAED] dark:border-border">
                                     {entry.github && entry.github !== 'not-provided' && entry.github !== 'pending' && (
-                                        <a href={entry.github} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#202124] dark:text-muted-foreground dark:hover:text-foreground transition-colors p-1 rounded-lg hover:bg-[#F1F3F4] dark:hover:bg-muted">
-                                            <Github className="w-4 h-4" />
+                                        <a href={entry.github} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5F6368] hover:text-[#202124] dark:text-muted-foreground dark:hover:text-foreground transition-colors">
+                                            <Github className="w-3.5 h-3.5" />
+                                            <span>GitHub</span>
                                         </a>
                                     )}
                                     {entry.linkedin && entry.linkedin !== 'not-provided' && entry.linkedin !== 'pending' && (
-                                        <a href={entry.linkedin} target="_blank" rel="noopener noreferrer" className="text-[#5F6368] hover:text-[#0077b5] dark:text-muted-foreground transition-colors p-1 rounded-lg hover:bg-[#F1F3F4] dark:hover:bg-muted">
-                                            <Linkedin className="w-4 h-4" />
+                                        <a href={entry.linkedin} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5F6368] hover:text-[#0077b5] dark:text-muted-foreground dark:hover:text-[#0077b5] transition-colors">
+                                            <Linkedin className="w-3.5 h-3.5" />
+                                            <span>LinkedIn</span>
                                         </a>
                                     )}
                                 </div>
