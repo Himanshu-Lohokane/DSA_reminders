@@ -7,12 +7,13 @@ import { useAuth } from "@/components/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { motion, AnimatePresence } from "framer-motion";
 import { authenticatedFetch } from "@/lib/api";
 import {
     Loader2, ArrowLeft, Save, Phone, Github, Linkedin,
     Settings, Clock, Code2, CheckCircle2, AlertCircle,
-    User, Bell, ExternalLink, Flame
+    User, Bell, ExternalLink, Flame, Trash2, AlertTriangle
 } from "lucide-react";
 import { AnimatedThemeToggler } from "@/components/ui/animated-theme-toggler";
 
@@ -23,13 +24,13 @@ const ROAST_LEVELS = [
 ] as const;
 
 export default function ProfilePage() {
-    const { user, token, isLoading: authLoading, updateUser, refreshToken } = useAuth();
+    const { user, token, isLoading: authLoading, updateUser, refreshToken, logout } = useAuth();
     const router = useRouter();
     const [isSaving, setIsSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
-    const [activeSection, setActiveSection] = useState<'info' | 'notifications' | 'platforms'>('info');
-
+    const [activeSection, setActiveSection] = useState<'info' | 'notifications' | 'platforms' | 'danger'>('info');
+    
     // Form state
     const [name, setName] = useState("");
     const [phoneNumber, setPhoneNumber] = useState("");
@@ -38,6 +39,11 @@ export default function ProfilePage() {
     const [gfgUsername, setGfgUsername] = useState("");
     const [dailyGrindTime, setDailyGrindTime] = useState("09:00");
     const [roastIntensity, setRoastIntensity] = useState<'mild' | 'medium' | 'savage'>('medium');
+    
+    // Delete account state
+    const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+    const [deleteConfirmation, setDeleteConfirmation] = useState("");
+    const [isDeleting, setIsDeleting] = useState(false);
 
     useEffect(() => {
         if (!authLoading && !user) {
@@ -118,6 +124,48 @@ export default function ProfilePage() {
         }
     };
 
+    const handleDeleteAccount = async () => {
+        if (deleteConfirmation !== 'DELETE') {
+            setError('Please type DELETE to confirm');
+            return;
+        }
+
+        setIsDeleting(true);
+        setError(null);
+
+        try {
+            const res = await authenticatedFetch(
+                "/api/users/delete",
+                {
+                    method: "DELETE",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ confirmation: deleteConfirmation })
+                },
+                refreshToken
+            );
+
+            const data = await res.json();
+
+            if (res.ok) {
+                setSuccess('Account deleted successfully. Redirecting...');
+                // Sign out and redirect to home after a delay
+                setTimeout(async () => {
+                    await logout();
+                    router.push('/');
+                }, 2000);
+            } else {
+                setError(data.error || 'Failed to delete account');
+                setIsDeleting(false);
+            }
+        } catch (err) {
+            setError('An error occurred while deleting your account');
+            setIsDeleting(false);
+        }
+    };
+
     if (authLoading) {
         return (
             <div className="min-h-screen bg-[#F8F9FA] dark:bg-background flex items-center justify-center">
@@ -137,6 +185,7 @@ export default function ProfilePage() {
         { id: 'info', label: 'Personal Info', icon: User },
         { id: 'platforms', label: 'Platforms', icon: Code2 },
         { id: 'notifications', label: 'Notifications', icon: Bell },
+        { id: 'danger', label: 'Danger Zone', icon: AlertTriangle },
     ] as const;
 
     return (
@@ -467,6 +516,53 @@ export default function ProfilePage() {
                             </motion.div>
                         )}
 
+                        {activeSection === 'danger' && (
+                            <motion.div
+                                key="danger"
+                                initial={{ opacity: 0, y: 12 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -8 }}
+                                transition={{ duration: 0.25 }}
+                                className="space-y-4"
+                            >
+                                {/* Danger Zone - Delete Account */}
+                                <div className="bg-white dark:bg-card rounded-2xl border-2 border-[#EA4335]/30 dark:border-[#EA4335]/40 p-6 md:p-8 space-y-6">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-1 h-5 bg-[#EA4335] rounded-full" />
+                                        <h2 className="font-semibold text-[#EA4335]">Danger Zone</h2>
+                                        <AlertTriangle className="w-4 h-4 text-[#EA4335]" />
+                                    </div>
+
+                                    <div className="bg-[#FEF2F2] dark:bg-[#EA4335]/5 border border-[#EA4335]/20 rounded-xl p-4">
+                                        <div className="flex gap-3">
+                                            <AlertTriangle className="w-5 h-5 text-[#EA4335] shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="font-semibold text-[#202124] dark:text-white mb-1">Delete Your Account</p>
+                                                <p className="text-sm text-[#5F6368] dark:text-muted-foreground mb-3">
+                                                    Once you delete your account, there is no going back. This will permanently:
+                                                </p>
+                                                <ul className="text-sm text-[#5F6368] dark:text-muted-foreground space-y-1 mb-4 ml-4 list-disc">
+                                                    <li>Delete all your problem-solving stats and history</li>
+                                                    <li>Remove you from all groups</li>
+                                                    <li>Delete any groups you own</li>
+                                                    <li>Remove your account from our system</li>
+                                                </ul>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setShowDeleteDialog(true)}
+                                                    disabled={isDeleting}
+                                                    className="px-4 py-2 bg-[#EA4335] hover:bg-[#C5221F] text-white font-medium rounded-lg text-sm transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                    Delete My Account
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
+
                     </AnimatePresence>
 
                     {/* Save Button */}
@@ -495,6 +591,69 @@ export default function ProfilePage() {
                         </button>
                     </motion.div>
                 </form>
+
+                {/* Delete Account Confirmation Dialog */}
+                <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+                    <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                            <DialogTitle className="flex items-center gap-2 text-[#EA4335]">
+                                <AlertTriangle className="w-5 h-5" />
+                                Delete Account
+                            </DialogTitle>
+                            <DialogDescription>
+                                This action cannot be undone. This will permanently delete your account and remove all your data from our servers.
+                            </DialogDescription>
+                        </DialogHeader>
+                        
+                        <div className="space-y-4 py-4">
+                            <div className="bg-[#FEF2F2] dark:bg-[#EA4335]/5 border border-[#EA4335]/20 rounded-lg p-4">
+                                <p className="text-sm text-[#5F6368] dark:text-muted-foreground">
+                                    To confirm deletion, please type <span className="font-mono font-bold text-[#EA4335]">DELETE</span> below:
+                                </p>
+                            </div>
+                            
+                            <Input
+                                type="text"
+                                value={deleteConfirmation}
+                                onChange={(e) => setDeleteConfirmation(e.target.value)}
+                                placeholder="Type DELETE to confirm"
+                                className="font-mono"
+                                disabled={isDeleting}
+                            />
+                        </div>
+
+                        <DialogFooter className="flex gap-2">
+                            <Button
+                                variant="outline"
+                                onClick={() => {
+                                    setShowDeleteDialog(false);
+                                    setDeleteConfirmation('');
+                                }}
+                                disabled={isDeleting}
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                variant="destructive"
+                                onClick={handleDeleteAccount}
+                                disabled={deleteConfirmation !== 'DELETE' || isDeleting}
+                                className="bg-[#EA4335] hover:bg-[#C5221F]"
+                            >
+                                {isDeleting ? (
+                                    <>
+                                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                        Deleting...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Trash2 className="w-4 h-4 mr-2" />
+                                        Delete Forever
+                                    </>
+                                )}
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </main>
         </div>
     );
